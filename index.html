@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#2b2f77">
 <meta name="referrer" content="strict-origin-when-cross-origin">
-<title>قنوات الأطفال</title>
+<title>Tube Kids Family</title>
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icon-192.png">
 <link rel="apple-touch-icon" href="icon-192.png">
@@ -19,8 +19,13 @@
 const CONFIG = {
   // مفتاح YouTube Data API v3 (ممكن تحطه هنا أو من شاشة الإعدادات جوه الأبلكيشن)
   API_KEY: "",
-  // رقم سري لشاشة الإعدادات (غيّره)
+  // رقم سري لشاشة الإعدادات — بيستخدم بس لو FIREBASE فاضي
   PIN: "0000",
+  // إعدادات Firebase (الأدمن باليوزر والباسورد). انسخها من Firebase ← Project settings ← Your apps.
+  // لو سبتها null الأبلكيشن بيشتغل بالرقم السري والإعدادات بتتحفظ على كل جهاز لوحده.
+  FIREBASE: null,
+  // اللغة الافتراضية أول مرة: "ar" أو "en"
+  DEFAULT_LANG: "ar",
   // القنوات المسموحة: لينك قناة (@handle أو channel/UC...) أو لينك فيديو (هتتضاف قناته)
   CHANNELS: [
     "https://www.youtube.com/@AnashedAlRawda",
@@ -39,36 +44,37 @@ const CONFIG = {
 };
 </script>
 <style>
-:root{--bg:#f3f5ff;--card:#fff;--ink:#1d2140;--muted:#6b7090;--brand:#2b2f77;--accent:#ff5a5f;--yellow:#ffc93c;--radius:18px}
+:root{--bg:#f3f5ff;--card:#fff;--ink:#1d2140;--muted:#6b7090;--brand:#2b2f77;--accent:#ff5a5f;--yellow:#ffc93c;--radius:18px;--pbg:#14152b;--pbtn:#262a52}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{margin:0;background:var(--bg);color:var(--ink);font-family:"Cairo",system-ui,-apple-system,"Segoe UI",Tahoma,sans-serif}
 button{font-family:inherit;cursor:pointer}
 header{position:sticky;top:0;z-index:20;background:var(--brand);color:#fff;padding:calc(env(safe-area-inset-top) + 10px) 14px 10px;display:flex;align-items:center;gap:10px;box-shadow:0 3px 12px rgba(0,0,0,.15)}
-header h1{font-size:20px;margin:0;flex:1;font-weight:800;display:flex;align-items:center;gap:8px}
+header h1{font-size:20px;margin:0;flex:1;font-weight:800;display:flex;align-items:center;gap:8px;white-space:nowrap}
 header h1 .logo{width:32px;height:32px;border-radius:9px;background:var(--yellow);display:grid;place-items:center;color:var(--brand);font-size:16px}
-.icon-btn{background:rgba(255,255,255,.15);border:0;color:#fff;width:42px;height:42px;border-radius:12px;font-size:20px;display:grid;place-items:center}
+.icon-btn{background:rgba(255,255,255,.15);border:0;color:#fff;min-width:42px;height:42px;border-radius:12px;font-size:20px;display:grid;place-items:center;padding:0 8px}
+.icon-btn.txt{font-size:15px;font-weight:800}
 .icon-btn:active{transform:scale(.93)}
 .icon-btn.spin span{display:inline-block;animation:spin 1s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
 #search{width:100%;max-width:260px;border:0;border-radius:12px;padding:9px 12px;font-family:inherit;font-size:15px}
-@media(max-width:560px){#search{display:none}#search.show{display:block;position:absolute;top:100%;left:8px;right:8px;max-width:none;margin-top:6px;box-shadow:0 4px 14px rgba(0,0,0,.2)}}
-@media(min-width:561px){#searchToggle{display:none}}
+@media(max-width:600px){#search{display:none}#search.show{display:block;position:absolute;top:100%;left:8px;right:8px;max-width:none;margin-top:6px;box-shadow:0 4px 14px rgba(0,0,0,.2)}header h1 span+span{font-size:17px}}
+@media(min-width:601px){#searchToggle{display:none}}
 #channels{display:flex;align-items:flex-start;gap:12px;overflow-x:auto;padding:14px;scrollbar-width:none}
 #channels::-webkit-scrollbar{display:none}
 .ch{flex:0 0 auto;width:84px;text-align:center;background:none;border:0;padding:0;color:var(--ink)}
 .ch .av{position:relative;width:72px;height:72px;margin:0 auto;border-radius:50%;background:#dde1ff center/cover;border:4px solid transparent;box-shadow:0 3px 10px rgba(0,0,0,.12);display:grid;place-items:center;font-size:28px}
 .ch.active .av{border-color:var(--accent)}
 .ch .nm{font-size:12px;font-weight:700;margin-top:6px;line-height:1.25;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
-.badge{position:absolute;top:-4px;left:-4px;background:var(--accent);color:#fff;font-size:12px;font-weight:800;min-width:24px;height:24px;border-radius:12px;display:grid;place-items:center;padding:0 6px;border:2px solid #fff}
+.badge{position:absolute;top:-4px;inset-inline-start:-4px;background:var(--accent);color:#fff;font-size:12px;font-weight:800;min-width:24px;height:24px;border-radius:12px;display:grid;place-items:center;padding:0 6px;border:2px solid #fff}
 #title{padding:0 16px;margin:4px 0 10px;font-size:18px;font-weight:800}
 #grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px;padding:0 14px 24px}
 @media(max-width:560px){#grid{grid-template-columns:1fr 1fr;gap:10px;padding:0 10px 20px}}
 @media(max-width:360px){#grid{grid-template-columns:1fr}}
-.v{background:var(--card);border-radius:var(--radius);overflow:hidden;box-shadow:0 3px 12px rgba(30,40,120,.08);border:0;padding:0;text-align:right;color:var(--ink);display:flex;flex-direction:column}
+.v{background:var(--card);border-radius:var(--radius);overflow:hidden;box-shadow:0 3px 12px rgba(30,40,120,.08);border:0;padding:0;text-align:start;color:var(--ink);display:flex;flex-direction:column}
 .v:active{transform:scale(.97)}
 .v .th{position:relative;aspect-ratio:16/9;background:#ccd center/cover}
-.v .dur{position:absolute;bottom:6px;left:6px;background:rgba(0,0,0,.78);color:#fff;font-size:12px;padding:1px 6px;border-radius:6px;direction:ltr}
-.v .new{position:absolute;top:6px;right:6px;background:var(--accent);color:#fff;font-size:12px;font-weight:800;padding:2px 8px;border-radius:8px}
+.v .dur{position:absolute;bottom:6px;inset-inline-end:6px;background:rgba(0,0,0,.78);color:#fff;font-size:12px;padding:1px 6px;border-radius:6px;direction:ltr}
+.v .new{position:absolute;top:6px;inset-inline-start:6px;background:var(--accent);color:#fff;font-size:12px;font-weight:800;padding:2px 8px;border-radius:8px}
 .v .watched{position:absolute;bottom:0;right:0;left:0;height:4px;background:var(--accent)}
 .v .meta{padding:8px 10px 10px}
 .v .t{font-size:14px;font-weight:700;line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
@@ -79,35 +85,52 @@ header h1 .logo{width:32px;height:32px;border-radius:9px;background:var(--yellow
 .skel{background:linear-gradient(90deg,#e6e8f5 25%,#f2f3fb 50%,#e6e8f5 75%);background-size:200% 100%;animation:sk 1.2s infinite}
 @keyframes sk{to{background-position:-200% 0}}
 
-/* Player */
-#player{position:fixed;inset:0;z-index:50;background:#000;display:none;flex-direction:column}
+/* ---------- Player ---------- */
+#player{position:fixed;inset:0;z-index:50;background:#000;display:none;flex-direction:column;color:#fff}
 #player.open{display:flex}
-#pTop{display:flex;align-items:center;gap:10px;padding:calc(env(safe-area-inset-top) + 8px) 10px 8px;color:#fff}
+#pTop{display:flex;align-items:center;gap:10px;padding:calc(env(safe-area-inset-top) + 8px) 12px 8px;background:var(--pbg);z-index:6;transition:opacity .25s}
 #pTop .t{flex:1;font-weight:700;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-#stage{position:relative;flex:1;display:flex;align-items:center;justify-content:center;min-height:0}
-#frameBox{position:relative;width:100%;max-height:100%;aspect-ratio:16/9}
+#stage{position:relative;flex:1;min-height:0;container-type:size;display:flex;align-items:center;justify-content:center;background:#000}
+#frameBox{position:relative;width:min(100cqw, calc(100cqh * 16 / 9));aspect-ratio:16/9}
 #frameBox iframe,#ytp{position:absolute;inset:0;width:100%;height:100%;border:0}
-#shield{position:absolute;top:0;left:0;right:0;height:16%;z-index:3}
-#pErr{position:absolute;inset:0;display:none;align-items:center;justify-content:center;flex-direction:column;gap:14px;color:#fff;text-align:center;padding:20px;background:#111;z-index:4}
+#tap{position:absolute;inset:0;z-index:3;display:none}
+#player.kid #tap{display:block}
+#bigIcon{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) scale(.8);width:84px;height:84px;border-radius:50%;background:rgba(20,21,43,.75);display:grid;place-items:center;font-size:36px;opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;z-index:4}
+#bigIcon.show{opacity:1;transform:translate(-50%,-50%) scale(1)}
+#pErr{position:absolute;inset:0;display:none;align-items:center;justify-content:center;flex-direction:column;gap:14px;text-align:center;padding:20px;background:#111;z-index:5}
 #pErr.show{display:flex}
-#bar{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:8px;padding:10px 10px calc(env(safe-area-inset-bottom) + 12px);background:#111;color:#fff}
-.pb{background:#2a2a35;color:#fff;border:0;border-radius:12px;min-width:46px;height:46px;font-size:20px;padding:0 12px;display:inline-flex;align-items:center;justify-content:center;gap:6px}
-.pb.small{font-size:14px;font-weight:700;min-width:44px;height:38px}
-.pb.on{background:var(--accent)}
-.pb.cast{background:var(--yellow);color:#1d2140;font-size:15px;font-weight:800}
-.grp{display:flex;gap:6px;align-items:center;background:#1b1b24;border-radius:14px;padding:4px}
-.grp label{font-size:12px;color:#aab;padding:0 6px}
-#vol{width:110px;accent-color:var(--accent)}
-#player:fullscreen #pTop,#player:fullscreen #bar{display:none}
-#player:fullscreen #frameBox{height:100%;width:auto;max-width:100%}
-#fsExit{position:absolute;top:12px;right:12px;z-index:6;display:none;opacity:.55}
-#player:fullscreen #fsExit{display:inline-flex}
+#bar{background:var(--pbg);padding:6px 12px calc(env(safe-area-inset-bottom) + 10px);z-index:6;transition:opacity .25s}
+.seekRow{display:flex;align-items:center;gap:10px;direction:ltr;font-size:13px;font-variant-numeric:tabular-nums;color:#c9cbe8}
+#seek{flex:1;accent-color:var(--accent);height:22px}
+.ctrls{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;margin-top:4px}
+.ctrls .side{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+@media(max-width:700px){.ctrls,.ctrls .side{justify-content:center;width:100%}}
+.pb{position:relative;background:var(--pbtn);color:#fff;border:0;border-radius:14px;min-width:46px;height:46px;font-size:19px;padding:0 12px;display:inline-flex;align-items:center;justify-content:center;gap:6px;font-weight:800}
+.pb:active{transform:scale(.93)}
+.pb.main{background:var(--accent);min-width:58px;height:52px;font-size:22px}
+.pb.small{font-size:14px}
+.pb.on{background:var(--yellow);color:var(--ink)}
+.pb.tv{background:var(--yellow);color:var(--ink);font-size:15px}
+.pb svg{width:22px;height:22px;fill:currentColor}
+.grp{display:flex;align-items:center;gap:6px;background:#1d1f3d;border-radius:16px;padding:4px}
+#vol{width:96px;accent-color:var(--accent);direction:ltr}
+.menu{position:absolute;bottom:56px;inset-inline-start:0;background:#fff;color:var(--ink);border-radius:14px;padding:6px;display:none;flex-direction:column;min-width:96px;box-shadow:0 8px 24px rgba(0,0,0,.35);z-index:10}
+.menu.open{display:flex}
+.menu button{border:0;background:none;padding:9px 12px;border-radius:10px;font-weight:700;font-size:15px;text-align:start;color:var(--ink)}
+.menu button.sel{background:var(--accent);color:#fff}
+/* fullscreen: controls float over the video and hide while playing */
+#player.fs #pTop{position:absolute;top:0;left:0;right:0;background:linear-gradient(rgba(0,0,0,.7),transparent)}
+#player.fs #bar{position:absolute;bottom:0;left:0;right:0;background:linear-gradient(transparent,rgba(0,0,0,.8))}
+#player.fs #stage{position:absolute;inset:0}
+#player.fs.idle #pTop,#player.fs.idle #bar{opacity:0;pointer-events:none}
+#player.fake-fs{z-index:100}
 
-/* Modal */
-.modal{position:fixed;inset:0;z-index:80;background:rgba(10,12,40,.55);display:none;align-items:center;justify-content:center;padding:16px}
+/* ---------- Modals ---------- */
+.modal{position:fixed;inset:0;z-index:120;background:rgba(10,12,40,.55);display:none;align-items:center;justify-content:center;padding:16px}
 .modal.open{display:flex}
-.sheet{background:#fff;border-radius:22px;width:100%;max-width:560px;max-height:92vh;overflow:auto;padding:20px}
+.sheet{background:#fff;color:var(--ink);border-radius:22px;width:100%;max-width:560px;max-height:92vh;overflow:auto;padding:20px}
 .sheet h2{margin:0 0 12px;font-size:20px}
+.sheet p{line-height:1.8;margin:0}
 .sheet label{display:block;font-weight:700;margin:14px 0 6px}
 .sheet input[type=text],.sheet input[type=password],.sheet textarea{width:100%;border:2px solid #dfe2f5;border-radius:12px;padding:10px;font-family:inherit;font-size:15px;direction:ltr;text-align:left}
 .sheet textarea{min-height:200px;font-size:13px}
@@ -115,21 +138,28 @@ header h1 .logo{width:32px;height:32px;border-radius:9px;background:var(--yellow
 .btn{border:0;border-radius:12px;padding:11px 18px;font-size:15px;font-weight:700;background:var(--brand);color:#fff}
 .btn.ghost{background:#eef0ff;color:var(--brand)}
 .btn.red{background:#ffe5e6;color:#c22}
+.btn.yellow{background:var(--yellow);color:var(--ink)}
 .hint{font-size:12.5px;color:var(--muted);line-height:1.7}
-.check{display:flex;align-items:center;gap:8px;font-weight:700;margin-top:14px}
-.check input{width:20px;height:20px}
+.check{display:flex;align-items:flex-start;gap:8px;font-weight:700;margin-top:14px}
+.check input{width:20px;height:20px;flex:0 0 auto;margin-top:3px}
+.check small{display:block;font-weight:400;color:var(--muted);font-size:12.5px}
 .pin{display:flex;gap:10px;justify-content:center;margin:14px 0}
 .pin input{width:200px;text-align:center;font-size:26px;letter-spacing:10px;border:2px solid #dfe2f5;border-radius:12px;padding:8px}
-#toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#1d2140;color:#fff;padding:10px 18px;border-radius:12px;z-index:99;display:none;font-size:14px;max-width:90vw;text-align:center}
+.add-admin{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.add-admin input{flex:1 1 180px;border:2px solid #dfe2f5;border-radius:12px;padding:10px;font-family:inherit;font-size:15px;direction:ltr;text-align:left}
+.adm{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:8px 10px;background:#f4f5ff;border-radius:10px;margin-top:6px;direction:ltr;font-size:14px;color:var(--ink)}
+.adm button{border:0;background:#ffe5e6;color:#c22;border-radius:8px;padding:4px 10px;font-family:inherit;font-weight:700}
+#toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#1d2140;color:#fff;padding:10px 18px;border-radius:12px;z-index:200;display:none;font-size:14px;max-width:90vw;text-align:center}
 </style>
 </head>
 <body>
 <header>
-  <h1><span class="logo">▶</span><span>قنوات الأطفال</span></h1>
-  <input id="search" type="search" placeholder="بحث في الفيديوهات...">
-  <button class="icon-btn" id="searchToggle" title="بحث">🔍</button>
-  <button class="icon-btn" id="refreshBtn" title="تحديث"><span>⟳</span></button>
-  <button class="icon-btn" id="settingsBtn" title="الإعدادات">🔒</button>
+  <h1><span class="logo">▶</span><span>Tube Kids Family</span></h1>
+  <input id="search" type="search" data-i18n-ph="search">
+  <button class="icon-btn" id="searchToggle" data-i18n-title="searchT">🔍</button>
+  <button class="icon-btn txt" id="langBtn"></button>
+  <button class="icon-btn" id="refreshBtn" data-i18n-title="refreshT"><span>⟳</span></button>
+  <button class="icon-btn" id="settingsBtn" data-i18n-title="settings">🔒</button>
 </header>
 
 <nav id="channels"></nav>
@@ -140,47 +170,84 @@ header h1 .logo{width:32px;height:32px;border-radius:9px;background:var(--yellow
 <!-- Player -->
 <section id="player" aria-hidden="true">
   <div id="pTop">
-    <button class="pb" id="pClose" title="رجوع">✕</button>
+    <button class="pb" id="pClose" data-i18n-title="close">✕</button>
     <div class="t" id="pTitle"></div>
   </div>
   <div id="stage">
     <div id="frameBox">
       <div id="ytp"></div>
-      <div id="shield" title=""></div>
+      <div id="tap"></div>
+      <div id="bigIcon">▶</div>
       <div id="pErr">
         <div id="pErrMsg"></div>
-        <div style="display:flex;gap:10px">
-          <button class="pb small" id="pErrNext">الفيديو اللي بعده ◀</button>
-        </div>
+        <button class="btn yellow" id="pErrNext" data-i18n="nextVideo"></button>
       </div>
     </div>
-    <button class="pb" id="fsExit" title="خروج من ملء الشاشة">⤡</button>
   </div>
   <div id="bar">
-    <div class="grp" dir="ltr">
-      <button class="pb" id="pPrev" title="السابق">⏮</button>
-      <button class="pb" id="pPlay" title="تشغيل/إيقاف">⏸</button>
-      <button class="pb" id="pNext" title="التالي">⏭</button>
+    <div class="seekRow"><span id="tCur">0:00</span><input type="range" id="seek" min="0" max="100" step="0.1" value="0"><span id="tDur">0:00</span></div>
+    <div class="ctrls">
+      <div class="side" dir="ltr">
+        <button class="pb" id="pPrev" data-i18n-title="prev"><svg viewBox="0 0 24 24"><path d="M6 6h2v12H6zM9.5 12 18 18V6z"/></svg></button>
+        <button class="pb small" id="pBack" data-i18n-title="back10">−10</button>
+        <button class="pb main" id="pPlay" data-i18n-title="playPause"><svg viewBox="0 0 24 24" id="playIco"><path d="M8 5v14l11-7z"/></svg></button>
+        <button class="pb small" id="pFwd" data-i18n-title="fwd10">+10</button>
+        <button class="pb" id="pNext" data-i18n-title="next"><svg viewBox="0 0 24 24"><path d="M16 6h2v12h-2zM6 18l8.5-6L6 6z"/></svg></button>
+      </div>
+      <div class="side">
+        <div style="position:relative">
+          <button class="pb small" id="pSpeed" data-i18n-title="speed">1x</button>
+          <div class="menu" id="speedMenu"></div>
+        </div>
+        <div class="grp">
+          <button class="pb" id="pMute" data-i18n-title="mute">🔊</button>
+          <input type="range" id="vol" min="0" max="100" value="100">
+        </div>
+        <button class="pb small" id="pCC" data-i18n-title="cc">CC</button>
+        <button class="pb" id="pFs" data-i18n-title="fullscreen"><svg viewBox="0 0 24 24" id="fsIco"><path d="M5 5h5V3H3v7h2zm9-2v2h5v5h2V3zm5 16h-5v2h7v-7h-2zM5 14H3v7h7v-2H5z"/></svg></button>
+        <button class="pb tv" id="pTv">📺 <span data-i18n="tv"></span></button>
+      </div>
     </div>
-    <div class="grp" id="speeds"><label>السرعة</label></div>
-    <div class="grp">
-      <button class="pb small" id="pMute" title="كتم">🔊</button>
-      <input type="range" dir="ltr" id="vol" min="0" max="100" value="100" title="الصوت">
-    </div>
-    <button class="pb" id="pFs" title="ملء الشاشة">⛶</button>
-    <button class="pb cast" id="pCast" title="تشغيل على الشاشة">📺 على الشاشة</button>
   </div>
 </section>
 
-<!-- PIN -->
+<!-- TV -->
+<div class="modal" id="tvModal">
+  <div class="sheet" style="max-width:460px">
+    <h2 data-i18n="tvTitle"></h2>
+    <p data-i18n-html="tvBody"></p>
+    <div class="row">
+      <button class="btn yellow" id="tvGo" data-i18n="tvGo"></button>
+      <button class="btn ghost" data-close data-i18n="cancel"></button>
+    </div>
+  </div>
+</div>
+
+<!-- Admin login (Firebase) -->
+<div class="modal" id="loginModal">
+  <div class="sheet" style="max-width:400px">
+    <h2 data-i18n="adminLogin"></h2>
+    <label for="lEmail" data-i18n="email"></label>
+    <input id="lEmail" type="text" inputmode="email" autocomplete="username">
+    <label for="lPass" data-i18n="password"></label>
+    <input id="lPass" type="password" autocomplete="current-password">
+    <div class="row">
+      <button class="btn" id="lOk" data-i18n="signIn"></button>
+      <button class="btn ghost" data-close data-i18n="cancel"></button>
+      <button class="btn ghost" id="lForgot" data-i18n="forgot"></button>
+    </div>
+  </div>
+</div>
+
+<!-- PIN (no Firebase) -->
 <div class="modal" id="pinModal">
   <div class="sheet" style="max-width:360px;text-align:center">
-    <h2>للكبار بس 🔒</h2>
-    <div class="hint">اكتب الرقم السري</div>
+    <h2 data-i18n="adultsOnly"></h2>
+    <div class="hint" data-i18n="enterPin"></div>
     <div class="pin"><input id="pinInput" type="password" inputmode="numeric" maxlength="8" autocomplete="off"></div>
     <div class="row" style="justify-content:center">
-      <button class="btn" id="pinOk">دخول</button>
-      <button class="btn ghost" data-close>إلغاء</button>
+      <button class="btn" id="pinOk" data-i18n="signIn"></button>
+      <button class="btn ghost" data-close data-i18n="cancel"></button>
     </div>
   </div>
 </div>
@@ -188,22 +255,37 @@ header h1 .logo{width:32px;height:32px;border-radius:9px;background:var(--yellow
 <!-- Settings -->
 <div class="modal" id="setModal">
   <div class="sheet">
-    <h2>الإعدادات</h2>
-    <label for="sKey">مفتاح YouTube API</label>
+    <h2 data-i18n="settings"></h2>
+    <label for="sKey" data-i18n="apiKey"></label>
     <input id="sKey" type="text" placeholder="AIza..." autocomplete="off">
-    <div class="hint">بيتحفظ على الجهاز ده بس. لو حطيته في الملف (CONFIG.API_KEY) هيشتغل على كل الأجهزة.</div>
-    <label for="sCh">القنوات المسموحة (لينك في كل سطر)</label>
+    <div class="hint" id="keyHint"></div>
+    <label for="sCh" data-i18n="channels"></label>
     <textarea id="sCh" spellcheck="false"></textarea>
-    <div class="hint">ينفع: https://www.youtube.com/@name — أو channel/UC... — أو لينك فيديو (هتتضاف قناته).</div>
-    <label class="check"><input type="checkbox" id="sShorts"> إخفاء الـ Shorts (الفيديوهات أقل من دقيقة)</label>
-    <label class="check"><input type="checkbox" id="sShield"> قفل روابط يوتيوب جوه المشغّل (عشان الطفل ميخرجش لليوتيوب)</label>
-    <label for="sPin">رقم سري جديد (اختياري)</label>
-    <input id="sPin" type="password" inputmode="numeric" maxlength="8" placeholder="سيبه فاضي لو مش عاوز تغيّره">
+    <div class="hint" data-i18n="channelsHint"></div>
+    <label class="check"><input type="checkbox" id="sKid"><span><span data-i18n="kidLock"></span><small data-i18n="kidLockHint"></small></span></label>
+    <label class="check"><input type="checkbox" id="sTv"><span><span data-i18n="showTv"></span><small data-i18n="showTvHint"></small></span></label>
+    <label class="check"><input type="checkbox" id="sShorts"><span data-i18n="hideShorts"></span></label>
+    <div id="pinBox">
+      <label for="sPin" data-i18n="newPin"></label>
+      <input id="sPin" type="password" inputmode="numeric" maxlength="8" data-i18n-ph="newPinPh">
+    </div>
+    <div id="adminsBox" style="display:none">
+      <label data-i18n="admins"></label>
+      <div id="adminsList" class="hint">...</div>
+      <div class="add-admin">
+        <input id="aEmail" type="text" inputmode="email" data-i18n-ph="newAdminEmail">
+        <input id="aPass" type="password" data-i18n-ph="newAdminPass">
+        <button class="btn" id="aAdd" data-i18n="addAdmin"></button>
+      </div>
+      <div class="hint" data-i18n="adminHint"></div>
+      <div class="hint" id="whoami" style="margin-top:8px"></div>
+    </div>
     <div class="row">
-      <button class="btn" id="sSave">حفظ</button>
-      <button class="btn ghost" data-close>إلغاء</button>
-      <button class="btn ghost" id="sDefaults">رجّع القنوات الافتراضية</button>
-      <button class="btn red" id="sClear">مسح الكاش</button>
+      <button class="btn" id="sSave" data-i18n="save"></button>
+      <button class="btn ghost" data-close data-i18n="cancel"></button>
+      <button class="btn ghost" id="sDefaults" data-i18n="defaults"></button>
+      <button class="btn red" id="sClear" data-i18n="clearCache"></button>
+      <button class="btn red" id="sLogout" style="display:none" data-i18n="logout"></button>
     </div>
   </div>
 </div>
@@ -223,30 +305,115 @@ const $ = s => document.querySelector(s);
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 const toast = (m, ms = 3000) => { const t = $("#toast"); t.textContent = m; t.style.display = "block"; clearTimeout(toast.h); toast.h = setTimeout(() => t.style.display = "none", ms); };
 
-const apiKey = () => LS.get("apiKey", "") || CONFIG.API_KEY;
-const channelList = () => LS.get("channels", null) || CONFIG.CHANNELS;
+/* ---------- language ---------- */
+const I18N = {
+  ar: {
+    search: "بحث في الفيديوهات...", searchT: "بحث", refreshT: "تحديث", settings: "الإعدادات", langT: "English", langBtn: "EN",
+    all: "الكل", latest: "أحدث الفيديوهات", results: "نتائج البحث", newTag: "جديد", older: "فيديوهات أقدم", loading: "بيحمّل...",
+    noVideos: "مفيش فيديوهات هنا.", noMatch: "مفيش فيديوهات بالكلمة دي.",
+    welcomeLocal: p => `أهلاً 👋<br>عشان الأبلكيشن يجيب الفيديوهات محتاج <b>مفتاح YouTube API</b>.<br>دوس على 🔒 فوق واكتب الرقم السري (الافتراضي <b>${p}</b>) وحط المفتاح.`,
+    welcomeRemote: "أهلاً 👋<br>الأبلكيشن لسه بيتجهّز.<br>الأدمن محتاج يدخل من 🔒 ويحط <b>مفتاح YouTube API</b>.",
+    loadFail: "مقدرتش أجيب الفيديوهات", badKey: "المفتاح مش صحيح. انسخه تاني من Google Cloud (Credentials ← SHOW KEY) وحطه من 🔒.",
+    refBlocked: "المفتاح مقفول على موقع تاني. راجع Application restrictions في Google Cloud.",
+    newVids: n => `فيه ${n} فيديو جديد 🎉`, upToDate: "تمام، كله محدّث ✔", needKey: "محتاج مفتاح API من الإعدادات",
+    problem: m => "حصلت مشكلة: " + m, notFound: l => "مقدرتش ألاقي: " + l, moreFail: m => "مشكلة في التحميل: " + m,
+    ago: (n, u) => "من " + n + " " + ({ m: "دقيقة", h: "ساعة", d: "يوم", mo: "شهر", y: "سنة" })[u],
+    close: "رجوع", prev: "السابق", next: "التالي", playPause: "تشغيل/إيقاف", back10: "رجوع 10 ثواني", fwd10: "قدام 10 ثواني",
+    speed: "السرعة", mute: "كتم الصوت", cc: "الترجمة", fullscreen: "ملء الشاشة", tv: "على الشاشة", nextVideo: "الفيديو اللي بعده ◀",
+    ccOn: "الترجمة شغالة", ccOff: "الترجمة مقفولة",
+    err: { 2: "لينك الفيديو غلط", 5: "المتصفح مش قادر يشغّل الفيديو ده", 100: "الفيديو اتشال أو بقى خاص", 101: "صاحب القناة مانع تشغيل الفيديو ده برّه يوتيوب", 150: "صاحب القناة مانع تشغيل الفيديو ده برّه يوتيوب", 153: "لازم الأبلكيشن يتفتح من لينك (مش من ملف على الجهاز)" },
+    errN: n => "خطأ " + n,
+    tvTitle: "📺 التشغيل على الشاشة",
+    tvBody: "جوجل مش بيسمح لأي أبلكيشن غير <b>يوتيوب</b> إنه يبعت فيديوهات يوتيوب للشاشة بالكاست.<br>هنفتح الفيديو في يوتيوب من نفس الثانية، ومن هناك دوس أيقونة الكاست واختار الشاشة. الشاشة بتشغّل الفيديو بنفسها بأعلى جودة.<br><br>أو افتح الأبلكيشن ده من متصفح الشاشة نفسها.",
+    tvGo: "افتح في يوتيوب", tvToast: "دوس على أيقونة الكاست واختار الشاشة", cancel: "إلغاء",
+    adminLogin: "دخول الأدمن 🔒", email: "الإيميل", password: "الباسورد", signIn: "دخول", forgot: "نسيت الباسورد",
+    adultsOnly: "للكبار بس 🔒", enterPin: "اكتب الرقم السري", wrongPin: "الرقم غلط",
+    apiKey: "مفتاح YouTube API", keyHintLocal: "بيتحفظ على الجهاز ده بس. لو حطيته في الملف (CONFIG.API_KEY) هيشتغل على كل الأجهزة.", keyHintRemote: "أي تعديل هنا بيتطبق عند كل اليوزرز على طول.",
+    channels: "القنوات المسموحة (لينك في كل سطر)", channelsHint: "ينفع: https://www.youtube.com/@name — أو channel/UC... — أو لينك فيديو (هتتضاف قناته).",
+    kidLock: "وضع الأطفال", kidLockHint: "أزرار التحكم كلها من الأبلكيشن، والطفل ميقدرش يدوس على حاجة جوه الفيديو تخرّجه ليوتيوب. لو قفلته هتظهر أزرار يوتيوب نفسها (ومنها الجودة).",
+    showTv: "إظهار زرار \"على الشاشة\"", showTvHint: "الزرار ده بيفتح يوتيوب الكامل، فلو العيال بيستخدموا الأبلكيشن لوحدهم ممكن تخفيه.",
+    hideShorts: "إخفاء الـ Shorts (الفيديوهات أقل من دقيقة)", newPin: "رقم سري جديد (اختياري)", newPinPh: "سيبه فاضي لو مش عاوز تغيّره",
+    admins: "الأدمنز", newAdminEmail: "إيميل الأدمن الجديد", newAdminPass: "باسورد (6 حروف على الأقل)", addAdmin: "إضافة أدمن",
+    adminHint: "لو الإيميل ده عنده حساب قبل كده سيب الباسورد فاضي.", you: "(انت)", remove: "شيل", sure: "متأكد؟", signedAs: "داخل بـ: ",
+    save: "حفظ", defaults: "رجّع القنوات الافتراضية", clearCache: "مسح الكاش", logout: "تسجيل خروج",
+    saved: "اتحفظ عند كل اليوزرز ✔", savedLocal: "اتحفظ ✔", cacheCleared: "اتمسح الكاش", loggedOut: "اتعمل تسجيل خروج", notAdmin: "الحساب ده مش أدمن",
+    removed: e => "اتشال " + e, added: e => "اتضاف " + e + " كأدمن ✔", badEmail: "اكتب إيميل صحيح", emailFirst: "اكتب الإيميل الأول",
+    resetSent: "اتبعت لينك تغيير الباسورد على الإيميل", fbDown: "مقدرتش أوصل لـ Firebase", none: "مفيش",
+    fb: { "auth/invalid-credential": "الإيميل أو الباسورد غلط", "auth/wrong-password": "الإيميل أو الباسورد غلط", "auth/user-not-found": "الإيميل أو الباسورد غلط", "auth/invalid-email": "الإيميل مكتوب غلط", "auth/weak-password": "الباسورد لازم 6 حروف على الأقل", "auth/too-many-requests": "محاولات كتير، استنى شوية وجرب تاني", "auth/network-request-failed": "مفيش نت", "permission-denied": "مش مسموحلك تعمل كده", "auth/missing-password": "اكتب الباسورد" }
+  },
+  en: {
+    search: "Search videos...", searchT: "Search", refreshT: "Refresh", settings: "Settings", langT: "العربية", langBtn: "ع",
+    all: "All", latest: "Latest videos", results: "Search results", newTag: "NEW", older: "Older videos", loading: "Loading...",
+    noVideos: "No videos here.", noMatch: "No videos match that word.",
+    welcomeLocal: p => `Hi 👋<br>To load videos the app needs a <b>YouTube API key</b>.<br>Tap 🔒 at the top, enter the PIN (default <b>${p}</b>) and add the key.`,
+    welcomeRemote: "Hi 👋<br>The app isn't set up yet.<br>An admin needs to sign in from 🔒 and add the <b>YouTube API key</b>.",
+    loadFail: "Couldn't load videos", badKey: "The API key isn't valid. Copy it again from Google Cloud (Credentials → SHOW KEY) and add it from 🔒.",
+    refBlocked: "The key is restricted to another website. Check Application restrictions in Google Cloud.",
+    newVids: n => `${n} new video${n > 1 ? "s" : ""} 🎉`, upToDate: "All up to date ✔", needKey: "An API key is needed (settings)",
+    problem: m => "Something went wrong: " + m, notFound: l => "Couldn't find: " + l, moreFail: m => "Couldn't load more: " + m,
+    ago: (n, u) => n + " " + ({ m: "min", h: "hour", d: "day", mo: "month", y: "year" })[u] + (n > 1 && u !== "m" ? "s" : "") + " ago",
+    close: "Back", prev: "Previous", next: "Next", playPause: "Play/Pause", back10: "Back 10s", fwd10: "Forward 10s",
+    speed: "Speed", mute: "Mute", cc: "Captions", fullscreen: "Full screen", tv: "On TV", nextVideo: "Next video ▶",
+    ccOn: "Captions on", ccOff: "Captions off",
+    err: { 2: "Bad video link", 5: "This browser can't play this video", 100: "The video was removed or made private", 101: "The channel owner doesn't allow this video outside YouTube", 150: "The channel owner doesn't allow this video outside YouTube", 153: "Open the app from its link (not from a file on the device)" },
+    errN: n => "Error " + n,
+    tvTitle: "📺 Play on TV",
+    tvBody: "Google only lets the <b>YouTube</b> app cast YouTube videos to a TV.<br>We'll open this video in YouTube at the same second; tap the Cast icon there and pick your TV. The TV streams it directly in the best quality.<br><br>Or open this app in the TV's own browser.",
+    tvGo: "Open in YouTube", tvToast: "Tap the Cast icon and pick your TV", cancel: "Cancel",
+    adminLogin: "Admin sign-in 🔒", email: "Email", password: "Password", signIn: "Sign in", forgot: "Forgot password",
+    adultsOnly: "Grown-ups only 🔒", enterPin: "Enter the PIN", wrongPin: "Wrong PIN",
+    apiKey: "YouTube API key", keyHintLocal: "Saved on this device only. Put it in the file (CONFIG.API_KEY) to use it on every device.", keyHintRemote: "Changes here apply to every user right away.",
+    channels: "Allowed channels (one link per line)", channelsHint: "Accepted: https://www.youtube.com/@name — or channel/UC... — or a video link (its channel is added).",
+    kidLock: "Kids mode", kidLockHint: "All controls come from the app, and nothing inside the video can take the child out to YouTube. Turn it off to show YouTube's own buttons (including quality).",
+    showTv: "Show the \"On TV\" button", showTvHint: "This button opens the full YouTube app, so hide it if kids use the app on their own.",
+    hideShorts: "Hide Shorts (videos under a minute)", newPin: "New PIN (optional)", newPinPh: "Leave empty to keep the current one",
+    admins: "Admins", newAdminEmail: "New admin's email", newAdminPass: "Password (6+ characters)", addAdmin: "Add admin",
+    adminHint: "If this email already has an account, leave the password empty.", you: "(you)", remove: "Remove", sure: "Sure?", signedAs: "Signed in as: ",
+    save: "Save", defaults: "Reset channels to default", clearCache: "Clear cache", logout: "Sign out",
+    saved: "Saved for every user ✔", savedLocal: "Saved ✔", cacheCleared: "Cache cleared", loggedOut: "Signed out", notAdmin: "This account isn't an admin",
+    removed: e => "Removed " + e, added: e => e + " added as admin ✔", badEmail: "Enter a valid email", emailFirst: "Enter the email first",
+    resetSent: "A password reset link was sent to the email", fbDown: "Couldn't reach Firebase", none: "None",
+    fb: { "auth/invalid-credential": "Wrong email or password", "auth/wrong-password": "Wrong email or password", "auth/user-not-found": "Wrong email or password", "auth/invalid-email": "Invalid email", "auth/weak-password": "Password must be at least 6 characters", "auth/too-many-requests": "Too many attempts, try again later", "auth/network-request-failed": "No internet connection", "permission-denied": "You're not allowed to do that", "auth/missing-password": "Enter the password" }
+  }
+};
+let lang = LS.get("lang", CONFIG.DEFAULT_LANG === "en" ? "en" : "ar");
+const T = k => I18N[lang][k];
+function applyLang() {
+  document.documentElement.lang = lang;
+  document.documentElement.dir = lang === "ar" ? "rtl" : "ltr";
+  document.querySelectorAll("[data-i18n]").forEach(e => e.textContent = T(e.dataset.i18n));
+  document.querySelectorAll("[data-i18n-html]").forEach(e => e.innerHTML = T(e.dataset.i18nHtml));
+  document.querySelectorAll("[data-i18n-ph]").forEach(e => e.placeholder = T(e.dataset.i18nPh));
+  document.querySelectorAll("[data-i18n-title]").forEach(e => e.title = T(e.dataset.i18nTitle));
+  $("#langBtn").textContent = T("langBtn"); $("#langBtn").title = T("langT");
+}
+$("#langBtn").onclick = () => { lang = lang === "ar" ? "en" : "ar"; LS.set("lang", lang); applyLang(); render(); };
+
+/* ---------- settings source ----------
+   Firestore (shared by all users) when CONFIG.FIREBASE is set, otherwise this device only */
+const REMOTE = !!(CONFIG.FIREBASE && CONFIG.FIREBASE.apiKey);
+let remoteCfg = LS.get("remoteCfg", null);
+const src = () => REMOTE ? (remoteCfg || {}) : Object.assign({ apiKey: LS.get("apiKey", ""), channels: LS.get("channels", null) }, LS.get("opts", {}));
+const apiKey = () => src().apiKey || CONFIG.API_KEY;
+const channelList = () => (src().channels && src().channels.length) ? src().channels : CONFIG.CHANNELS;
 const pin = () => LS.get("pin", "") || CONFIG.PIN;
-const opts = () => Object.assign({ hideShorts: false, shield: true }, LS.get("opts", {}));
+const opts = () => { const s = src(); return { hideShorts: !!s.hideShorts, kidLock: (s.kidLock ?? s.shield) !== false, showTv: s.showTv !== false }; };
 
 /* ---------- state ---------- */
-let channels = LS.get("chInfo", []);          // [{id,title,thumb,uploads}]
-let vids = LS.get("vids", {});                 // {chId:{items:[...], next}}
+let channels = LS.get("chInfo", []);
+let vids = LS.get("vids", {});
 let lastFetch = LS.get("lastFetch", 0);
 const firstSeenDefault = Date.now() - CONFIG.NEW_DAYS * 864e5;
-let seen = LS.get("seen", {});                 // {chId: ts}
+let seen = LS.get("seen", {});
 let watched = new Set(LS.get("watched", []));
-let current = "all";                           // "all" | chId
-let viewSeen = {};                             // seen values captured when a view opened
-let query = "";
-let busy = false;
-let lastError = "";
+let current = "all", viewSeen = {}, query = "", busy = false, lastError = "";
+let lastFetchHadData = !!lastFetch;
 
 /* ---------- YouTube Data API ---------- */
 async function api(path, params) {
   const key = apiKey();
   if (!key) throw new Error("NO_KEY");
-  const url = "https://www.googleapis.com/youtube/v3/" + path + "?" + new URLSearchParams({ ...params, key });
-  const r = await fetch(url);
+  const r = await fetch("https://www.googleapis.com/youtube/v3/" + path + "?" + new URLSearchParams({ ...params, key }));
   const j = await r.json().catch(() => ({}));
   if (!r.ok) throw new Error((j.error && j.error.message) || ("HTTP " + r.status));
   return j;
@@ -263,8 +430,7 @@ const chunk = (a, n) => { const o = []; for (let i = 0; i < a.length; i += n) o.
 
 async function resolveChannelIds(list) {
   const cache = LS.get("resolved", {});
-  const ids = [], vidIds = [];
-  const unresolved = [];
+  const ids = [], vidIds = [], unresolved = [];
   for (const raw of list) {
     const e = parseEntry(raw);
     if (!e) { unresolved.push(raw); continue; }
@@ -275,8 +441,7 @@ async function resolveChannelIds(list) {
     else {
       try {
         const j = await api("channels", { part: "id", forHandle: e.id });
-        if (j.items && j.items[0]) { cache[k] = j.items[0].id; ids.push(j.items[0].id); }
-        else unresolved.push(raw);
+        if (j.items && j.items[0]) { cache[k] = j.items[0].id; ids.push(j.items[0].id); } else unresolved.push(raw);
       } catch (err) { if (err.message === "NO_KEY") throw err; unresolved.push(raw); }
     }
   }
@@ -285,10 +450,9 @@ async function resolveChannelIds(list) {
     for (const it of j.items || []) { cache["video:" + it.id] = it.snippet.channelId; ids.push(it.snippet.channelId); }
   }
   LS.set("resolved", cache);
-  if (unresolved.length) toast("مقدرتش ألاقي: " + unresolved.join(" ، "), 6000);
+  if (unresolved.length) toast(T("notFound")(unresolved.join(" , ")), 6000);
   return [...new Set(ids)];
 }
-
 async function loadChannelInfo(ids) {
   const out = [];
   for (const part of chunk(ids, 50)) {
@@ -298,11 +462,9 @@ async function loadChannelInfo(ids) {
       out.push({ id: it.id, title: it.snippet.title, thumb: (th.medium || th.default || {}).url || "", uploads: it.contentDetails.relatedPlaylists.uploads });
     }
   }
-  // keep the order the parent wrote them in
   out.sort((a, b) => ids.indexOf(a.id) - ids.indexOf(b.id));
   return out;
 }
-
 function isoDur(s) {
   const m = /P(?:(\d+)D)?T?(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?/.exec(s || "") || [];
   return (+m[1] || 0) * 86400 + (+m[2] || 0) * 3600 + (+m[3] || 0) * 60 + (+m[4] || 0);
@@ -317,19 +479,19 @@ async function fetchUploads(ch, pageToken) {
     const d = await api("videos", { part: "snippet,contentDetails,status", id: ids.join(",") });
     items = (d.items || [])
       .filter(v => v.status && v.status.embeddable !== false && v.status.privacyStatus !== "private" && (v.snippet.liveBroadcastContent || "none") === "none")
-      .map(v => {
-        const th = v.snippet.thumbnails || {};
-        return { id: v.id, ch: ch.id, title: v.snippet.title, thumb: (th.high || th.medium || th.default || {}).url || "", at: Date.parse(v.snippet.publishedAt), dur: isoDur(v.contentDetails.duration) };
-      });
+      .map(v => { const th = v.snippet.thumbnails || {}; return { id: v.id, ch: ch.id, title: v.snippet.title, thumb: (th.high || th.medium || th.default || {}).url || "", at: Date.parse(v.snippet.publishedAt), dur: isoDur(v.contentDetails.duration) }; });
   }
   return { items, next: pl.nextPageToken || null };
 }
-
-async function refresh(force) {
+function saveVids() {
+  const slim = {}; for (const k in vids) slim[k] = { items: vids[k].items.slice(0, 300), next: vids[k].next };
+  LS.set("vids", slim);
+}
+async function refresh(force, silent) {
   if (busy) return;
   if (!apiKey()) { render(); return; }
   if (!force && Date.now() - lastFetch < CONFIG.REFRESH_MINUTES * 60e3 && channels.length) return;
-  busy = true; $("#refreshBtn").classList.add("spin");
+  busy = true; $("#refreshBtn").classList.add("spin"); render();
   try {
     const ids = await resolveChannelIds(channelList());
     channels = await loadChannelInfo(ids);
@@ -343,41 +505,28 @@ async function refresh(force) {
       const known = new Set(old.items.map(v => v.id));
       fresh += r.value.items.filter(v => !known.has(v.id)).length;
       const map = new Map(); [...r.value.items, ...old.items].forEach(v => map.set(v.id, v));
-      const merged = [...map.values()].sort((a, b) => b.at - a.at);
-      vids[ch.id] = { items: merged, next: old.items.length > r.value.items.length ? old.next : r.value.next };
+      vids[ch.id] = { items: [...map.values()].sort((a, b) => b.at - a.at), next: old.items.length > r.value.items.length ? old.next : r.value.next };
     });
-    // drop removed channels
     const keep = new Set(channels.map(c => c.id));
     Object.keys(vids).forEach(k => { if (!keep.has(k)) delete vids[k]; });
-    lastFetch = Date.now();
-    saveVids(); LS.set("lastFetch", lastFetch);
-    if (force) toast(fresh && lastFetchHadData ? `فيه ${fresh} فيديو جديد 🎉` : "تمام، كله محدّث ✔");
-    lastFetchHadData = true;
-    lastError = "";
+    lastFetch = Date.now(); saveVids(); LS.set("lastFetch", lastFetch);
+    if (force && !silent) toast(fresh && lastFetchHadData ? T("newVids")(fresh) : T("upToDate"));
+    lastFetchHadData = true; lastError = "";
   } catch (e) {
     lastError = e.message;
-    toast(e.message === "NO_KEY" ? "محتاج مفتاح API من الإعدادات" : "حصلت مشكلة: " + e.message, 6000);
-  } finally {
-    busy = false; $("#refreshBtn").classList.remove("spin"); render();
-  }
+    toast(e.message === "NO_KEY" ? T("needKey") : T("problem")(e.message), 6000);
+  } finally { busy = false; $("#refreshBtn").classList.remove("spin"); render(); }
 }
-let lastFetchHadData = !!lastFetch;
-function saveVids() {
-  // cap stored items so localStorage doesn't overflow
-  const slim = {}; for (const k in vids) slim[k] = { items: vids[k].items.slice(0, 300), next: vids[k].next };
-  LS.set("vids", slim);
-}
-
 async function loadMore() {
   const ch = channels.find(c => c.id === current); const st = vids[current];
   if (!ch || !st || !st.next) return;
-  const btn = $("#moreBtn"); if (btn) { btn.disabled = true; btn.textContent = "بيحمّل..."; }
+  const btn = $("#moreBtn"); if (btn) { btn.disabled = true; btn.textContent = T("loading"); }
   try {
     const r = await fetchUploads(ch, st.next);
     const map = new Map(); [...st.items, ...r.items].forEach(v => map.set(v.id, v));
     vids[current] = { items: [...map.values()].sort((a, b) => b.at - a.at), next: r.next };
     saveVids();
-  } catch (e) { toast("مشكلة في التحميل: " + e.message); }
+  } catch (e) { toast(T("moreFail")(e.message)); }
   render();
 }
 
@@ -385,75 +534,60 @@ async function loadMore() {
 const seenOf = id => (seen[id] ?? firstSeenDefault);
 const isNew = v => v.at > (viewSeen[v.ch] ?? seenOf(v.ch)) && !watched.has(v.id);
 const passes = v => (!opts().hideShorts || v.dur > 60) && (!query || v.title.toLowerCase().includes(query));
-function newCount(chId) { return ((vids[chId] || {}).items || []).filter(v => v.at > seenOf(chId) && !watched.has(v.id) && passes(v)).length; }
-function fmtDur(s) { if (!s) return ""; const h = Math.floor(s / 3600), m = Math.floor(s % 3600 / 60), x = s % 60; return (h ? h + ":" + String(m).padStart(2, "0") : m) + ":" + String(x).padStart(2, "0"); }
+const newCount = chId => ((vids[chId] || {}).items || []).filter(v => v.at > seenOf(chId) && !watched.has(v.id) && passes(v)).length;
+function fmtDur(s) { s = Math.max(0, Math.floor(s || 0)); const h = Math.floor(s / 3600), m = Math.floor(s % 3600 / 60), x = s % 60; return (h ? h + ":" + String(m).padStart(2, "0") : m) + ":" + String(x).padStart(2, "0"); }
 function ago(t) {
-  const d = (Date.now() - t) / 1000;
-  if (d < 3600) return "من " + Math.max(1, Math.round(d / 60)) + " دقيقة";
-  if (d < 86400) return "من " + Math.round(d / 3600) + " ساعة";
-  if (d < 86400 * 30) return "من " + Math.round(d / 86400) + " يوم";
-  if (d < 86400 * 365) return "من " + Math.round(d / 86400 / 30) + " شهر";
-  return "من " + Math.round(d / 86400 / 365) + " سنة";
+  const d = (Date.now() - t) / 1000, a = T("ago");
+  if (d < 3600) return a(Math.max(1, Math.round(d / 60)), "m");
+  if (d < 86400) return a(Math.round(d / 3600), "h");
+  if (d < 86400 * 30) return a(Math.round(d / 86400), "d");
+  if (d < 86400 * 365) return a(Math.round(d / 86400 / 30), "mo");
+  return a(Math.round(d / 86400 / 365), "y");
 }
 let currentList = [];
 function listFor(view) {
-  if (view === "all") {
-    let all = []; for (const k in vids) all = all.concat(vids[k].items);
-    return all.filter(passes).sort((a, b) => b.at - a.at).slice(0, 200);
-  }
+  if (view === "all") { let all = []; for (const k in vids) all = all.concat(vids[k].items); return all.filter(passes).sort((a, b) => b.at - a.at).slice(0, 200); }
   return ((vids[view] || {}).items || []).filter(passes);
 }
-
 function render() {
-  const nav = $("#channels");
   const totalNew = channels.reduce((s, c) => s + newCount(c.id), 0);
-  nav.innerHTML =
-    `<button class="ch ${current === "all" ? "active" : ""}" data-ch="all"><div class="av" style="background:var(--yellow)">⭐${totalNew ? `<span class="badge">${totalNew}</span>` : ""}</div><div class="nm">الكل</div></button>` +
+  $("#channels").innerHTML =
+    `<button class="ch ${current === "all" ? "active" : ""}" data-ch="all"><div class="av" style="background:var(--yellow)">⭐${totalNew ? `<span class="badge">${totalNew}</span>` : ""}</div><div class="nm">${T("all")}</div></button>` +
     channels.map(c => { const n = newCount(c.id); return `<button class="ch ${current === c.id ? "active" : ""}" data-ch="${esc(c.id)}"><div class="av" style="background-image:url('${esc(c.thumb)}')">${n ? `<span class="badge">${n}</span>` : ""}</div><div class="nm">${esc(c.title)}</div></button>`; }).join("");
-
-  const grid = $("#grid"), more = $("#moreBox");
-  more.innerHTML = "";
-  if (!apiKey()) {
-    $("#title").textContent = "";
-    grid.innerHTML = `<div class="msg" style="grid-column:1/-1">أهلاً 👋<br>عشان الأبلكيشن يجيب الفيديوهات محتاج <b>مفتاح YouTube API</b>.<br>دوس على 🔒 فوق واكتب الرقم السري (الافتراضي <b>${esc(CONFIG.PIN)}</b>) وحط المفتاح.</div>`;
-    return;
-  }
+  const grid = $("#grid"), more = $("#moreBox"); more.innerHTML = "";
+  if (!apiKey()) { $("#title").textContent = ""; grid.innerHTML = `<div class="msg" style="grid-column:1/-1">${REMOTE ? T("welcomeRemote") : T("welcomeLocal")(esc(CONFIG.PIN))}</div>`; return; }
   const ch = channels.find(c => c.id === current);
-  $("#title").textContent = current === "all" ? (query ? "نتائج البحث" : "أحدث الفيديوهات") : (ch ? ch.title : "");
+  $("#title").textContent = current === "all" ? (query ? T("results") : T("latest")) : (ch ? ch.title : "");
   currentList = listFor(current);
   if (!currentList.length) {
     if (!busy && lastError) {
       const bad = /key not valid|API_KEY_INVALID/i.test(lastError), ref = /referer|referrer/i.test(lastError);
-      grid.innerHTML = `<div class="msg" style="grid-column:1/-1"><b>مقدرتش أجيب الفيديوهات</b><br>${bad ? "المفتاح مش صحيح. انسخه تاني من Google Cloud (Credentials ← SHOW KEY) وحطه من 🔒." : ref ? "المفتاح مقفول على موقع تاني. راجع Application restrictions في Google Cloud." : esc(lastError)}<br><span class="hint" dir="ltr">${esc(lastError)}</span></div>`;
+      grid.innerHTML = `<div class="msg" style="grid-column:1/-1"><b>${T("loadFail")}</b><br>${bad ? T("badKey") : ref ? T("refBlocked") : esc(lastError)}<br><span class="hint" dir="ltr">${esc(lastError)}</span></div>`;
       return;
     }
     grid.innerHTML = busy || !lastFetch
       ? Array.from({ length: 8 }, () => `<div class="v"><div class="th skel"></div><div class="meta"><div class="skel" style="height:14px;border-radius:6px"></div><div class="skel" style="height:10px;width:50%;margin-top:8px;border-radius:6px"></div></div></div>`).join("")
-      : `<div class="msg" style="grid-column:1/-1">مفيش فيديوهات هنا${query ? " بالكلمة دي" : ""}.</div>`;
+      : `<div class="msg" style="grid-column:1/-1">${query ? T("noMatch") : T("noVideos")}</div>`;
     return;
   }
   const chName = id => (channels.find(c => c.id === id) || {}).title || "";
   grid.innerHTML = currentList.map((v, i) => `
     <button class="v" data-i="${i}">
       <div class="th" style="background-image:url('${esc(v.thumb)}')">
-        ${isNew(v) ? '<span class="new">جديد</span>' : ""}
+        ${isNew(v) ? `<span class="new">${T("newTag")}</span>` : ""}
         ${v.dur ? `<span class="dur">${fmtDur(v.dur)}</span>` : ""}
         ${watched.has(v.id) ? '<span class="watched"></span>' : ""}
       </div>
-      <div class="meta"><div class="t">${esc(v.title)}</div><div class="c">${current === "all" ? esc(chName(v.ch)) + " · " : ""}${ago(v.at)}</div></div>
+      <div class="meta"><div class="t" dir="auto">${esc(v.title)}</div><div class="c">${current === "all" ? esc(chName(v.ch)) + " · " : ""}${ago(v.at)}</div></div>
     </button>`).join("");
-  if (current !== "all" && vids[current] && vids[current].next && !query)
-    more.innerHTML = `<button class="more" id="moreBtn">فيديوهات أقدم</button>`;
+  if (current !== "all" && vids[current] && vids[current].next && !query) more.innerHTML = `<button class="more" id="moreBtn">${T("older")}</button>`;
 }
-
 function openView(id) {
-  // when leaving a channel, mark it as seen
   if (current !== "all" && current !== id) { seen[current] = Date.now(); LS.set("seen", seen); }
   current = id;
   if (id !== "all") { viewSeen[id] = seenOf(id); seen[id] = Date.now(); LS.set("seen", seen); }
   render(); window.scrollTo({ top: 0, behavior: "smooth" });
 }
-
 $("#channels").addEventListener("click", e => { const b = e.target.closest(".ch"); if (b) openView(b.dataset.ch); });
 $("#grid").addEventListener("click", e => { const b = e.target.closest(".v"); if (b) playAt(currentList, +b.dataset.i); });
 $("#moreBox").addEventListener("click", e => { if (e.target.id === "moreBtn") loadMore(); });
@@ -462,125 +596,293 @@ $("#searchToggle").onclick = () => { const s = $("#search"); s.classList.toggle(
 $("#search").addEventListener("input", e => { query = e.target.value.trim().toLowerCase(); if (query && current !== "all") current = "all"; render(); });
 
 /* ---------- Player ---------- */
-let yt = null, ytReady = false, pendingId = null, playlist = [], idx = 0;
+const P = $("#player");
+let yt = null, ytReady = false, ytKey = "", pendingId = null, playlist = [], idx = 0, ticker = null, seeking = false, ccApplied = null;
 const rate = () => LS.get("rate", 1);
 const SPEEDS = [0.5, 0.75, 1, 1.25, 1.5, 2];
-$("#speeds").insertAdjacentHTML("beforeend", SPEEDS.map(s => `<button class="pb small" data-rate="${s}">${s}x</button>`).join(""));
-function paintSpeeds() { document.querySelectorAll("[data-rate]").forEach(b => b.classList.toggle("on", +b.dataset.rate === rate())); }
-paintSpeeds();
+const ICON_PLAY = '<path d="M8 5v14l11-7z"/>', ICON_PAUSE = '<path d="M6 5h4v14H6zm8 0h4v14h-4z"/>';
+const ICON_FS = '<path d="M5 5h5V3H3v7h2zm9-2v2h5v5h2V3zm5 16h-5v2h7v-7h-2zM5 14H3v7h7v-2H5z"/>', ICON_FS_EXIT = '<path d="M8 3v5H3v2h7V3zm8 0h-2v7h7V8h-5zM3 16h5v5h2v-7H3zm11 5h2v-5h5v-2h-7z"/>';
 
-function loadYT() {
-  if (window.YT && window.YT.Player) return onYTApi();
-  const s = document.createElement("script"); s.src = "https://www.youtube.com/iframe_api"; document.head.appendChild(s);
+function paintSpeed() {
+  $("#pSpeed").textContent = rate() + "x";
+  $("#speedMenu").innerHTML = SPEEDS.map(s => `<button data-rate="${s}" class="${s === rate() ? "sel" : ""}">${s}x</button>`).join("");
 }
-window.onYouTubeIframeAPIReady = onYTApi;
-function onYTApi() {
-  if (yt) return;
+function paintVol() { const m = LS.get("muted", false); $("#pMute").textContent = m ? "🔇" : "🔊"; $("#vol").value = LS.get("vol", 100); }
+function paintCC() { $("#pCC").classList.toggle("on", LS.get("cc", false)); }
+function setPlayIcon(playing) { $("#playIco").innerHTML = playing ? ICON_PAUSE : ICON_PLAY; }
+paintSpeed(); paintVol(); paintCC();
+
+function loadYTApi() {
+  if (window.YT && window.YT.Player) return createPlayer();
+  if (!loadYTApi.started) { loadYTApi.started = true; const s = document.createElement("script"); s.src = "https://www.youtube.com/iframe_api"; document.head.appendChild(s); }
+}
+window.onYouTubeIframeAPIReady = () => createPlayer();
+function wantedKey() { return lang + "|" + (opts().kidLock ? "kid" : "yt"); }
+function ensurePlayer() {
+  if (yt && ytKey !== wantedKey()) {      // language or mode changed → rebuild the player
+    try { yt.destroy(); } catch {}
+    yt = null; ytReady = false;
+  }
+  if (!document.getElementById("ytp")) $("#frameBox").insertAdjacentHTML("afterbegin", '<div id="ytp"></div>');
+  if (!yt) loadYTApi();
+}
+function createPlayer() {
+  if (yt || !P.classList.contains("open") && !pendingId) return;
+  const kid = opts().kidLock; ytKey = wantedKey();
   yt = new YT.Player("ytp", {
-    width: "100%", height: "100%",
-    host: "https://www.youtube.com",
-    playerVars: { rel: 0, playsinline: 1, modestbranding: 1, iv_load_policy: 3, fs: 1, autoplay: 1, origin: location.origin },
+    width: "100%", height: "100%", host: "https://www.youtube.com",
+    playerVars: { rel: 0, playsinline: 1, modestbranding: 1, iv_load_policy: 3, autoplay: 1, controls: kid ? 0 : 1, fs: kid ? 0 : 1, disablekb: kid ? 1 : 0, hl: lang, cc_lang_pref: lang, origin: location.origin },
     events: {
-      onReady: () => { ytReady = true; yt.setVolume(LS.get("vol", 100)); if (LS.get("muted", false)) yt.mute(); paintVol(); if (pendingId) { yt.loadVideoById(pendingId); pendingId = null; } },
+      onReady: () => { ytReady = true; yt.setVolume(LS.get("vol", 100)); if (LS.get("muted", false)) yt.mute(); if (pendingId) { yt.loadVideoById(pendingId); pendingId = null; } },
       onStateChange: e => {
-        if (e.data === YT.PlayerState.PLAYING) { try { yt.setPlaybackRate(rate()); } catch {} $("#pPlay").textContent = "⏸"; }
-        else if (e.data === YT.PlayerState.PAUSED) $("#pPlay").textContent = "▶";
+        if (e.data === YT.PlayerState.PLAYING) { try { yt.setPlaybackRate(rate()); } catch {} setPlayIcon(true); applyCC(); idleSoon(); }
+        else if (e.data === YT.PlayerState.PAUSED) { setPlayIcon(false); wake(); }
         else if (e.data === YT.PlayerState.ENDED) next();
       },
-      onError: e => {
-        const m = { 2: "لينك الفيديو غلط", 5: "المتصفح مش قادر يشغّل الفيديو ده", 100: "الفيديو اتشال أو بقى خاص", 101: "صاحب القناة مانع تشغيل الفيديو ده برّه يوتيوب", 150: "صاحب القناة مانع تشغيل الفيديو ده برّه يوتيوب", 153: "لازم الأبلكيشن يتفتح من لينك (مش من ملف على الجهاز)" }[e.data] || ("خطأ " + e.data);
-        $("#pErrMsg").textContent = m; $("#pErr").classList.add("show");
-      }
+      onError: e => { $("#pErrMsg").textContent = T("err")[e.data] || T("errN")(e.data); $("#pErr").classList.add("show"); wake(); }
     }
   });
 }
+function applyCC() {
+  const on = LS.get("cc", false), vid = playlist[idx] && playlist[idx].id;
+  if (ccApplied === vid + on) return; ccApplied = vid + on;
+  try {
+    if (on) { yt.loadModule("captions"); yt.setOption("captions", "track", { languageCode: lang }); }
+    else yt.unloadModule("captions");
+  } catch {}
+}
 function playAt(list, i) {
   playlist = list.slice(); idx = i;
-  $("#player").classList.add("open"); $("#player").setAttribute("aria-hidden", "false");
+  P.classList.add("open"); P.classList.toggle("kid", opts().kidLock); P.setAttribute("aria-hidden", "false");
+  $("#pTv").style.display = opts().showTv ? "" : "none";
   if (!history.state || !history.state.player) history.pushState({ player: 1 }, "");
   document.body.style.overflow = "hidden";
-  $("#shield").style.display = opts().shield ? "block" : "none";
-  start();
+  ensurePlayer(); start();
+  clearInterval(ticker); ticker = setInterval(tick, 500);
+  wake();
 }
 function start() {
   const v = playlist[idx]; if (!v) return;
-  $("#pTitle").textContent = v.title; $("#pErr").classList.remove("show");
+  $("#pTitle").textContent = v.title; $("#pErr").classList.remove("show"); ccApplied = null;
+  $("#seek").value = 0; $("#tCur").textContent = "0:00"; $("#tDur").textContent = fmtDur(v.dur);
   watched.add(v.id); LS.set("watched", [...watched].slice(-3000));
-  if (ytReady) yt.loadVideoById(v.id); else { pendingId = v.id; loadYT(); }
+  if (ytReady) yt.loadVideoById(v.id); else { pendingId = v.id; ensurePlayer(); }
+}
+function tick() {
+  if (!ytReady || seeking) return;
+  try {
+    const d = yt.getDuration() || 0, c = yt.getCurrentTime() || 0;
+    if (d) { $("#seek").max = d; $("#seek").value = c; $("#tDur").textContent = fmtDur(d); }
+    $("#tCur").textContent = fmtDur(c);
+    setPlayIcon(yt.getPlayerState() === YT.PlayerState.PLAYING);
+  } catch {}
 }
 function next() { if (idx < playlist.length - 1) { idx++; start(); } else closePlayer(true); }
 function prev() { if (idx > 0) { idx--; start(); } }
+function togglePlay() {
+  if (!ytReady) return;
+  const playing = yt.getPlayerState() === YT.PlayerState.PLAYING;
+  playing ? yt.pauseVideo() : yt.playVideo();
+  const b = $("#bigIcon"); b.textContent = playing ? "❚❚" : "▶"; b.classList.add("show"); clearTimeout(b.h); b.h = setTimeout(() => b.classList.remove("show"), 600);
+}
 function closePlayer(fromCode) {
-  if (!$("#player").classList.contains("open")) return;
+  if (!P.classList.contains("open")) return;
   try { yt && yt.stopVideo(); } catch {}
   if (document.fullscreenElement) document.exitFullscreen().catch(() => {});
-  $("#player").classList.remove("open"); $("#player").setAttribute("aria-hidden", "true");
+  P.classList.remove("open", "fs", "fake-fs", "idle"); P.setAttribute("aria-hidden", "true");
+  clearInterval(ticker); $("#speedMenu").classList.remove("open");
   document.body.style.overflow = "";
   if (fromCode && history.state && history.state.player) history.back();
   render();
 }
-window.addEventListener("popstate", () => closePlayer(false));
+window.addEventListener("popstate", () => { if ($("#tvModal").classList.contains("open")) $("#tvModal").classList.remove("open"); closePlayer(false); });
+
+// show controls on activity, hide them after 3s while playing in full screen
+function wake() { P.classList.remove("idle"); idleSoon(); }
+function idleSoon() {
+  clearTimeout(wake.h);
+  wake.h = setTimeout(() => { try { if (P.classList.contains("fs") && yt.getPlayerState() === YT.PlayerState.PLAYING && !$("#speedMenu").classList.contains("open")) P.classList.add("idle"); } catch {} }, 3000);
+}
+P.addEventListener("pointermove", wake);
+P.addEventListener("pointerdown", wake);
+$("#tap").addEventListener("click", () => { if (P.classList.contains("fs") && P.classList.contains("idle")) { wake(); return; } togglePlay(); });
+$("#tap").addEventListener("dblclick", toggleFs);
+
 $("#pClose").onclick = () => closePlayer(true);
 $("#pNext").onclick = next; $("#pPrev").onclick = prev; $("#pErrNext").onclick = next;
-$("#pPlay").onclick = () => { if (!ytReady) return; const s = yt.getPlayerState(); s === YT.PlayerState.PLAYING ? yt.pauseVideo() : yt.playVideo(); };
-$("#speeds").addEventListener("click", e => { const b = e.target.closest("[data-rate]"); if (!b) return; LS.set("rate", +b.dataset.rate); paintSpeeds(); try { yt && yt.setPlaybackRate(+b.dataset.rate); } catch {} });
-function paintVol() { const m = LS.get("muted", false); $("#pMute").textContent = m ? "🔇" : "🔊"; $("#vol").value = LS.get("vol", 100); }
+$("#pPlay").onclick = togglePlay;
+const jump = s => { if (ytReady) { yt.seekTo(Math.max(0, (yt.getCurrentTime() || 0) + s), true); tick(); } };
+$("#pBack").onclick = () => jump(-10); $("#pFwd").onclick = () => jump(10);
+$("#seek").addEventListener("input", () => { seeking = true; $("#tCur").textContent = fmtDur(+$("#seek").value); });
+$("#seek").addEventListener("change", () => { if (ytReady) yt.seekTo(+$("#seek").value, true); seeking = false; });
+$("#pSpeed").onclick = e => { e.stopPropagation(); $("#speedMenu").classList.toggle("open"); };
+$("#speedMenu").addEventListener("click", e => {
+  const b = e.target.closest("[data-rate]"); if (!b) return;
+  LS.set("rate", +b.dataset.rate); paintSpeed(); $("#speedMenu").classList.remove("open");
+  try { yt && yt.setPlaybackRate(+b.dataset.rate); } catch {}
+});
+document.addEventListener("click", e => { if (!e.target.closest("#speedMenu,#pSpeed")) $("#speedMenu").classList.remove("open"); });
 $("#vol").addEventListener("input", e => { const v = +e.target.value; LS.set("vol", v); LS.set("muted", false); if (ytReady) { yt.unMute(); yt.setVolume(v); } paintVol(); });
 $("#pMute").onclick = () => { const m = !LS.get("muted", false); LS.set("muted", m); if (ytReady) m ? yt.mute() : yt.unMute(); paintVol(); };
+$("#pCC").onclick = () => { const on = !LS.get("cc", false); LS.set("cc", on); paintCC(); ccApplied = null; if (ytReady) applyCC(); toast(on ? T("ccOn") : T("ccOff"), 1500); };
+
 async function toggleFs() {
-  const el = $("#player");
+  const inFs = document.fullscreenElement || P.classList.contains("fake-fs");
   try {
     if (document.fullscreenElement) await document.exitFullscreen();
-    else if (el.requestFullscreen) { await el.requestFullscreen(); try { await screen.orientation.lock("landscape"); } catch {} }
-    else if (el.webkitRequestFullscreen) el.webkitRequestFullscreen();
-    else toast("استخدم زرار ملء الشاشة اللي جوه الفيديو");
-  } catch { toast("استخدم زرار ملء الشاشة اللي جوه الفيديو"); }
+    else if (P.classList.contains("fake-fs")) { P.classList.remove("fake-fs", "fs"); paintFs(); }
+    else if (P.requestFullscreen) { await P.requestFullscreen(); try { await screen.orientation.lock("landscape"); } catch {} }
+    else { P.classList.add("fake-fs", "fs"); paintFs(); }       // iPhone: no full-screen API for pages
+  } catch { if (!inFs) { P.classList.add("fake-fs", "fs"); paintFs(); } }
 }
-$("#pFs").onclick = toggleFs; $("#fsExit").onclick = toggleFs;
+function paintFs() { $("#fsIco").innerHTML = P.classList.contains("fs") ? ICON_FS_EXIT : ICON_FS; wake(); }
+document.addEventListener("fullscreenchange", () => { P.classList.toggle("fs", !!document.fullscreenElement); paintFs(); });
+$("#pFs").onclick = toggleFs;
 
-// Cast: hand the video to the official YouTube app, whose Cast button makes the TV stream it directly
-$("#pCast").onclick = () => {
+// TV: Google only allows the YouTube app to cast YouTube videos, so explain and hand off
+$("#pTv").onclick = () => { try { yt.pauseVideo(); } catch {} if (document.fullscreenElement) document.exitFullscreen().catch(() => {}); $("#tvModal").classList.add("open"); };
+$("#tvGo").onclick = () => {
+  $("#tvModal").classList.remove("open");
   const v = playlist[idx]; if (!v) return;
   let t = 0; try { t = Math.floor(yt.getCurrentTime() || 0); } catch {}
-  try { yt.pauseVideo(); } catch {}
   const web = `https://www.youtube.com/watch?v=${v.id}${t ? "&t=" + t + "s" : ""}`;
-  const ua = navigator.userAgent;
-  if (/Android/i.test(ua)) location.href = `intent://www.youtube.com/watch?v=${v.id}${t ? "&t=" + t : ""}#Intent;package=com.google.android.youtube;scheme=https;S.browser_fallback_url=${encodeURIComponent(web)};end`;
+  if (/Android/i.test(navigator.userAgent)) location.href = `intent://www.youtube.com/watch?v=${v.id}${t ? "&t=" + t : ""}#Intent;package=com.google.android.youtube;scheme=https;S.browser_fallback_url=${encodeURIComponent(web)};end`;
   else window.open(web, "_blank");
-  toast("في يوتيوب دوس على أيقونة الكاست 📺 واختار الشاشة", 6000);
+  toast(T("tvToast"), 6000);
 };
 
-/* ---------- Settings ---------- */
-function openModal(id) { $(id).classList.add("open"); }
-function closeModal(el) { el.closest(".modal").classList.remove("open"); }
-document.querySelectorAll("[data-close]").forEach(b => b.onclick = () => closeModal(b));
-$("#settingsBtn").onclick = () => { $("#pinInput").value = ""; openModal("#pinModal"); setTimeout(() => $("#pinInput").focus(), 50); };
+/* ---------- Settings / Admin ---------- */
+const openModal = id => $(id).classList.add("open");
+document.querySelectorAll("[data-close]").forEach(b => b.onclick = () => b.closest(".modal").classList.remove("open"));
+let db = null, auth = null;
+const FB_V = "10.12.2";
+const loadScript = u => new Promise((res, rej) => { const s = document.createElement("script"); s.src = u; s.onload = res; s.onerror = rej; document.head.appendChild(s); });
+const fbErr = e => T("fb")[e && e.code] || (e && e.message) || String(e);
+
+async function initFirebase() {
+  const base = `https://www.gstatic.com/firebasejs/${FB_V}/`;
+  await loadScript(base + "firebase-app-compat.js");
+  await Promise.all([loadScript(base + "firebase-auth-compat.js"), loadScript(base + "firebase-firestore-compat.js")]);
+  firebase.initializeApp(CONFIG.FIREBASE);
+  db = firebase.firestore(); auth = firebase.auth();
+  try { await auth.setPersistence(firebase.auth.Auth.Persistence.SESSION); } catch {}
+  // live: when an admin saves, every open app picks it up
+  db.collection("app").doc("config").onSnapshot(d => {
+    const before = JSON.stringify([apiKey(), channelList(), opts()]);
+    const x = d.exists ? d.data() : null;
+    remoteCfg = x ? { apiKey: x.apiKey || "", channels: x.channels || [], hideShorts: !!x.hideShorts, kidLock: (x.kidLock ?? x.shield) !== false, showTv: x.showTv !== false } : null;
+    LS.set("remoteCfg", remoteCfg);
+    if (JSON.stringify([apiKey(), channelList()]) !== JSON.stringify(JSON.parse(before).slice(0, 2))) { lastError = ""; refresh(true, true); } else render();
+  }, e => console.warn("config", e));
+}
+const fbReady = REMOTE ? initFirebase().catch(e => { console.warn(e); toast(T("fbDown")); }) : Promise.resolve();
+const isAdmin = async email => !!email && (await db.collection("admins").doc(email.toLowerCase()).get()).exists;
+
+$("#settingsBtn").onclick = async () => {
+  if (!REMOTE) { $("#pinInput").value = ""; openModal("#pinModal"); setTimeout(() => $("#pinInput").focus(), 50); return; }
+  await fbReady;
+  if (!auth) return toast(T("fbDown"));
+  try { if (auth.currentUser && await isAdmin(auth.currentUser.email)) return openSettings(); } catch {}
+  $("#lPass").value = ""; openModal("#loginModal"); setTimeout(() => $("#lEmail").focus(), 50);
+};
 function checkPin() {
-  if ($("#pinInput").value === String(pin())) {
-    $("#pinModal").classList.remove("open");
-    $("#sKey").value = LS.get("apiKey", "") || CONFIG.API_KEY;
-    $("#sCh").value = channelList().join("\n");
-    $("#sShorts").checked = opts().hideShorts; $("#sShield").checked = opts().shield; $("#sPin").value = "";
-    openModal("#setModal");
-  } else { toast("الرقم غلط"); $("#pinInput").value = ""; }
+  if ($("#pinInput").value === String(pin())) { $("#pinModal").classList.remove("open"); openSettings(); }
+  else { toast(T("wrongPin")); $("#pinInput").value = ""; }
 }
 $("#pinOk").onclick = checkPin;
 $("#pinInput").addEventListener("keydown", e => { if (e.key === "Enter") checkPin(); });
-$("#sSave").onclick = () => {
-  const key = $("#sKey").value.replace(/[\s"']/g, "");
-  if (key && key !== CONFIG.API_KEY) LS.set("apiKey", key); else if (!key || key === CONFIG.API_KEY) LS.del("apiKey");
-  const list = $("#sCh").value.split(/\n+/).map(s => s.trim()).filter(Boolean);
-  const same = list.join("\n") === CONFIG.CHANNELS.join("\n");
-  same ? LS.del("channels") : LS.set("channels", list);
-  LS.set("opts", { hideShorts: $("#sShorts").checked, shield: $("#sShield").checked });
-  const np = $("#sPin").value.trim(); if (np) LS.set("pin", np);
-  $("#setModal").classList.remove("open");
-  current = "all"; refresh(true);
+async function doLogin() {
+  const email = $("#lEmail").value.trim().toLowerCase(), pw = $("#lPass").value;
+  const b = $("#lOk"); b.disabled = true;
+  try {
+    await auth.signInWithEmailAndPassword(email, pw);
+    if (!(await isAdmin(email))) { await auth.signOut(); toast(T("notAdmin")); return; }
+    $("#loginModal").classList.remove("open"); openSettings();
+  } catch (e) { toast(fbErr(e)); }
+  finally { b.disabled = false; }
+}
+$("#lOk").onclick = doLogin;
+$("#lPass").addEventListener("keydown", e => { if (e.key === "Enter") doLogin(); });
+$("#lForgot").onclick = async () => {
+  const email = $("#lEmail").value.trim();
+  if (!email) return toast(T("emailFirst"));
+  try { await auth.sendPasswordResetEmail(email); toast(T("resetSent"), 5000); } catch (e) { toast(fbErr(e)); }
+};
+function openSettings() {
+  const o = opts();
+  $("#sKey").value = apiKey();
+  $("#sCh").value = channelList().join("\n");
+  $("#sShorts").checked = o.hideShorts; $("#sKid").checked = o.kidLock; $("#sTv").checked = o.showTv; $("#sPin").value = "";
+  $("#keyHint").textContent = REMOTE ? T("keyHintRemote") : T("keyHintLocal");
+  $("#pinBox").style.display = REMOTE ? "none" : "";
+  $("#adminsBox").style.display = REMOTE ? "" : "none";
+  $("#sLogout").style.display = REMOTE ? "" : "none";
+  if (REMOTE) { $("#whoami").textContent = T("signedAs") + auth.currentUser.email; loadAdmins(); }
+  openModal("#setModal");
+}
+async function loadAdmins() {
+  const box = $("#adminsList"); box.textContent = "...";
+  try {
+    const snap = await db.collection("admins").get();
+    const me = auth.currentUser.email.toLowerCase();
+    box.innerHTML = snap.docs.map(d => `<div class="adm"><span>${esc(d.id)}</span>${d.id === me ? `<small>${T("you")}</small>` : `<button data-del="${esc(d.id)}">${T("remove")}</button>`}</div>`).join("") || T("none");
+  } catch (e) { box.textContent = fbErr(e); }
+}
+function confirmTwice(btn) {   // tap once → "Sure?", tap again within 3s → do it
+  if (btn.dataset.sure) return true;
+  btn.dataset.sure = 1; const t = btn.textContent; btn.textContent = T("sure");
+  setTimeout(() => { delete btn.dataset.sure; btn.textContent = t; }, 3000);
+  return false;
+}
+$("#adminsList").addEventListener("click", async e => {
+  const id = e.target.dataset && e.target.dataset.del; if (!id) return;
+  if (!confirmTwice(e.target)) return;
+  try { await db.collection("admins").doc(id).delete(); toast(T("removed")(id)); loadAdmins(); } catch (err) { toast(fbErr(err)); }
+});
+$("#aAdd").onclick = async () => {
+  const email = $("#aEmail").value.trim().toLowerCase(), pw = $("#aPass").value;
+  if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) return toast(T("badEmail"));
+  const b = $("#aAdd"); b.disabled = true;
+  try {
+    if (pw) {   // create the account on a second Firebase instance so the current admin stays signed in
+      const sec = firebase.apps.find(a => a.name === "sec") || firebase.initializeApp(CONFIG.FIREBASE, "sec");
+      try { await sec.auth().createUserWithEmailAndPassword(email, pw); } catch (e) { if (e.code !== "auth/email-already-in-use") throw e; }
+      await sec.auth().signOut();
+    }
+    await db.collection("admins").doc(email).set({ addedBy: auth.currentUser.email, at: firebase.firestore.FieldValue.serverTimestamp() });
+    $("#aEmail").value = ""; $("#aPass").value = "";
+    toast(T("added")(email)); loadAdmins();
+  } catch (e) { toast(fbErr(e)); }
+  finally { b.disabled = false; }
+};
+$("#sLogout").onclick = async () => { try { await auth.signOut(); } catch {} $("#setModal").classList.remove("open"); toast(T("loggedOut")); };
+$("#sSave").onclick = async () => {
+  const data = {
+    apiKey: $("#sKey").value.replace(/[\s"']/g, ""),
+    channels: $("#sCh").value.split(/\n+/).map(x => x.trim()).filter(Boolean),
+    hideShorts: $("#sShorts").checked, kidLock: $("#sKid").checked, showTv: $("#sTv").checked
+  };
+  const b = $("#sSave"); b.disabled = true;
+  try {
+    if (REMOTE) {
+      await db.collection("app").doc("config").set({ ...data, updatedBy: auth.currentUser.email, updatedAt: firebase.firestore.FieldValue.serverTimestamp() });
+      toast(T("saved"));
+    } else {
+      data.apiKey && data.apiKey !== CONFIG.API_KEY ? LS.set("apiKey", data.apiKey) : LS.del("apiKey");
+      data.channels.join("\n") === CONFIG.CHANNELS.join("\n") ? LS.del("channels") : LS.set("channels", data.channels);
+      LS.set("opts", { hideShorts: data.hideShorts, kidLock: data.kidLock, showTv: data.showTv });
+      const np = $("#sPin").value.trim(); if (np) LS.set("pin", np);
+      lastError = ""; refresh(true); toast(T("savedLocal"));
+    }
+    $("#setModal").classList.remove("open"); current = "all"; render();
+  } catch (e) { toast(fbErr(e)); }
+  finally { b.disabled = false; }
 };
 $("#sDefaults").onclick = () => { $("#sCh").value = CONFIG.CHANNELS.join("\n"); };
-$("#sClear").onclick = () => { ["vids", "chInfo", "lastFetch", "resolved"].forEach(LS.del); vids = {}; channels = []; lastFetch = 0; toast("اتمسح الكاش"); };
+$("#sClear").onclick = () => { ["vids", "chInfo", "lastFetch", "resolved"].forEach(LS.del); vids = {}; channels = []; lastFetch = 0; toast(T("cacheCleared")); refresh(true, true); };
 
 /* ---------- boot ---------- */
+applyLang();
 render();
 refresh(false);
 setInterval(() => { if (document.visibilityState === "visible") refresh(false); }, 5 * 60e3);
