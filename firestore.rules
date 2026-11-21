@@ -2,23 +2,39 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    function isAdmin() {
-      return request.auth != null
-        && request.auth.token.email != null
-        && exists(/databases/$(database)/documents/admins/$(request.auth.token.email.lower()));
+    function signedIn() { return request.auth != null; }
+    // the signed-in user's id: email (lowercase) or phone number (+20...)
+    function em() { return request.auth.token.get('email', '').lower(); }
+    function ph() { return request.auth.token.get('phone_number', ''); }
+    function listed(col) {
+      return (em() != '' && exists(/databases/$(database)/documents/$(col)/$(em())))
+          || (ph() != '' && exists(/databases/$(database)/documents/$(col)/$(ph())));
     }
+    function isAdmin() { return signedIn() && listed('admins'); }
+    function isOpen() {
+      return exists(/databases/$(database)/documents/app/access)
+          && get(/databases/$(database)/documents/app/access).data.open == true;
+    }
+    function canWatch() { return signedIn() && (isAdmin() || listed('members') || isOpen()); }
 
-    // App settings: anyone can read (so the app works for everyone), only admins can change
-    match /app/config {
-      allow read: if true;
+    // "anyone who signs in can watch" switch
+    match /app/access {
+      allow read: if signedIn();
       allow write: if isAdmin();
     }
-
-    // Admin list: document ID = admin email in lowercase
-    match /admins/{email} {
-      allow read: if isAdmin()
-        || (request.auth != null && request.auth.token.email.lower() == email);
-      allow create, update, delete: if isAdmin();
+    // app settings (API key, channels...): only people allowed to watch can read, only admins change
+    match /app/config {
+      allow read: if canWatch();
+      allow write: if isAdmin();
+    }
+    // lists: document ID = email in lowercase, or phone number like +201001234567
+    match /admins/{id} {
+      allow read: if isAdmin() || (signedIn() && (id == em() || id == ph()));
+      allow write: if isAdmin();
+    }
+    match /members/{id} {
+      allow read: if isAdmin() || (signedIn() && (id == em() || id == ph()));
+      allow write: if isAdmin();
     }
   }
 }
