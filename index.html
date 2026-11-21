@@ -85,6 +85,7 @@ header h1 .logo{width:32px;height:32px;border-radius:9px;background:var(--yellow
 .gcard p{line-height:1.8;margin:8px 0;color:var(--ink)}
 .gcard input{width:100%;border:2px solid #dfe2f5;border-radius:14px;padding:12px;font-family:inherit;font-size:17px;margin:8px 0;direction:ltr;text-align:center}
 .gcard input.code{font-size:28px;letter-spacing:10px}
+.gcard input.code::placeholder{font-size:16px;letter-spacing:0}
 .glang{position:absolute;top:14px;inset-inline-end:14px;border:0;background:#eef0ff;color:var(--brand);border-radius:10px;padding:6px 12px;font-weight:800}
 .big{width:100%;padding:14px;font-size:17px;margin-top:6px}
 .linkbtn{border:0;background:none;color:var(--brand);font-weight:700;margin-top:10px;text-decoration:underline;font-size:14px}
@@ -191,6 +192,19 @@ header h1 .logo{width:32px;height:32px;border-radius:9px;background:var(--yellow
 .pinfo span{color:var(--muted)}
 .pinfo b{text-align:end}
 .uav{width:26px;height:26px;border-radius:50%;object-fit:cover;vertical-align:middle;margin-inline-end:6px;background:#dde1ff}
+#lock{position:fixed;inset:0;z-index:150;background:linear-gradient(160deg,#1b1e4b,#2b2f77 55%,#5b3f9e);display:flex;align-items:center;justify-content:center;padding:20px}
+.icon-btn.timer{background:#ffffff26;font-size:14px;font-weight:800;display:inline-flex;align-items:center;gap:6px;padding:0 12px;font-variant-numeric:tabular-nums}
+.icon-btn.timer.low{background:var(--accent)}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin:6px 0}
+.chips button{border:2px solid #dfe2f5;background:#fff;border-radius:12px;padding:8px 14px;font-weight:800;color:var(--brand)}
+.chips button.on{background:var(--brand);border-color:var(--brand);color:#fff}
+.tmbig{font-size:46px;font-weight:800;color:var(--brand);font-variant-numeric:tabular-nums;direction:ltr}
+.ustats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:6px 0 4px}
+@media(max-width:520px){.ustats{grid-template-columns:repeat(2,1fr)}}
+.ustats div{background:#f4f5ff;border-radius:12px;padding:10px;text-align:center}
+.ustats b{display:block;font-size:22px;color:var(--brand)}
+.ustats span{font-size:12px;color:var(--muted)}
+.tag.app{background:#fff3d1;color:#8a6200}
 #toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#1d2140;color:#fff;padding:10px 18px;border-radius:12px;z-index:200;display:none;font-size:14px;max-width:90vw;text-align:center}
 </style>
 </head>
@@ -200,6 +214,7 @@ header h1 .logo{width:32px;height:32px;border-radius:9px;background:var(--yellow
   <input id="search" type="search" data-i18n-ph="search">
   <button class="icon-btn" id="searchToggle" data-i18n-title="searchT">🔍</button>
   <button class="icon-btn install" id="installBtn" hidden>📲 <span data-i18n="install"></span></button>
+  <button class="icon-btn timer" id="timerPill" hidden>⏱ <span id="timerLeft"></span></button>
   <button class="icon-btn txt" id="langBtn"></button>
   <button class="icon-btn" id="accountBtn" data-i18n-title="account">👤</button>
 </header>
@@ -238,6 +253,14 @@ header h1 .logo{width:32px;height:32px;border-radius:9px;background:var(--yellow
       <button class="btn big" id="gPasteOk" data-i18n="signIn"></button>
       <button class="linkbtn" data-back data-i18n="changeId"></button>
     </div>
+    <div data-step="admin" hidden>
+      <p data-i18n="adminLoginTitle"></p>
+      <input id="gAEmail" type="text" inputmode="email" autocomplete="username" data-i18n-ph="email">
+      <input id="gAPass" type="password" autocomplete="current-password" data-i18n-ph="password">
+      <button class="btn big" id="gAOk" data-i18n="signIn"></button>
+      <button class="linkbtn" id="gAForgot" data-i18n="forgot"></button>
+      <button class="linkbtn" data-back data-i18n="backToUser"></button>
+    </div>
     <div data-step="confirmEmail" hidden>
       <p data-i18n="confirmEmailMsg"></p>
       <input id="gEmail2" type="text" inputmode="email">
@@ -254,6 +277,44 @@ header h1 .logo{width:32px;height:32px;border-radius:9px;background:var(--yellow
 </section>
 
 <!-- Player -->
+<!-- Watch timer -->
+<div class="modal" id="timerModal">
+  <div class="sheet" style="max-width:440px">
+    <h2 data-i18n="watchTimer"></h2>
+    <div id="tmSetup">
+      <p class="hint" data-i18n="timerIntro"></p>
+      <label data-i18n="timerMinutes"></label>
+      <div class="chips" id="tmChips"></div>
+      <input id="tmCustom" class="filter" type="number" min="1" max="720" data-i18n-ph="customMin">
+      <label class="check"><input type="checkbox" id="tmDaily" checked><span><span data-i18n="timerDaily"></span><small data-i18n="timerDailyHint"></small></span></label>
+      <label for="tmPin" data-i18n="parentPin"></label>
+      <div class="pin"><input id="tmPin" type="password" inputmode="numeric" maxlength="8" autocomplete="off"></div>
+      <div class="row"><button class="btn" id="tmStart" data-i18n="startTimer"></button><button class="btn ghost" data-close data-i18n="cancel"></button></div>
+    </div>
+    <div id="tmActive" hidden style="text-align:center">
+      <div class="tmbig" id="tmLeft"></div>
+      <p class="hint" id="tmDesc"></p>
+      <label for="tmPin2" data-i18n="parentPin"></label>
+      <div class="pin"><input id="tmPin2" type="password" inputmode="numeric" maxlength="8" autocomplete="off"></div>
+      <div class="row" style="justify-content:center"><button class="btn" id="tmAdd" data-i18n="add15"></button><button class="btn red" id="tmStop" data-i18n="stopTimer"></button><button class="btn ghost" data-close data-i18n="close"></button></div>
+    </div>
+  </div>
+</div>
+
+<!-- Time's up -->
+<section id="lock" hidden>
+  <div class="gcard">
+    <div style="font-size:72px;line-height:1">🌙</div>
+    <h1 data-i18n="timeUp"></h1>
+    <p id="lockMsg"></p>
+    <input id="lockPin" class="code" type="password" inputmode="numeric" maxlength="8" autocomplete="off" data-i18n-ph="pinShort">
+    <div class="row" style="justify-content:center;display:flex;gap:10px;flex-wrap:wrap;margin-top:8px">
+      <button class="btn" id="lockAdd" data-i18n="add15"></button>
+      <button class="btn ghost" id="lockStop" data-i18n="stopTimer"></button>
+    </div>
+  </div>
+</section>
+
 <section id="player" aria-hidden="true">
   <div id="pTop">
     <button class="pb" id="pClose" data-i18n-title="close">✕</button>
@@ -332,6 +393,7 @@ header h1 .logo{width:32px;height:32px;border-radius:9px;background:var(--yellow
     <div class="hint" id="pNote" style="text-align:center;margin-top:8px"></div>
     <div class="row" style="flex-direction:column">
       <button class="btn" id="pSave" data-i18n="saveProfile"></button>
+      <button class="btn ghost" id="accTimer" data-i18n="watchTimer"></button>
       <button class="btn ghost" id="accSettings" data-i18n="openSettings"></button>
       <button class="btn yellow" id="accAdmin" data-i18n="loginAdmin"></button>
       <button class="btn red" id="accLogout" data-i18n="logout"></button>
@@ -386,10 +448,12 @@ header h1 .logo{width:32px;height:32px;border-radius:9px;background:var(--yellow
     </div>
     <div class="tab" id="tUsers" hidden>
       <label class="check"><input type="checkbox" id="sOpen"><span><span data-i18n="openAccess"></span><small data-i18n="openAccessHint"></small></span></label>
+      <div class="ustats" id="uStats"></div>
       <h3 data-i18n="addUser"></h3>
       <div class="add-row">
         <input id="uNew" type="text" data-i18n-ph="idPh">
         <select id="uNewRole"></select>
+        <input id="uPass" type="password" autocomplete="new-password" data-i18n-ph="passOptional">
         <button class="btn" id="uAdd" data-i18n="add"></button>
       </div>
       <h3 data-i18n="tabUsers"></h3>
@@ -427,6 +491,7 @@ header h1 .logo{width:32px;height:32px;border-radius:9px;background:var(--yellow
     <div class="row">
       <button class="btn" id="ueSave" data-i18n="save"></button>
       <button class="btn ghost" data-close data-i18n="cancel"></button>
+      <button class="btn ghost" id="ueReset" data-i18n="sendReset"></button>
       <button class="btn red" id="ueDelete" data-i18n="deleteUser"></button>
     </div>
   </div>
@@ -489,6 +554,15 @@ const I18N = {
     save: "حفظ", defaults: "رجّع القنوات الافتراضية", clearCache: "مسح الكاش وتحديث",
     saved: "اتحفظ عند كل اليوزرز ✔", savedLocal: "اتحفظ ✔", cacheCleared: "اتمسح الكاش", removed: e => "اتشال " + e, added: e => "اتضاف " + e + " ✔",
     fbDown: "مقدرتش أوصل لـ Firebase", none: "مفيش",
+    forgot: "نسيت الباسورد", pinShort: "الرقم السري", adminLoginTitle: "دخول الأدمن بالإيميل والباسورد", backToUser: "رجوع لدخول اليوزر", passOptional: "باسورد (اختياري، للأدمن والمحرر)", sendReset: "📧 ابعت لينك تعيين باسورد",
+    resetSentTo: e => "اتبعت لينك تعيين الباسورد على " + e, emailOnly: "ده بيشتغل مع الإيميل بس", accountExists: "الحساب ده موجود قبل كده. لو محتاج باسورد ابعتله لينك تعيين باسورد من صفحته.",
+    stUsers: "يوزر", stToday: "دخلوا النهارده", stApp: "مثبّتين الأبلكيشن", stViews: "مشاهدات النهارده", installedTag: "📲 مثبّت", installedEvt: "📲 ثبّت الأبلكيشن",
+    watchTimer: "⏱ مؤقت المشاهدة", timerIntro: "حدد وقت المشاهدة، ولما يخلص الأبلكيشن بيتقفل لوحده لحد ما حد من الكبار يكتب الرقم السري. الوقت بيتحسب بس والفيديو شغّال.",
+    timerMinutes: "المدة", customMin: "أو اكتب عدد الدقايق", minN: m => m + " دقيقة", timerDaily: "كل يوم", timerDailyHint: "الوقت بيرجع من الأول كل يوم الصبح. لو مش متعلّم عليها بيشتغل مرة واحدة بس.",
+    parentPin: "رقم سري للكبار (4 أرقام على الأقل)", startTimer: "ابدأ المؤقت", add15: "+15 دقيقة", stopTimer: "إيقاف المؤقت",
+    tmBadMin: "اختار مدة صحيحة", tmBadPin: "اكتب رقم سري من 4 أرقام على الأقل", tmStarted: m => `المؤقت اشتغل: ${m} دقيقة ⏱`, tmAdded: "اتزودت 15 دقيقة ✔", tmStopped: "المؤقت اتقفل",
+    tmDailyDesc: m => `${m} دقيقة كل يوم`, tmOnceDesc: m => `${m} دقيقة مرة واحدة`,
+    timeUp: "خلص وقت المشاهدة", lockDaily: "شاطر! كفاية كده النهارده، ارجع بكرة 🌞", lockOnce: "شاطر! خلص الوقت. اطلب من بابا أو ماما.",
     yourName: "اسمك", changePhoto: "غيّر الصورة", removePhoto: "شيل الصورة", saveProfile: "حفظ الاسم والصورة", profileSaved: "اتحفظ ✔",
     lAccount: "الحساب", lRole: "الدور", lFirst: "أول دخول", lLast: "آخر دخول", lLogins: "مرات الدخول", lDevice: "الجهاز", lWatched: "فيديوهات اتشافت على الجهاز ده", lLang: "اللغة",
     localNote: "تسجيل الدخول والخروج بيشتغلوا بعد ربط Firebase. الاسم والصورة متحفظين على الجهاز ده بس لحد كده.", badImage: "مقدرتش أفتح الصورة دي",
@@ -505,7 +579,7 @@ const I18N = {
     suspendedMsg: id => `الحساب <b dir="ltr">${id}</b> موقوف.<br>كلّم الأدمن.`,
     expiredMsg: (id, d) => `صلاحية الحساب <b dir="ltr">${id}</b> انتهت يوم ${d}.<br>كلّم الأدمن يجددها.`,
     selfLock: "مينفعش تشيل صلاحية الأدمن من نفسك أو توقف حسابك", yourRole: r => "الدور: " + r,
-    fb: { "auth/invalid-phone-number": "رقم الموبايل مش صحيح", "auth/invalid-email": "الإيميل مكتوب غلط", "auth/too-many-requests": "محاولات كتير، استنى شوية وجرب تاني", "auth/invalid-verification-code": "الكود غلط", "auth/code-expired": "الكود انتهى، اطلب كود جديد", "auth/invalid-action-code": "اللينك ده اتستخدم قبل كده أو انتهى، اطلب لينك جديد", "auth/expired-action-code": "اللينك انتهى، اطلب لينك جديد", "auth/billing-not-enabled": "رسايل الموبايل محتاجة تفعيل الدفع في Firebase (Blaze). استخدم الإيميل لحد ما الأدمن يفعّله.", "auth/operation-not-allowed": "طريقة الدخول دي مش متفعّلة في Firebase", "auth/unauthorized-domain": "الدومين ده مش مضاف في Firebase ← Authorized domains", "auth/quota-exceeded": "خلصت رسايل النهارده، جرّب بكرة أو استخدم الإيميل", "auth/captcha-check-failed": "فشل التحقق، جرّب تاني", "auth/network-request-failed": "مفيش نت", "permission-denied": "مش مسموحلك تعمل كده" }
+    fb: { "auth/invalid-phone-number": "رقم الموبايل مش صحيح", "auth/invalid-email": "الإيميل مكتوب غلط", "auth/too-many-requests": "محاولات كتير، استنى شوية وجرب تاني", "auth/invalid-verification-code": "الكود غلط", "auth/code-expired": "الكود انتهى، اطلب كود جديد", "auth/invalid-action-code": "اللينك ده اتستخدم قبل كده أو انتهى، اطلب لينك جديد", "auth/expired-action-code": "اللينك انتهى، اطلب لينك جديد", "auth/billing-not-enabled": "رسايل الموبايل محتاجة تفعيل الدفع في Firebase (Blaze). استخدم الإيميل لحد ما الأدمن يفعّله.", "auth/operation-not-allowed": "طريقة الدخول دي مش متفعّلة في Firebase", "auth/unauthorized-domain": "الدومين ده مش مضاف في Firebase ← Authorized domains", "auth/quota-exceeded": "خلصت رسايل النهارده، جرّب بكرة أو استخدم الإيميل", "auth/captcha-check-failed": "فشل التحقق، جرّب تاني", "auth/network-request-failed": "مفيش نت", "permission-denied": "مش مسموحلك تعمل كده", "auth/invalid-credential": "الإيميل أو الباسورد غلط", "auth/wrong-password": "الإيميل أو الباسورد غلط", "auth/user-not-found": "الإيميل أو الباسورد غلط", "auth/missing-password": "اكتب الباسورد", "auth/weak-password": "الباسورد لازم 6 حروف على الأقل", "auth/email-already-in-use": "الحساب ده موجود قبل كده" }
   },
   en: {
     search: "Search videos...", searchT: "Search", settings: "Settings", langT: "العربية", langBtn: "ع", install: "Install app", account: "Account", ok: "OK",
@@ -546,6 +620,15 @@ const I18N = {
     save: "Save", defaults: "Reset channels to default", clearCache: "Clear cache & refresh",
     saved: "Saved for every user ✔", savedLocal: "Saved ✔", cacheCleared: "Cache cleared", removed: e => "Removed " + e, added: e => e + " added ✔",
     fbDown: "Couldn't reach Firebase", none: "None",
+    forgot: "Forgot password", pinShort: "PIN", adminLoginTitle: "Admin sign-in with email and password", backToUser: "Back to user sign-in", passOptional: "Password (optional, for admins/editors)", sendReset: "📧 Send password link",
+    resetSentTo: e => "Password link sent to " + e, emailOnly: "This works with email only", accountExists: "This account already exists. If it needs a password, send a password link from its page.",
+    stUsers: "Users", stToday: "Active today", stApp: "Installed the app", stViews: "Views today", installedTag: "📲 Installed", installedEvt: "📲 Installed the app",
+    watchTimer: "⏱ Watch timer", timerIntro: "Set the watching time. When it runs out the app locks until a grown-up enters the PIN. Time only counts while a video plays.",
+    timerMinutes: "Duration", customMin: "Or type minutes", minN: m => m + " min", timerDaily: "Every day", timerDailyHint: "The time resets every morning. If unticked it runs once only.",
+    parentPin: "Grown-up PIN (at least 4 digits)", startTimer: "Start timer", add15: "+15 min", stopTimer: "Stop timer",
+    tmBadMin: "Choose a valid duration", tmBadPin: "Enter a PIN of at least 4 digits", tmStarted: m => `Timer started: ${m} min ⏱`, tmAdded: "Added 15 minutes ✔", tmStopped: "Timer stopped",
+    tmDailyDesc: m => `${m} min every day`, tmOnceDesc: m => `${m} min, once`,
+    timeUp: "Watching time is over", lockDaily: "Well done! That's enough for today, see you tomorrow 🌞", lockOnce: "Well done! Time's up. Ask mom or dad.",
     yourName: "Your name", changePhoto: "Change photo", removePhoto: "Remove photo", saveProfile: "Save name & photo", profileSaved: "Saved ✔",
     lAccount: "Account", lRole: "Role", lFirst: "First sign-in", lLast: "Last sign-in", lLogins: "Sign-ins", lDevice: "Device", lWatched: "Videos watched on this device", lLang: "Language",
     localNote: "Sign-in and sign-out work once Firebase is connected. Until then, the name and photo are saved on this device only.", badImage: "Couldn't open that image",
@@ -562,7 +645,7 @@ const I18N = {
     suspendedMsg: id => `The account <b dir="ltr">${id}</b> is suspended.<br>Ask an admin.`,
     expiredMsg: (id, d) => `Access for <b dir="ltr">${id}</b> ended on ${d}.<br>Ask an admin to renew it.`,
     selfLock: "You can't remove your own admin role or suspend yourself", yourRole: r => "Role: " + r,
-    fb: { "auth/invalid-phone-number": "Invalid mobile number", "auth/invalid-email": "Invalid email", "auth/too-many-requests": "Too many attempts, try again later", "auth/invalid-verification-code": "Wrong code", "auth/code-expired": "The code expired, request a new one", "auth/invalid-action-code": "This link was already used or expired, request a new one", "auth/expired-action-code": "The link expired, request a new one", "auth/billing-not-enabled": "SMS sign-in needs billing (Blaze) in Firebase. Use email until an admin enables it.", "auth/operation-not-allowed": "This sign-in method isn't enabled in Firebase", "auth/unauthorized-domain": "This domain isn't in Firebase → Authorized domains", "auth/quota-exceeded": "SMS quota reached for today, try tomorrow or use email", "auth/captcha-check-failed": "Verification failed, try again", "auth/network-request-failed": "No internet connection", "permission-denied": "You're not allowed to do that" }
+    fb: { "auth/invalid-phone-number": "Invalid mobile number", "auth/invalid-email": "Invalid email", "auth/too-many-requests": "Too many attempts, try again later", "auth/invalid-verification-code": "Wrong code", "auth/code-expired": "The code expired, request a new one", "auth/invalid-action-code": "This link was already used or expired, request a new one", "auth/expired-action-code": "The link expired, request a new one", "auth/billing-not-enabled": "SMS sign-in needs billing (Blaze) in Firebase. Use email until an admin enables it.", "auth/operation-not-allowed": "This sign-in method isn't enabled in Firebase", "auth/unauthorized-domain": "This domain isn't in Firebase → Authorized domains", "auth/quota-exceeded": "SMS quota reached for today, try tomorrow or use email", "auth/captcha-check-failed": "Verification failed, try again", "auth/network-request-failed": "No internet connection", "permission-denied": "You're not allowed to do that", "auth/invalid-credential": "Wrong email or password", "auth/wrong-password": "Wrong email or password", "auth/user-not-found": "Wrong email or password", "auth/missing-password": "Enter the password", "auth/weak-password": "Password must be at least 6 characters", "auth/email-already-in-use": "This account already exists" }
   }
 };
 let lang = LS.get("lang", CONFIG.DEFAULT_LANG === "en" ? "en" : "ar");
@@ -1045,7 +1128,7 @@ function showGate(step, arg) {
   if (step === "code") $("#gCodeMsg").innerHTML = T("codeSent")(esc(arg));
   if (step === "mail") $("#gMailMsg").innerHTML = T("mailSent")(esc(arg));
   if (step === "denied") $("#gDeniedMsg").innerHTML = typeof arg === "function" ? arg() : T("deniedMsg")(esc(arg));
-  const f = { id: "#gId", code: "#gCode", confirmEmail: "#gEmail2" }[step]; if (f) setTimeout(() => $(f).focus(), 50);
+  const f = { id: "#gId", code: "#gCode", confirmEmail: "#gEmail2", admin: "#gAEmail" }[step]; if (f) setTimeout(() => $(f).focus(), 50);
 }
 function hideGate() { gateStep = null; $("#gate").hidden = true; }
 
@@ -1067,7 +1150,7 @@ async function initFirebase() {
 async function onAuth(u) {
   user = u; myRec = null; amAdmin = amEditor = false; myChannels = [];
   if (cfgUnsub) { cfgUnsub(); cfgUnsub = null; }
-  if (!u) { authorized = false; myId = ""; showGate(pendingLink ? "confirmEmail" : "id"); render(); return; }
+  if (!u) { authorized = false; myId = ""; showGate(pendingLink ? "confirmEmail" : adminIntent ? "admin" : "id"); render(); return; }
   showGate("loading");
   myId = myIds(u)[0] || "";
   // the user's own record: role, suspended, expiry, channels
@@ -1094,6 +1177,7 @@ async function onAuth(u) {
     if (first || changed) refresh(changed, true);   // first load respects the refresh interval unless the settings changed
     render();
     if (first && (adminIntent || location.hash === "#admin")) { adminIntent = false; cleanUrl(); openAdmin(); }
+    if (first) { checkInstalled(); if (LS.get("installPending", false)) markInstalled(); }
   }, e => {
     authorized = false;
     if (!(e && e.code === "permission-denied")) toast(fbErr(e), 6000);
@@ -1107,6 +1191,7 @@ async function logActivity() {
     const ref = db.collection("activity").doc(myId), d = await ref.get();
     const newSession = !sessionStorage.getItem("kt_session_" + myId);
     const data = { lastSeen: FV().serverTimestamp(), lastDevice: deviceName() };
+    if (standalone) { data.installedApp = true; data.lastAppOpen = FV().serverTimestamp(); }
     if (!d.exists) data.firstSeen = FV().serverTimestamp();
     if (newSession) data.logins = FV().increment(1);
     await ref.set(data, { merge: true });
@@ -1116,6 +1201,17 @@ async function logActivity() {
     }
   } catch (e) { console.warn("activity", e); }
 }
+// the app was installed (or opened as an installed app for the first time) → note it for the admin
+function checkInstalled() { if (standalone && !LS.get("installLogged_" + myId, false)) markInstalled(); }
+async function markInstalled() {
+  if (!REMOTE || !db || !myId) { LS.set("installPending", true); return; }
+  try {
+    await db.collection("activity").doc(myId).set({ installedApp: true, installedAt: FV().serverTimestamp(), installDevice: deviceName() }, { merge: true });
+    await db.collection("logins").add({ id: myId, at: FV().serverTimestamp(), device: deviceName(), type: "install" });
+    LS.set("installLogged_" + myId, true); LS.del("installPending");
+  } catch (e) { console.warn("install", e); }
+}
+window.addEventListener("appinstalled", () => markInstalled());
 // which video was watched (once each time a video starts)
 function logView() {
   const v = playlist[idx];
@@ -1143,7 +1239,19 @@ $("#gSend").onclick = async () => {
   } finally { b.disabled = false; }
 };
 $("#gId").addEventListener("keydown", e => { if (e.key === "Enter") $("#gSend").click(); });
-$("#gAdmin").onclick = () => { adminIntent = true; toast(T("adminLoginHint"), 4000); $("#gId").focus(); };
+$("#gAdmin").onclick = () => { adminIntent = true; showGate("admin"); };
+$("#gAOk").onclick = async () => {
+  const email = idOf($("#gAEmail").value), pw = $("#gAPass").value, b = $("#gAOk");
+  if (!email || !email.includes("@")) return toast(T("badId"));
+  b.disabled = true; adminIntent = true;
+  try { await auth.signInWithEmailAndPassword(email, pw); $("#gAPass").value = ""; } catch (e) { toast(fbErr(e)); } finally { b.disabled = false; }
+};
+$("#gAPass").addEventListener("keydown", e => { if (e.key === "Enter") $("#gAOk").click(); });
+$("#gAForgot").onclick = async () => {
+  const email = idOf($("#gAEmail").value);
+  if (!email || !email.includes("@")) return toast(T("emailFirst"));
+  try { await auth.sendPasswordResetEmail(email); toast(T("resetSentTo")(email), 5000); } catch (e) { toast(fbErr(e)); }
+};
 $("#gVerify").onclick = async () => {
   const code = $("#gCode").value.replace(/\D/g, ""), b = $("#gVerify");
   if (code.length < 6 || !confirmation) return toast(T("fb")["auth/invalid-verification-code"]);
@@ -1161,7 +1269,7 @@ $("#gEmail2Ok").onclick = async () => {
   if (!email || !email.includes("@")) return toast(T("badId"));
   try { await auth.signInWithEmailLink(email, pendingLink); pendingLink = null; LS.del("emailForSignIn"); } catch (e) { toast(fbErr(e), 6000); pendingLink = null; showGate("id"); }
 };
-document.querySelectorAll("#gate [data-back]").forEach(b => b.onclick = () => showGate("id"));
+document.querySelectorAll("#gate [data-back]").forEach(b => b.onclick = () => { adminIntent = false; showGate("id"); });
 $("#gRetry").onclick = () => onAuth(user);
 async function signOut(thenAdmin) {
   if (P.classList.contains("open")) closePlayer(true);
@@ -1169,7 +1277,7 @@ async function signOut(thenAdmin) {
   try { sessionStorage.removeItem("kt_session_" + myId); } catch {}
   try { await auth.signOut(); } catch {}
   remoteCfg = null; LS.del("remoteCfg"); $("#gId").value = ""; profile = { name: "", photo: "" }; LS.del("profile"); paintAvatar();
-  if (thenAdmin) { adminIntent = true; toast(T("adminLoginHint"), 4000); } else toast(T("loggedOut"));
+  if (thenAdmin) { adminIntent = true; showGate("admin"); } else toast(T("loggedOut"));
 }
 $("#gLogout").onclick = () => signOut(); $("#accLogout").onclick = () => signOut();
 
@@ -1315,6 +1423,11 @@ async function loadUsers() {
     prof.docs.forEach(d => { const e = map.get(d.id); if (e) e.prof = d.data(); });
     usersCache = [...map.values()].sort((a, b) => tsMs(b.act && b.act.lastSeen) - tsMs(a.act && a.act.lastSeen));
     renderUsers();
+    const start = new Date(); start.setHours(0, 0, 0, 0);
+    let viewsToday = "–";
+    try { const v = await db.collection("views").orderBy("at", "desc").limit(1000).get(); viewsToday = v.docs.filter(d => tsMs(d.data().at) >= start.getTime()).length; } catch {}
+    const st = [[usersCache.length, T("stUsers")], [usersCache.filter(e => tsMs(e.act && e.act.lastSeen) >= start.getTime()).length, T("stToday")], [usersCache.filter(e => e.act && e.act.installedApp).length, T("stApp")], [viewsToday, T("stViews")]];
+    $("#uStats").innerHTML = st.map(([n, l]) => `<div><b>${n}</b><span>${l}</span></div>`).join("");
   } catch (e) { box.textContent = fbErr(e); }
 }
 function userStatus(e) {
@@ -1327,12 +1440,12 @@ function userStatus(e) {
 function renderUsers() {
   const f = $("#uFilter").value.trim().toLowerCase();
   $("#usersList").innerHTML = usersCache.filter(e => !f || e.id.includes(f)).map(e => {
-    const [cls, st] = userStatus(e), role = e.rec ? (e.rec.role || "viewer") : "";
     const a = e.act || {};
+    const [cls, st] = userStatus(e), role = e.rec ? (e.rec.role || "viewer") : "";
     const seen = a.lastSeen ? T("lastSeen")(fmtDate(tsDate(a.lastSeen), true)) : T("never");
     return `<button class="urow" data-uid="${esc(e.id)}">
       <span class="uid">${e.prof && e.prof.photo ? `<img class="uav" src="${esc(e.prof.photo)}" alt="">` : ""}${e.prof && e.prof.name ? `<b>${esc(e.prof.name)}</b> · ` : ""}<span dir="ltr">${esc(e.id)}</span>${e.id === myId ? " " + T("you") : ""}</span>
-      <span class="tags">${role ? `<span class="tag role-${role}">${T("roles")[role]}</span>` : ""}<span class="tag ${cls}">${st}</span>${e.rec && e.rec.channels && e.rec.channels.length ? `<span class="tag">📺 ${e.rec.channels.length}</span>` : ""}</span>
+      <span class="tags">${role ? `<span class="tag role-${role}">${T("roles")[role]}</span>` : ""}<span class="tag ${cls}">${st}</span>${a.installedApp ? `<span class="tag app">${T("installedTag")}</span>` : ""}${e.rec && e.rec.channels && e.rec.channels.length ? `<span class="tag">📺 ${e.rec.channels.length}</span>` : ""}</span>
       <span class="useen">${seen}${a.logins ? " · " + T("timesN")(a.logins) : ""}${a.lastDevice ? " · " + esc(a.lastDevice) : ""}</span>
     </button>`;
   }).join("") || T("none");
@@ -1340,8 +1453,15 @@ function renderUsers() {
 $("#uFilter").addEventListener("input", renderUsers);
 $("#usersList").addEventListener("click", e => { const b = e.target.closest("[data-uid]"); if (b) openUser(b.dataset.uid); });
 $("#uAdd").onclick = async () => {
-  const id = idOf($("#uNew").value); if (!id) return toast(T("badId"));
+  const id = idOf($("#uNew").value), pw = $("#uPass").value; if (!id) return toast(T("badId"));
   try {
+    if (pw) {   // create a password account on a second Firebase instance so the admin stays signed in
+      if (!id.includes("@")) return toast(T("emailOnly"));
+      const sec = firebase.apps.find(a => a.name === "sec") || firebase.initializeApp(CONFIG.FIREBASE, "sec");
+      try { await sec.auth().createUserWithEmailAndPassword(id, pw); } catch (e) { if (e.code === "auth/email-already-in-use") toast(T("accountExists"), 6000); else throw e; }
+      try { await sec.auth().signOut(); } catch {}
+      $("#uPass").value = "";
+    }
     await db.collection("users").doc(id).set({ role: $("#uNewRole").value, addedBy: myId, at: FV().serverTimestamp() }, { merge: true });
     $("#uNew").value = ""; toast(T("added")(id)); loadUsers();
   } catch (e) { toast(fbErr(e)); }
@@ -1361,8 +1481,10 @@ function openUser(id) {
   const sel = Array.isArray(r.channels) ? r.channels : [];
   $("#ueChannels").innerHTML = channels.map(c => `<label><input type="checkbox" value="${esc(c.id)}" ${!sel.length || sel.includes(c.id) ? "checked" : ""}><img src="${esc(c.thumb)}" alt="">${esc(c.title)}</label>`).join("");
   $("#ueDelete").hidden = !e.rec || id === myId;
+  $("#ueReset").hidden = !id.includes("@");
   openModal("#userModal");
 }
+$("#ueReset").onclick = async () => { try { await auth.sendPasswordResetEmail(editing); toast(T("resetSentTo")(editing), 5000); } catch (e) { toast(fbErr(e)); } };
 $("#ueNoExp").onclick = () => { $("#ueExpires").value = ""; };
 $("#ueSave").onclick = async () => {
   const role = $("#ueRole").value, disabled = $("#ueDisabled").checked;
@@ -1400,7 +1522,7 @@ async function loadLogs() {
 function renderLogs() {
   const f = $("#logFilter").value.trim().toLowerCase();
   const rows = logCache.filter(x => !f || (x.id || "").toLowerCase().includes(f) || (x.title || "").toLowerCase().includes(f) || (x.ch || "").toLowerCase().includes(f));
-  $("#logList").innerHTML = rows.map(x => `<div class="lrow"><span class="uid" dir="ltr" data-f="${esc(x.id)}">${esc(x.id)}</span><span class="ltime">${fmtDate(tsDate(x.at), true)}</span><span class="ldet" dir="auto">${logKind === "logins" ? "📱 " + esc(x.device || "") : "▶ " + esc(x.title || x.v) + (x.ch ? " · " + esc(x.ch) : "")}</span></div>`).join("") || T("noLogs");
+  $("#logList").innerHTML = rows.map(x => `<div class="lrow"><span class="uid" dir="ltr" data-f="${esc(x.id)}">${esc(x.id)}</span><span class="ltime">${fmtDate(tsDate(x.at), true)}</span><span class="ldet" dir="auto">${logKind === "logins" ? (x.type === "install" ? T("installedEvt") + " · " : "📱 ") + esc(x.device || "") : "▶ " + esc(x.title || x.v) + (x.ch ? " · " + esc(x.ch) : "")}</span></div>`).join("") || T("noLogs");
 }
 $("#logTabs").addEventListener("click", e => { const b = e.target.closest("[data-log]"); if (!b) return; logKind = b.dataset.log; document.querySelectorAll("#logTabs button").forEach(x => x.classList.toggle("on", x === b)); loadLogs(); });
 $("#logFilter").addEventListener("input", renderLogs);
@@ -1431,6 +1553,76 @@ $("#sSave").onclick = async () => {
 };
 $("#sDefaults").onclick = () => { $("#sCh").value = CONFIG.CHANNELS.join("\n"); };
 $("#sClear").onclick = () => { ["vids", "chInfo", "lastFetch", "resolved", "pls"].forEach(LS.del); vids = {}; channels = []; pls = {}; plVids = {}; lastFetch = 0; toast(T("cacheCleared")); $("#setModal").classList.remove("open"); refresh(true, true); };
+
+/* ---------- watch timer: limit watching time, then lock the app until a parent enters the PIN ---------- */
+// counted only while a video is actually playing; stored on this device
+const TIMER_CHOICES = [15, 30, 45, 60, 90, 120];
+const today = () => new Date().toLocaleDateString("en-CA");
+const getTimer = () => LS.get("timer", { active: false });
+const saveTimer = t => LS.set("timer", t);
+const timeLeft = t => Math.max(0, t.limit * 60 + (t.extra || 0) - (t.used || 0));
+const fmtLeft = s => { s = Math.ceil(s); const h = Math.floor(s / 3600), m = Math.floor(s % 3600 / 60), x = s % 60; return h ? `${h}:${String(m).padStart(2, "0")}:${String(x).padStart(2, "0")}` : `${m}:${String(x).padStart(2, "0")}`; };
+function rollDay(t) { if (t.active && t.daily && t.day !== today()) { t.day = today(); t.used = 0; t.extra = 0; saveTimer(t); hideLock(); } }
+let tmPick = 30;
+function paintTimer() {
+  const t = getTimer();
+  $("#timerPill").hidden = !t.active;
+  if (t.active) { const l = timeLeft(t); $("#timerLeft").textContent = fmtLeft(l); $("#timerPill").classList.toggle("low", l < 120); }
+}
+function openTimer() {
+  const t = getTimer(); rollDay(t);
+  $("#tmSetup").hidden = !!t.active; $("#tmActive").hidden = !t.active;
+  if (t.active) {
+    $("#tmLeft").textContent = fmtLeft(timeLeft(t));
+    $("#tmDesc").textContent = (t.daily ? T("tmDailyDesc") : T("tmOnceDesc"))(t.limit);
+    $("#tmPin2").value = "";
+  } else {
+    $("#tmChips").innerHTML = TIMER_CHOICES.map(m => `<button type="button" data-min="${m}" class="${m === tmPick ? "on" : ""}">${T("minN")(m)}</button>`).join("");
+    $("#tmCustom").value = ""; $("#tmPin").value = "";
+  }
+  openModal("#timerModal");
+}
+$("#tmChips").addEventListener("click", e => { const b = e.target.closest("[data-min]"); if (!b) return; tmPick = +b.dataset.min; $("#tmCustom").value = ""; document.querySelectorAll("#tmChips button").forEach(x => x.classList.toggle("on", x === b)); });
+$("#tmStart").onclick = () => {
+  const mins = +$("#tmCustom").value || tmPick, pinv = $("#tmPin").value.trim();
+  if (!(mins > 0 && mins <= 720)) return toast(T("tmBadMin"));
+  if (!/^\d{4,8}$/.test(pinv)) return toast(T("tmBadPin"));
+  saveTimer({ active: true, limit: mins, used: 0, extra: 0, daily: $("#tmDaily").checked, day: today(), pin: pinv });
+  $("#timerModal").classList.remove("open"); paintTimer(); toast(T("tmStarted")(mins));
+};
+function checkTimerPin(input) {
+  const t = getTimer();
+  if ($(input).value.trim() !== t.pin) { toast(T("wrongPin")); $(input).value = ""; return null; }
+  return t;
+}
+function addTime(input) { const t = checkTimerPin(input); if (!t) return; t.extra = (t.extra || 0) + 15 * 60; saveTimer(t); hideLock(); $("#timerModal").classList.remove("open"); paintTimer(); toast(T("tmAdded")); }
+function stopTimer(input) { const t = checkTimerPin(input); if (!t) return; saveTimer({ active: false }); hideLock(); $("#timerModal").classList.remove("open"); paintTimer(); toast(T("tmStopped")); }
+$("#tmAdd").onclick = () => addTime("#tmPin2"); $("#tmStop").onclick = () => stopTimer("#tmPin2");
+$("#lockAdd").onclick = () => addTime("#lockPin"); $("#lockStop").onclick = () => stopTimer("#lockPin");
+$("#timerPill").onclick = openTimer;
+$("#accTimer").onclick = () => { $("#accountModal").classList.remove("open"); openTimer(); };
+function showLock() {
+  if (!$("#lock").hidden) return;
+  if (P.classList.contains("open")) closePlayer(true);
+  if (document.fullscreenElement) document.exitFullscreen().catch(() => {});
+  document.querySelectorAll(".modal.open").forEach(m => m.classList.remove("open"));
+  const t = getTimer();
+  $("#lockMsg").textContent = t.daily ? T("lockDaily") : T("lockOnce");
+  $("#lockPin").value = ""; $("#lock").hidden = false;
+}
+function hideLock() { $("#lock").hidden = true; }
+let tmLast = Date.now();
+setInterval(() => {
+  const now = Date.now(), dt = (now - tmLast) / 1000; tmLast = now;
+  const t = getTimer(); if (!t.active) { paintTimer(); return; }
+  rollDay(t);
+  let playing = false;
+  try { playing = P.classList.contains("open") && ytReady && yt.getPlayerState() === YT.PlayerState.PLAYING; } catch {}
+  if (playing && dt < 5) { t.used = (t.used || 0) + dt; saveTimer(t); }
+  paintTimer();
+  if (timeLeft(t) <= 0) showLock();
+}, 1000);
+(() => { const t = getTimer(); rollDay(t); paintTimer(); if (t.active && timeLeft(t) <= 0) showLock(); })();
 
 /* ---------- boot ---------- */
 applyLang();
