@@ -9,7 +9,7 @@ window.APP_CONFIG = {
   API_KEY: "AIzaSyBookLb_X2ALPYj3Ww7DBHl5-smpdnwmgg",
 
   // رقم سري للإعدادات — بيستخدم بس لو FIREBASE فاضي
-  PIN: "0000",
+  PIN: "1994",
 
   // إعدادات Firebase (تسجيل الدخول + اليوزرز). لو null الأبلكيشن بيفتح لأي حد من غير تسجيل دخول.
   FIREBASE: null,
