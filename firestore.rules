@@ -40,6 +40,14 @@ service cloud.firestore {
     // last seen per user (each user updates their own)
     match /activity/{id} { allow read: if isAdmin() || isMe(id); allow create, update: if isMe(id); }
 
+    // name + small photo (data URL) for each user
+    match /profiles/{id} {
+      allow read: if isAdmin() || isMe(id);
+      allow create, update: if (isMe(id) || isAdmin()) && request.resource.data.get('photo', '').size() < 300000
+                            && request.resource.data.get('name', '').size() <= 40;
+      allow delete: if isAdmin() || isMe(id);
+    }
+
     // sign-in log and watched videos (each user adds their own rows, admins read)
     match /logins/{doc} { allow read: if isAdmin(); allow create: if signedIn() && isMe(request.resource.data.id); }
     match /views/{doc}  { allow read: if isAdmin(); allow create: if signedIn() && isMe(request.resource.data.id); }

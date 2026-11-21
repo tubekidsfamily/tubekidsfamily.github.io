@@ -32,7 +32,11 @@ header h1{font-size:20px;margin:0;flex:1;font-weight:800;display:flex;align-item
 header h1 .logo{width:32px;height:32px;border-radius:9px;background:var(--yellow);display:grid;place-items:center;color:var(--brand);font-size:16px}
 .icon-btn{background:rgba(255,255,255,.15);border:0;color:#fff;min-width:42px;height:42px;border-radius:12px;font-size:19px;display:grid;place-items:center;padding:0 10px}
 .icon-btn.txt{font-size:15px;font-weight:800}
-.icon-btn.install{background:var(--yellow);color:var(--ink);font-size:14px;font-weight:800}
+.icon-btn.install{background:var(--yellow);color:var(--ink);font-size:14px;font-weight:800;display:inline-flex;align-items:center;gap:6px;white-space:nowrap;padding:0 12px}
+.icon-btn.install span{font-size:14px}
+#accountBtn{padding:0;overflow:hidden;border-radius:50%;width:42px}
+#accountBtn img{width:42px;height:42px;object-fit:cover;display:block}
+#accountBtn .ini{font-size:18px;font-weight:800}
 .icon-btn:active{transform:scale(.93)}
 #search{width:100%;max-width:260px;border:0;border-radius:12px;padding:9px 12px;font-family:inherit;font-size:15px}
 @media(max-width:600px){#search{display:none}#search.show{display:block;position:absolute;top:100%;left:8px;right:8px;max-width:none;margin-top:6px;box-shadow:0 4px 14px rgba(0,0,0,.2)}header h1 span+span{font-size:17px}.icon-btn.install span{display:none}}
@@ -175,6 +179,18 @@ header h1 .logo{width:32px;height:32px;border-radius:9px;background:var(--yellow
 .chk-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:6px;margin-top:8px}
 .chk-grid label{display:flex;align-items:center;gap:8px;margin:0;font-weight:700;font-size:14px;background:#f4f5ff;border-radius:10px;padding:8px}
 .chk-grid img{width:28px;height:28px;border-radius:50%}
+.prof{display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center}
+.pav{position:relative;width:112px;height:112px;border-radius:50%;border:4px solid var(--yellow);background:#eef0ff;padding:0;overflow:hidden;display:grid;place-items:center;font-size:44px;font-weight:800;color:var(--brand)}
+.pav img{width:100%;height:100%;object-fit:cover}
+.pcam{position:absolute;bottom:0;left:0;right:0;background:rgba(20,21,43,.6);color:#fff;font-size:16px;padding:3px 0}
+.pname{width:100%;max-width:300px;border:2px solid #dfe2f5;border-radius:12px;padding:10px;font-family:inherit;font-size:17px;font-weight:800;text-align:center;margin-top:4px}
+.pid{font-weight:700;color:var(--muted);font-size:14px}
+.pinfo{margin-top:14px;background:#f4f5ff;border-radius:14px;padding:6px 12px}
+.pinfo div{display:flex;justify-content:space-between;gap:10px;padding:7px 0;border-bottom:1px solid #e6e8f7;font-size:14px}
+.pinfo div:last-child{border-bottom:0}
+.pinfo span{color:var(--muted)}
+.pinfo b{text-align:end}
+.uav{width:26px;height:26px;border-radius:50%;object-fit:cover;vertical-align:middle;margin-inline-end:6px;background:#dde1ff}
 #toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#1d2140;color:#fff;padding:10px 18px;border-radius:12px;z-index:200;display:none;font-size:14px;max-width:90vw;text-align:center}
 </style>
 </head>
@@ -304,15 +320,22 @@ header h1 .logo{width:32px;height:32px;border-radius:9px;background:var(--yellow
 
 <!-- Account -->
 <div class="modal" id="accountModal">
-  <div class="sheet" style="max-width:380px;text-align:center">
-    <h2 data-i18n="account"></h2>
-    <p id="accId" dir="ltr" style="font-weight:700"></p>
-    <p id="accRole" class="hint"></p>
-    <div class="row" style="justify-content:center;flex-direction:column">
-      <button class="btn" id="accSettings" data-i18n="openSettings"></button>
+  <div class="sheet" style="max-width:420px">
+    <div class="prof">
+      <button class="pav" id="pAv" data-i18n-title="changePhoto"><span id="pAvImg"></span><span class="pcam">📷</span></button>
+      <input type="file" id="pFile" accept="image/*" hidden>
+      <button class="linkbtn" id="pRemovePhoto" data-i18n="removePhoto"></button>
+      <input id="pName" class="pname" type="text" maxlength="40" data-i18n-ph="yourName">
+      <div class="pid" id="accId" dir="ltr"></div>
+    </div>
+    <div class="pinfo" id="pInfo"></div>
+    <div class="hint" id="pNote" style="text-align:center;margin-top:8px"></div>
+    <div class="row" style="flex-direction:column">
+      <button class="btn" id="pSave" data-i18n="saveProfile"></button>
+      <button class="btn ghost" id="accSettings" data-i18n="openSettings"></button>
       <button class="btn yellow" id="accAdmin" data-i18n="loginAdmin"></button>
       <button class="btn red" id="accLogout" data-i18n="logout"></button>
-      <button class="btn ghost" data-close data-i18n="cancel"></button>
+      <button class="btn ghost" data-close data-i18n="close"></button>
     </div>
   </div>
 </div>
@@ -466,6 +489,9 @@ const I18N = {
     save: "حفظ", defaults: "رجّع القنوات الافتراضية", clearCache: "مسح الكاش وتحديث",
     saved: "اتحفظ عند كل اليوزرز ✔", savedLocal: "اتحفظ ✔", cacheCleared: "اتمسح الكاش", removed: e => "اتشال " + e, added: e => "اتضاف " + e + " ✔",
     fbDown: "مقدرتش أوصل لـ Firebase", none: "مفيش",
+    yourName: "اسمك", changePhoto: "غيّر الصورة", removePhoto: "شيل الصورة", saveProfile: "حفظ الاسم والصورة", profileSaved: "اتحفظ ✔",
+    lAccount: "الحساب", lRole: "الدور", lFirst: "أول دخول", lLast: "آخر دخول", lLogins: "مرات الدخول", lDevice: "الجهاز", lWatched: "فيديوهات اتشافت على الجهاز ده", lLang: "اللغة",
+    localNote: "تسجيل الدخول والخروج بيشتغلوا بعد ربط Firebase. الاسم والصورة متحفظين على الجهاز ده بس لحد كده.", badImage: "مقدرتش أفتح الصورة دي",
     loginAdmin: "دخول كأدمن", adminLoginHint: "سجّل دخول بإيميل أو رقم الأدمن", openSettings: "⚙ الإعدادات",
     tabSettings: "الإعدادات", tabUsers: "اليوزرز", tabLogs: "السجل", addUser: "إضافة يوزر",
     filterUser: "دوّر بالإيميل أو الرقم...", filterLog: "دوّر بيوزر أو فيديو...", logLogins: "مرات الدخول", logViews: "الفيديوهات اللي اتشافت", reload: "تحديث", noLogs: "مفيش حاجة لسه",
@@ -520,6 +546,9 @@ const I18N = {
     save: "Save", defaults: "Reset channels to default", clearCache: "Clear cache & refresh",
     saved: "Saved for every user ✔", savedLocal: "Saved ✔", cacheCleared: "Cache cleared", removed: e => "Removed " + e, added: e => e + " added ✔",
     fbDown: "Couldn't reach Firebase", none: "None",
+    yourName: "Your name", changePhoto: "Change photo", removePhoto: "Remove photo", saveProfile: "Save name & photo", profileSaved: "Saved ✔",
+    lAccount: "Account", lRole: "Role", lFirst: "First sign-in", lLast: "Last sign-in", lLogins: "Sign-ins", lDevice: "Device", lWatched: "Videos watched on this device", lLang: "Language",
+    localNote: "Sign-in and sign-out work once Firebase is connected. Until then, the name and photo are saved on this device only.", badImage: "Couldn't open that image",
     loginAdmin: "Sign in as admin", adminLoginHint: "Sign in with the admin's email or number", openSettings: "⚙ Settings",
     tabSettings: "Settings", tabUsers: "Users", tabLogs: "Activity", addUser: "Add user",
     filterUser: "Search by email or number...", filterLog: "Search by user or video...", logLogins: "Sign-ins", logViews: "Watched videos", reload: "Reload", noLogs: "Nothing yet",
@@ -1052,7 +1081,7 @@ async function onAuth(u) {
     amAdmin = myRec.role === "admin"; amEditor = amAdmin || myRec.role === "editor";
     myChannels = Array.isArray(myRec.channels) ? myRec.channels : [];
   }
-  logActivity();
+  logActivity(); loadProfile();
   cfgUnsub = db.collection("app").doc("config").onSnapshot(d => {
     const first = !authorized;
     authorized = true; hideGate();
@@ -1139,20 +1168,87 @@ async function signOut(thenAdmin) {
   document.querySelectorAll(".modal.open").forEach(m => m.classList.remove("open"));
   try { sessionStorage.removeItem("kt_session_" + myId); } catch {}
   try { await auth.signOut(); } catch {}
-  remoteCfg = null; LS.del("remoteCfg"); $("#gId").value = "";
+  remoteCfg = null; LS.del("remoteCfg"); $("#gId").value = ""; profile = { name: "", photo: "" }; LS.del("profile"); paintAvatar();
   if (thenAdmin) { adminIntent = true; toast(T("adminLoginHint"), 4000); } else toast(T("loggedOut"));
 }
 $("#gLogout").onclick = () => signOut(); $("#accLogout").onclick = () => signOut();
 
 /* ---------- account button (👤): who I am, settings, sign in as admin, sign out ---------- */
-$("#accountBtn").onclick = () => {
+/* ---------- profile (👤): name, photo and account info ---------- */
+// photo is resized to a small JPEG and kept in Firestore (profiles/{id}) — no Firebase Storage needed.
+// Without Firebase it stays on this device.
+let profile = LS.get("profile", { name: "", photo: "" });
+let draftPhoto = null;
+function avatarInner(p, fallback) {
+  if (p.photo) return `<img src="${esc(p.photo)}" alt="">`;
+  const ch = (p.name || "").trim().charAt(0);
+  return ch ? `<span class="ini">${esc(ch.toUpperCase())}</span>` : fallback;
+}
+function paintAvatar() { $("#accountBtn").innerHTML = avatarInner(profile, "👤"); }
+async function loadProfile() {
+  if (REMOTE && db && myId) {
+    try {
+      const d = await db.collection("profiles").doc(myId).get();
+      profile = d.exists ? { name: d.data().name || "", photo: d.data().photo || "" } : { name: "", photo: "" };
+      LS.set("profile", profile);
+    } catch {}
+  }
+  paintAvatar();
+}
+function resizeImage(file, size = 192) {
+  return new Promise((res, rej) => {
+    const img = new Image(), url = URL.createObjectURL(file);
+    img.onload = () => {
+      const c = document.createElement("canvas"); c.width = c.height = size;
+      const s = Math.min(img.width, img.height);
+      c.getContext("2d").drawImage(img, (img.width - s) / 2, (img.height - s) / 2, s, s, 0, 0, size, size);
+      URL.revokeObjectURL(url); res(c.toDataURL("image/jpeg", 0.82));
+    };
+    img.onerror = () => { URL.revokeObjectURL(url); rej(new Error("image")); };
+    img.src = url;
+  });
+}
+const paintDraft = () => { $("#pAvImg").innerHTML = avatarInner({ name: $("#pName").value, photo: draftPhoto }, "👤"); $("#pRemovePhoto").hidden = !draftPhoto; };
+const infoRow = (k, v) => v ? `<div><span>${k}</span><b dir="auto">${esc(v)}</b></div>` : "";
+$("#accountBtn").onclick = async () => {
+  draftPhoto = profile.photo || "";
+  $("#pName").value = profile.name || "";
+  paintDraft();
   $("#accId").textContent = REMOTE ? myId : "";
-  $("#accRole").textContent = REMOTE && myRec ? T("yourRole")(T("roles")[myRec.role || "viewer"]) : "";
   $("#accSettings").hidden = !(REMOTE && amEditor);
   $("#accAdmin").hidden = REMOTE && amEditor;
   $("#accLogout").hidden = !REMOTE;
+  $("#pNote").textContent = REMOTE ? "" : T("localNote");
+  const base = infoRow(T("lDevice"), deviceName()) + infoRow(T("lWatched"), String(watched.size)) + infoRow(T("lLang"), lang === "ar" ? "العربية" : "English");
+  $("#pInfo").innerHTML = (REMOTE && myRec ? infoRow(T("lRole"), T("roles")[myRec.role || "viewer"]) : "") + base;
   openModal("#accountModal");
+  if (REMOTE && db && myId) {
+    try {
+      const a = (await db.collection("activity").doc(myId).get()).data() || {};
+      $("#pInfo").innerHTML = (myRec ? infoRow(T("lRole"), T("roles")[myRec.role || "viewer"]) : "")
+        + infoRow(T("lFirst"), fmtDate(tsDate(a.firstSeen), true)) + infoRow(T("lLast"), fmtDate(tsDate(a.lastSeen), true))
+        + infoRow(T("lLogins"), a.logins ? String(a.logins) : "") + base;
+    } catch {}
+  }
 };
+$("#pAv").onclick = () => $("#pFile").click();
+$("#pFile").onchange = async e => {
+  const f = e.target.files && e.target.files[0]; e.target.value = "";
+  if (!f) return;
+  try { draftPhoto = await resizeImage(f); paintDraft(); } catch { toast(T("badImage")); }
+};
+$("#pRemovePhoto").onclick = () => { draftPhoto = ""; paintDraft(); };
+$("#pName").addEventListener("input", paintDraft);
+$("#pSave").onclick = async () => {
+  const next = { name: $("#pName").value.trim().slice(0, 40), photo: draftPhoto || "" };
+  const b = $("#pSave"); b.disabled = true;
+  try {
+    if (REMOTE && db && myId) await db.collection("profiles").doc(myId).set({ ...next, updatedAt: FV().serverTimestamp() });
+    profile = next; LS.set("profile", profile); paintAvatar(); toast(T("profileSaved"));
+  } catch (e) { toast(fbErr(e)); }
+  finally { b.disabled = false; }
+};
+paintAvatar();
 $("#accSettings").onclick = () => { $("#accountModal").classList.remove("open"); openSettings(); };
 $("#accAdmin").onclick = () => { $("#accountModal").classList.remove("open"); if (REMOTE) signOut(true); else openAdmin(); };
 
@@ -1212,10 +1308,11 @@ let usersCache = [];
 async function loadUsers() {
   const box = $("#usersList"); box.textContent = "...";
   try {
-    const [us, act] = await Promise.all([db.collection("users").get(), db.collection("activity").get()]);
+    const [us, act, prof] = await Promise.all([db.collection("users").get(), db.collection("activity").get(), db.collection("profiles").get().catch(() => ({ docs: [] }))]);
     const map = new Map();
     us.docs.forEach(d => map.set(d.id, { id: d.id, rec: d.data() }));
     act.docs.forEach(d => { const e = map.get(d.id) || { id: d.id }; e.act = d.data(); map.set(d.id, e); });
+    prof.docs.forEach(d => { const e = map.get(d.id); if (e) e.prof = d.data(); });
     usersCache = [...map.values()].sort((a, b) => tsMs(b.act && b.act.lastSeen) - tsMs(a.act && a.act.lastSeen));
     renderUsers();
   } catch (e) { box.textContent = fbErr(e); }
@@ -1234,7 +1331,7 @@ function renderUsers() {
     const a = e.act || {};
     const seen = a.lastSeen ? T("lastSeen")(fmtDate(tsDate(a.lastSeen), true)) : T("never");
     return `<button class="urow" data-uid="${esc(e.id)}">
-      <span class="uid" dir="ltr">${esc(e.id)}${e.id === myId ? " " + T("you") : ""}</span>
+      <span class="uid">${e.prof && e.prof.photo ? `<img class="uav" src="${esc(e.prof.photo)}" alt="">` : ""}${e.prof && e.prof.name ? `<b>${esc(e.prof.name)}</b> · ` : ""}<span dir="ltr">${esc(e.id)}</span>${e.id === myId ? " " + T("you") : ""}</span>
       <span class="tags">${role ? `<span class="tag role-${role}">${T("roles")[role]}</span>` : ""}<span class="tag ${cls}">${st}</span>${e.rec && e.rec.channels && e.rec.channels.length ? `<span class="tag">📺 ${e.rec.channels.length}</span>` : ""}</span>
       <span class="useen">${seen}${a.logins ? " · " + T("timesN")(a.logins) : ""}${a.lastDevice ? " · " + esc(a.lastDevice) : ""}</span>
     </button>`;
@@ -1255,7 +1352,7 @@ function openUser(id) {
   const e = usersCache.find(x => x.id === id) || { id };
   const r = e.rec || {}, a = e.act || {};
   editing = id;
-  $("#ueTitle").textContent = id;
+  $("#ueTitle").textContent = (e.prof && e.prof.name ? e.prof.name + " · " : "") + id;
   $("#ueStats").innerHTML = [a.firstSeen && T("firstSeen")(fmtDate(tsDate(a.firstSeen), true)), a.lastSeen ? T("lastSeen")(fmtDate(tsDate(a.lastSeen), true)) : T("never"), a.logins && T("timesN")(a.logins), a.lastDevice && T("device")(esc(a.lastDevice))].filter(Boolean).join("<br>");
   $("#ueRole").innerHTML = roleOptions(r.role || "viewer");
   $("#ueDisabled").checked = !!r.disabled;
