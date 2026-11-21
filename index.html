@@ -13,38 +13,13 @@
 <meta name="mobile-web-app-capable" content="yes">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;800&display=swap" rel="stylesheet">
+<!-- إعداداتك (المفتاح، Firebase، القنوات) في ملف config.js لوحده، عشان تحديثات index.html متمسحهاش -->
+<script src="config.js"></script>
 <script>
-/* =====================================================================
-   الإعدادات — عدّل هنا
-   ===================================================================== */
-const CONFIG = {
-  // مفتاح YouTube Data API v3. بعد ما تجهّز Firebase امسحه من هنا وحطه من إعدادات الأدمن (عشان ميبقاش ظاهر للناس)
-  API_KEY: "AIzaSyBookLb_X2ALPYj3Ww7DBHl5-smpdnwmgg",
-  // رقم سري للإعدادات — بيستخدم بس لو FIREBASE فاضي
-  PIN: "0000",
-  // إعدادات Firebase (تسجيل الدخول + إعدادات مشتركة). انسخها من Firebase ← Project settings ← Your apps.
-  // لو سبتها null الأبلكيشن بيفتح لأي حد من غير تسجيل دخول.
-  FIREBASE: null,
-  // كود الدولة لأرقام الموبايل اللي بتبدأ بـ 0
-  COUNTRY_CODE: "+20",
-  // اللغة الافتراضية أول مرة: "ar" أو "en"
-  DEFAULT_LANG: "ar",
-  // القنوات المسموحة: لينك قناة (@handle أو channel/UC...) أو لينك فيديو (هتتضاف قناته)
-  CHANNELS: [
-    "https://www.youtube.com/@AnashedAlRawda",
-    "https://www.youtube.com/@learn2kids",
-    "https://www.youtube.com/@ahlansimsim",
-    "https://www.youtube.com/@MYBABYGH",
-    "https://www.youtube.com/watch?v=NEcug4krSAo",
-    "https://www.youtube.com/@LittleFoxKids",
-    "https://www.youtube.com/watch?v=6lQb75KP-V8",
-    "https://www.youtube.com/channel/UCtlcIZVBdFPSAtCoNZsTusg",
-    "https://www.youtube.com/@LearnwithTamer",
-    "https://www.youtube.com/@DawoodKidsTV"
-  ],
-  REFRESH_MINUTES: 30,   // كل قد إيه يدوّر على فيديوهات جديدة
-  NEW_DAYS: 3            // الفيديو يتعلّم "جديد" لو نازل من أقل من كده (أول مرة)
-};
+const CONFIG = Object.assign({
+  API_KEY: "", PIN: "0000", FIREBASE: null, COUNTRY_CODE: "+20", DEFAULT_LANG: "ar",
+  CHANNELS: [], REFRESH_MINUTES: 30, NEW_DAYS: 3
+}, window.APP_CONFIG || {});
 </script>
 <style>
 :root{--bg:#f3f5ff;--card:#fff;--ink:#1d2140;--muted:#6b7090;--brand:#2b2f77;--accent:#ff5a5f;--yellow:#ffc93c;--radius:18px;--pbg:#14152b;--pbtn:#262a52}
@@ -177,6 +152,29 @@ header h1 .logo{width:32px;height:32px;border-radius:9px;background:var(--yellow
 .add-row input{flex:1 1 200px;border:2px solid #dfe2f5;border-radius:12px;padding:10px;font-family:inherit;font-size:15px;direction:ltr;text-align:left}
 .adm{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:8px 10px;background:#f4f5ff;border-radius:10px;margin-top:6px;direction:ltr;font-size:14px;color:var(--ink)}
 .adm button{border:0;background:#ffe5e6;color:#c22;border-radius:8px;padding:4px 10px;font-family:inherit;font-weight:700}
+.sheet.wide{max-width:720px}
+.tabs{display:flex;gap:6px;background:#eef0ff;border-radius:14px;padding:4px;margin-bottom:8px}
+.tabs button{flex:1;border:0;background:none;padding:9px 8px;border-radius:10px;font-weight:800;color:var(--brand);font-size:14px}
+.tabs button.on{background:var(--brand);color:#fff}
+.tabs.small{max-width:320px}
+.sheet select{border:2px solid #dfe2f5;border-radius:12px;padding:10px;font-family:inherit;font-size:15px;background:#fff;color:var(--ink)}
+.sheet input[type=date]{border:2px solid #dfe2f5;border-radius:12px;padding:9px;font-family:inherit;font-size:15px}
+.filter{width:100%;border:2px solid #dfe2f5;border-radius:12px;padding:9px 12px;font-family:inherit;font-size:14px;margin:6px 0}
+.urow{display:grid;grid-template-columns:1fr auto;gap:4px 10px;width:100%;text-align:start;border:0;background:#f4f5ff;border-radius:12px;padding:10px 12px;margin-top:6px;color:var(--ink);font-family:inherit}
+.urow:hover{background:#e9ebff}
+.uid{font-weight:800;font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.useen{grid-column:1/-1;font-size:12px;color:var(--muted)}
+.tags{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+.tag{font-size:12px;font-weight:800;border-radius:8px;padding:2px 8px;background:#e3e6ff;color:var(--brand)}
+.tag.ok{background:#dff6e7;color:#167a3e}.tag.off{background:#ffe5e6;color:#c22}.tag.notAdded{background:#fff3d1;color:#8a6200}
+.tag.role-admin{background:var(--brand);color:#fff}.tag.role-editor{background:#7b6cf0;color:#fff}
+.lrow{display:grid;grid-template-columns:auto 1fr;gap:2px 10px;padding:8px 10px;border-bottom:1px solid #eef0ff;font-size:13px;color:var(--ink)}
+.lrow .ltime{color:var(--muted);font-size:12px;white-space:nowrap}
+.lrow .ldet{grid-column:1/-1;color:var(--muted)}
+.lrow .uid{cursor:pointer}
+.chk-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:6px;margin-top:8px}
+.chk-grid label{display:flex;align-items:center;gap:8px;margin:0;font-weight:700;font-size:14px;background:#f4f5ff;border-radius:10px;padding:8px}
+.chk-grid img{width:28px;height:28px;border-radius:50%}
 #toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#1d2140;color:#fff;padding:10px 18px;border-radius:12px;z-index:200;display:none;font-size:14px;max-width:90vw;text-align:center}
 </style>
 </head>
@@ -187,7 +185,7 @@ header h1 .logo{width:32px;height:32px;border-radius:9px;background:var(--yellow
   <button class="icon-btn" id="searchToggle" data-i18n-title="searchT">🔍</button>
   <button class="icon-btn install" id="installBtn" hidden>📲 <span data-i18n="install"></span></button>
   <button class="icon-btn txt" id="langBtn"></button>
-  <button class="icon-btn" id="accountBtn" hidden data-i18n-title="account">👤</button>
+  <button class="icon-btn" id="accountBtn" data-i18n-title="account">👤</button>
 </header>
 
 <nav id="channels"></nav>
@@ -209,6 +207,7 @@ header h1 .logo{width:32px;height:32px;border-radius:9px;background:var(--yellow
       <p data-i18n="loginIntro"></p>
       <input id="gId" type="text" inputmode="email" autocomplete="username" data-i18n-ph="idPh">
       <button class="btn big" id="gSend" data-i18n="continue"></button>
+      <button class="linkbtn" id="gAdmin" data-i18n="loginAdmin"></button>
     </div>
     <div data-step="code" hidden>
       <p id="gCodeMsg"></p>
@@ -308,7 +307,10 @@ header h1 .logo{width:32px;height:32px;border-radius:9px;background:var(--yellow
   <div class="sheet" style="max-width:380px;text-align:center">
     <h2 data-i18n="account"></h2>
     <p id="accId" dir="ltr" style="font-weight:700"></p>
-    <div class="row" style="justify-content:center">
+    <p id="accRole" class="hint"></p>
+    <div class="row" style="justify-content:center;flex-direction:column">
+      <button class="btn" id="accSettings" data-i18n="openSettings"></button>
+      <button class="btn yellow" id="accAdmin" data-i18n="loginAdmin"></button>
       <button class="btn red" id="accLogout" data-i18n="logout"></button>
       <button class="btn ghost" data-close data-i18n="cancel"></button>
     </div>
@@ -328,40 +330,81 @@ header h1 .logo{width:32px;height:32px;border-radius:9px;background:var(--yellow
   </div>
 </div>
 
-<!-- Settings (admins) -->
+<!-- Settings (editors & admins) -->
 <div class="modal" id="setModal">
-  <div class="sheet">
+  <div class="sheet wide">
     <h2 data-i18n="settings"></h2>
-    <label for="sKey" data-i18n="apiKey"></label>
-    <input id="sKey" type="text" placeholder="AIza..." autocomplete="off">
-    <div class="hint" id="keyHint"></div>
-    <label for="sCh" data-i18n="channels"></label>
-    <textarea id="sCh" spellcheck="false"></textarea>
-    <div class="hint" data-i18n="channelsHint"></div>
-    <label class="check"><input type="checkbox" id="sKid"><span><span data-i18n="kidLock"></span><small data-i18n="kidLockHint"></small></span></label>
-    <label class="check"><input type="checkbox" id="sTv"><span><span data-i18n="showTv"></span><small data-i18n="showTvHint"></small></span></label>
-    <label class="check"><input type="checkbox" id="sPl"><span data-i18n="showPl"></span></label>
-    <label class="check"><input type="checkbox" id="sShorts"><span data-i18n="hideShorts"></span></label>
-    <div id="pinBox">
-      <label for="sPin" data-i18n="newPin"></label>
-      <input id="sPin" type="password" inputmode="numeric" maxlength="8" data-i18n-ph="newPinPh">
+    <div class="tabs" id="setTabs">
+      <button data-tab="tSet" class="on" data-i18n="tabSettings"></button>
+      <button data-tab="tUsers" data-i18n="tabUsers"></button>
+      <button data-tab="tLogs" data-i18n="tabLogs"></button>
     </div>
-    <div id="remoteBox" hidden>
-      <h3 data-i18n="access"></h3>
+    <div class="tab" id="tSet">
+      <label for="sKey" data-i18n="apiKey"></label>
+      <input id="sKey" type="text" placeholder="AIza..." autocomplete="off">
+      <div class="hint" id="keyHint"></div>
+      <label for="sCh" data-i18n="channels"></label>
+      <textarea id="sCh" spellcheck="false"></textarea>
+      <div class="hint" data-i18n="channelsHint"></div>
+      <label class="check"><input type="checkbox" id="sKid"><span><span data-i18n="kidLock"></span><small data-i18n="kidLockHint"></small></span></label>
+      <label class="check"><input type="checkbox" id="sTv"><span><span data-i18n="showTv"></span><small data-i18n="showTvHint"></small></span></label>
+      <label class="check"><input type="checkbox" id="sPl"><span data-i18n="showPl"></span></label>
+      <label class="check"><input type="checkbox" id="sShorts"><span data-i18n="hideShorts"></span></label>
+      <div id="pinBox">
+        <label for="sPin" data-i18n="newPin"></label>
+        <input id="sPin" type="password" inputmode="numeric" maxlength="8" data-i18n-ph="newPinPh">
+      </div>
+      <div class="row">
+        <button class="btn" id="sSave" data-i18n="save"></button>
+        <button class="btn ghost" data-close data-i18n="cancel"></button>
+        <button class="btn ghost" id="sDefaults" data-i18n="defaults"></button>
+        <button class="btn red" id="sClear" data-i18n="clearCache"></button>
+      </div>
+    </div>
+    <div class="tab" id="tUsers" hidden>
       <label class="check"><input type="checkbox" id="sOpen"><span><span data-i18n="openAccess"></span><small data-i18n="openAccessHint"></small></span></label>
-      <h3 data-i18n="members"></h3>
-      <div id="membersList" class="hint">...</div>
-      <div class="add-row"><input id="mId" type="text" data-i18n-ph="idPh"><button class="btn" id="mAdd" data-i18n="add"></button></div>
-      <h3 data-i18n="admins"></h3>
-      <div id="adminsList" class="hint">...</div>
-      <div class="add-row"><input id="aId" type="text" data-i18n-ph="idPh"><button class="btn" id="aAdd" data-i18n="add"></button></div>
+      <h3 data-i18n="addUser"></h3>
+      <div class="add-row">
+        <input id="uNew" type="text" data-i18n-ph="idPh">
+        <select id="uNewRole"></select>
+        <button class="btn" id="uAdd" data-i18n="add"></button>
+      </div>
+      <h3 data-i18n="tabUsers"></h3>
+      <input id="uFilter" class="filter" type="text" data-i18n-ph="filterUser">
+      <div id="usersList" class="hint">...</div>
       <div class="hint" id="whoami" style="margin-top:10px"></div>
+      <div class="row"><button class="btn ghost" data-close data-i18n="close"></button></div>
     </div>
+    <div class="tab" id="tLogs" hidden>
+      <div class="tabs small" id="logTabs">
+        <button data-log="logins" class="on" data-i18n="logLogins"></button>
+        <button data-log="views" data-i18n="logViews"></button>
+      </div>
+      <input id="logFilter" class="filter" type="text" data-i18n-ph="filterLog">
+      <div id="logList" class="hint">...</div>
+      <div class="row"><button class="btn ghost" id="logReload" data-i18n="reload"></button><button class="btn ghost" data-close data-i18n="close"></button></div>
+    </div>
+  </div>
+</div>
+
+<!-- One user -->
+<div class="modal" id="userModal">
+  <div class="sheet">
+    <h2 id="ueTitle" dir="ltr"></h2>
+    <div class="hint" id="ueStats"></div>
+    <label for="ueRole" data-i18n="role"></label>
+    <select id="ueRole"></select>
+    <div class="hint" data-i18n="roleHint"></div>
+    <label class="check"><input type="checkbox" id="ueDisabled"><span data-i18n="suspend"></span></label>
+    <label for="ueExpires" data-i18n="expires"></label>
+    <div class="add-row"><input type="date" id="ueExpires"><button class="btn ghost" id="ueNoExp" data-i18n="noExpiry"></button></div>
+    <label data-i18n="userChannels"></label>
+    <div class="hint" data-i18n="userChannelsHint"></div>
+    <div id="ueChannels" class="chk-grid"></div>
     <div class="row">
-      <button class="btn" id="sSave" data-i18n="save"></button>
+      <button class="btn" id="ueSave" data-i18n="save"></button>
       <button class="btn ghost" data-close data-i18n="cancel"></button>
-      <button class="btn ghost" id="sDefaults" data-i18n="defaults"></button>
-      <button class="btn red" id="sClear" data-i18n="clearCache"></button>
+      <button class="btn red" id="ueDelete" data-i18n="deleteUser"></button>
     </div>
   </div>
 </div>
@@ -423,6 +466,19 @@ const I18N = {
     save: "حفظ", defaults: "رجّع القنوات الافتراضية", clearCache: "مسح الكاش وتحديث",
     saved: "اتحفظ عند كل اليوزرز ✔", savedLocal: "اتحفظ ✔", cacheCleared: "اتمسح الكاش", removed: e => "اتشال " + e, added: e => "اتضاف " + e + " ✔",
     fbDown: "مقدرتش أوصل لـ Firebase", none: "مفيش",
+    loginAdmin: "دخول كأدمن", adminLoginHint: "سجّل دخول بإيميل أو رقم الأدمن", openSettings: "⚙ الإعدادات",
+    tabSettings: "الإعدادات", tabUsers: "اليوزرز", tabLogs: "السجل", addUser: "إضافة يوزر",
+    filterUser: "دوّر بالإيميل أو الرقم...", filterLog: "دوّر بيوزر أو فيديو...", logLogins: "مرات الدخول", logViews: "الفيديوهات اللي اتشافت", reload: "تحديث", noLogs: "مفيش حاجة لسه",
+    role: "الدور", roleHint: "مشاهد: بيتفرج بس — محرر: بيعدّل القنوات والإعدادات — أدمن: كل حاجة، ومعاها اليوزرز والسجل.",
+    roles: { viewer: "مشاهد", editor: "محرر", admin: "أدمن" },
+    suspend: "إيقاف الحساب (ميقدرش يدخل)", expires: "الصلاحية لحد (اختياري)", noExpiry: "من غير تاريخ",
+    userChannels: "القنوات اللي يشوفها", userChannelsHint: "لو كلهم متعلّم عليهم أو مفيش ولا واحدة، هيشوف كل القنوات.",
+    deleteUser: "مسح اليوزر", deleted: e => "اتمسح " + e, userSaved: "اتحفظ ✔",
+    active: "شغّال", suspended: "موقوف", expired: "انتهت صلاحيته", until: d => "لحد " + d, notAdded: "مش مضاف",
+    lastSeen: d => "آخر دخول: " + d, firstSeen: d => "أول دخول: " + d, timesN: n => n + " مرة", never: "لسه مدخلش", device: d => "الجهاز: " + d,
+    suspendedMsg: id => `الحساب <b dir="ltr">${id}</b> موقوف.<br>كلّم الأدمن.`,
+    expiredMsg: (id, d) => `صلاحية الحساب <b dir="ltr">${id}</b> انتهت يوم ${d}.<br>كلّم الأدمن يجددها.`,
+    selfLock: "مينفعش تشيل صلاحية الأدمن من نفسك أو توقف حسابك", yourRole: r => "الدور: " + r,
     fb: { "auth/invalid-phone-number": "رقم الموبايل مش صحيح", "auth/invalid-email": "الإيميل مكتوب غلط", "auth/too-many-requests": "محاولات كتير، استنى شوية وجرب تاني", "auth/invalid-verification-code": "الكود غلط", "auth/code-expired": "الكود انتهى، اطلب كود جديد", "auth/invalid-action-code": "اللينك ده اتستخدم قبل كده أو انتهى، اطلب لينك جديد", "auth/expired-action-code": "اللينك انتهى، اطلب لينك جديد", "auth/billing-not-enabled": "رسايل الموبايل محتاجة تفعيل الدفع في Firebase (Blaze). استخدم الإيميل لحد ما الأدمن يفعّله.", "auth/operation-not-allowed": "طريقة الدخول دي مش متفعّلة في Firebase", "auth/unauthorized-domain": "الدومين ده مش مضاف في Firebase ← Authorized domains", "auth/quota-exceeded": "خلصت رسايل النهارده، جرّب بكرة أو استخدم الإيميل", "auth/captcha-check-failed": "فشل التحقق، جرّب تاني", "auth/network-request-failed": "مفيش نت", "permission-denied": "مش مسموحلك تعمل كده" }
   },
   en: {
@@ -464,6 +520,19 @@ const I18N = {
     save: "Save", defaults: "Reset channels to default", clearCache: "Clear cache & refresh",
     saved: "Saved for every user ✔", savedLocal: "Saved ✔", cacheCleared: "Cache cleared", removed: e => "Removed " + e, added: e => e + " added ✔",
     fbDown: "Couldn't reach Firebase", none: "None",
+    loginAdmin: "Sign in as admin", adminLoginHint: "Sign in with the admin's email or number", openSettings: "⚙ Settings",
+    tabSettings: "Settings", tabUsers: "Users", tabLogs: "Activity", addUser: "Add user",
+    filterUser: "Search by email or number...", filterLog: "Search by user or video...", logLogins: "Sign-ins", logViews: "Watched videos", reload: "Reload", noLogs: "Nothing yet",
+    role: "Role", roleHint: "Viewer: watches only — Editor: edits channels and settings — Admin: everything, including users and activity.",
+    roles: { viewer: "Viewer", editor: "Editor", admin: "Admin" },
+    suspend: "Suspend account (can't sign in)", expires: "Access until (optional)", noExpiry: "No end date",
+    userChannels: "Channels this user can see", userChannelsHint: "If all or none are ticked, the user sees every channel.",
+    deleteUser: "Delete user", deleted: e => "Deleted " + e, userSaved: "Saved ✔",
+    active: "Active", suspended: "Suspended", expired: "Expired", until: d => "Until " + d, notAdded: "Not added",
+    lastSeen: d => "Last seen: " + d, firstSeen: d => "First seen: " + d, timesN: n => n + (n === 1 ? " time" : " times"), never: "Never signed in", device: d => "Device: " + d,
+    suspendedMsg: id => `The account <b dir="ltr">${id}</b> is suspended.<br>Ask an admin.`,
+    expiredMsg: (id, d) => `Access for <b dir="ltr">${id}</b> ended on ${d}.<br>Ask an admin to renew it.`,
+    selfLock: "You can't remove your own admin role or suspend yourself", yourRole: r => "Role: " + r,
     fb: { "auth/invalid-phone-number": "Invalid mobile number", "auth/invalid-email": "Invalid email", "auth/too-many-requests": "Too many attempts, try again later", "auth/invalid-verification-code": "Wrong code", "auth/code-expired": "The code expired, request a new one", "auth/invalid-action-code": "This link was already used or expired, request a new one", "auth/expired-action-code": "The link expired, request a new one", "auth/billing-not-enabled": "SMS sign-in needs billing (Blaze) in Firebase. Use email until an admin enables it.", "auth/operation-not-allowed": "This sign-in method isn't enabled in Firebase", "auth/unauthorized-domain": "This domain isn't in Firebase → Authorized domains", "auth/quota-exceeded": "SMS quota reached for today, try tomorrow or use email", "auth/captcha-check-failed": "Verification failed, try again", "auth/network-request-failed": "No internet connection", "permission-denied": "You're not allowed to do that" }
   }
 };
@@ -503,7 +572,9 @@ let seen = LS.get("seen", {});
 let watched = new Set(LS.get("watched", []));
 let current = "all", prevView = "all", viewSeen = {}, query = "", busy = false, lastError = "";
 let lastFetchHadData = !!lastFetch;
-let authorized = !REMOTE;                    // remote mode: true once the user may read the config
+let authorized = !REMOTE;
+let myChannels = [];                         // per-user channel limit (empty = all)
+const visible = id => !myChannels.length || myChannels.includes(id);                    // remote mode: true once the user may read the config
 
 /* ---------- YouTube Data API ---------- */
 async function api(path, params) {
@@ -669,22 +740,23 @@ function playlistsFor(view) {
   if (!opts().showPl) return [];
   let list;
   if (view === "all") {   // mix the channels so the row isn't all one channel
-    const cols = channels.map(c => (pls[c.id] || []).slice()); list = [];
+    const cols = channels.filter(c => visible(c.id)).map(c => (pls[c.id] || []).slice()); list = [];
     for (let i = 0; cols.some(c => c.length) && list.length < 80; i = (i + 1) % cols.length) { const p = cols[i].shift(); if (p) list.push(p); }
-  } else list = pls[view] || [];
+  } else list = visible(view) ? (pls[view] || []) : [];
   return query ? list.filter(p => p.title.toLowerCase().includes(query)) : list;
 }
 let currentList = [];
 function listFor(view) {
-  if (view.startsWith("pl:")) return ((plVids[view.slice(3)] || {}).items || []).filter(passes);
-  if (view === "all") { let all = []; for (const k in vids) all = all.concat(vids[k].items); return all.filter(passes).sort((a, b) => b.at - a.at).slice(0, 200); }
+  if (view.startsWith("pl:")) return ((plVids[view.slice(3)] || {}).items || []).filter(v => visible(v.ch) && passes(v));
+  if (view === "all") { let all = []; for (const k in vids) if (visible(k)) all = all.concat(vids[k].items); return all.filter(passes).sort((a, b) => b.at - a.at).slice(0, 200); }
   return ((vids[view] || {}).items || []).filter(passes);
 }
 function render() {
-  const totalNew = channels.reduce((s, c) => s + newCount(c.id), 0);
+  const shown = channels.filter(c => visible(c.id));
+  const totalNew = shown.reduce((s, c) => s + newCount(c.id), 0);
   $("#channels").innerHTML =
     `<button class="ch ${current === "all" ? "active" : ""}" data-ch="all"><div class="av" style="background:var(--yellow)">⭐${totalNew ? `<span class="badge">${totalNew}</span>` : ""}</div><div class="nm">${T("all")}</div></button>` +
-    channels.map(c => { const n = newCount(c.id); return `<button class="ch ${current === c.id ? "active" : ""}" data-ch="${esc(c.id)}"><div class="av" style="background-image:url('${esc(c.thumb)}')">${n ? `<span class="badge">${n}</span>` : ""}</div><div class="nm">${esc(c.title)}</div></button>`; }).join("");
+    shown.map(c => { const n = newCount(c.id); return `<button class="ch ${current === c.id ? "active" : ""}" data-ch="${esc(c.id)}"><div class="av" style="background-image:url('${esc(c.thumb)}')">${n ? `<span class="badge">${n}</span>` : ""}</div><div class="nm">${esc(c.title)}</div></button>`; }).join("");
 
   const isPl = current.startsWith("pl:");
   const plist = isPl ? [] : playlistsFor(current);
@@ -750,6 +822,7 @@ $("#search").addEventListener("input", e => { query = e.target.value.trim().toLo
 
 /* ---------- Player ---------- */
 const P = $("#player");
+let viewLogged = null;
 let yt = null, ytReady = false, ytKey = "", pendingId = null, playlist = [], idx = 0, ticker = null, seeking = false, ccApplied = null, ignorePop = false;
 const rate = () => LS.get("rate", 1);
 const SPEEDS = [0.5, 0.75, 1, 1.25, 1.5, 2];
@@ -781,7 +854,7 @@ function createPlayer() {
     events: {
       onReady: () => { ytReady = true; yt.setVolume(LS.get("vol", 100)); if (LS.get("muted", false)) yt.mute(); if (pendingId) { yt.loadVideoById(pendingId); pendingId = null; } },
       onStateChange: e => {
-        if (e.data === YT.PlayerState.PLAYING) { try { yt.setPlaybackRate(rate()); } catch {} setPlayIcon(true); applyCC(); idleSoon(); }
+        if (e.data === YT.PlayerState.PLAYING) { try { yt.setPlaybackRate(rate()); } catch {} setPlayIcon(true); applyCC(); idleSoon(); logView(); }
         else if (e.data === YT.PlayerState.PAUSED) { setPlayIcon(false); wake(); }
         else if (e.data === YT.PlayerState.ENDED) next();
       },
@@ -806,7 +879,7 @@ function playAt(list, i) {
 }
 function start() {
   const v = playlist[idx]; if (!v) return;
-  $("#pTitle").textContent = v.title; $("#pErr").classList.remove("show"); ccApplied = null;
+  $("#pTitle").textContent = v.title; $("#pErr").classList.remove("show"); ccApplied = null; viewLogged = null;
   $("#seek").value = 0; $("#tCur").textContent = "0:00"; $("#tDur").textContent = fmtDur(v.dur);
   watched.add(v.id); LS.set("watched", [...watched].slice(-3000));
   if (ytReady) yt.loadVideoById(v.id); else { pendingId = v.id; ensurePlayer(); }
@@ -909,8 +982,9 @@ $("#installBtn").onclick = async () => {
   else openModal("#installModal");
 };
 
-/* ---------- Firebase: sign-in for everyone, shared settings ---------- */
-let db = null, auth = null, user = null, amAdmin = false, confirmation = null, verifier = null, cfgUnsub = null, gateStep = null, gateArg = null;
+/* ---------- Firebase: sign-in for everyone, roles, activity ---------- */
+let db = null, auth = null, user = null, myId = "", myRec = null, amAdmin = false, amEditor = false;
+let confirmation = null, verifier = null, cfgUnsub = null, gateStep = null, gateArg = null, adminIntent = false, pendingLink = null;
 const FB_V = "10.12.2";
 const loadScript = u => new Promise((res, rej) => { const s = document.createElement("script"); s.src = u; s.onload = res; s.onerror = rej; document.head.appendChild(s); });
 const fbErr = e => T("fb")[e && e.code] || (e && e.message) || String(e);
@@ -924,6 +998,16 @@ function normPhone(s) {
 const idOf = s => { s = String(s).trim(); return s.includes("@") ? (isEmail(s) ? s.toLowerCase() : null) : normPhone(s); };
 const myIds = u => [u && u.email && u.email.toLowerCase(), u && u.phoneNumber].filter(Boolean);
 const cleanUrl = () => history.replaceState(history.state, "", location.pathname + location.hash.replace(/^#admin$/, ""));
+const FV = () => firebase.firestore.FieldValue;
+const tsDate = x => !x ? null : x.toDate ? x.toDate() : new Date(x);
+const tsMs = x => { const d = tsDate(x); return d ? d.getTime() : 0; };
+const fmtDate = (d, time) => !d ? "" : new Intl.DateTimeFormat(lang === "ar" ? "ar-EG" : "en-GB", time ? { dateStyle: "medium", timeStyle: "short" } : { dateStyle: "medium" }).format(d);
+function deviceName() {
+  const ua = navigator.userAgent;
+  const os = /Android/i.test(ua) ? "Android" : /iPhone|iPad|iPod/i.test(ua) ? "iPhone/iPad" : /Windows/i.test(ua) ? "Windows" : /Mac OS/i.test(ua) ? "Mac" : /CrOS/.test(ua) ? "ChromeOS" : /Linux/i.test(ua) ? "Linux" : "?";
+  const br = /Edg\//.test(ua) ? "Edge" : /OPR\//.test(ua) ? "Opera" : /SamsungBrowser/.test(ua) ? "Samsung" : /Firefox/.test(ua) ? "Firefox" : /Chrome\//.test(ua) ? "Chrome" : /Safari/.test(ua) ? "Safari" : "?";
+  return os + " · " + br + (standalone ? " · App" : "");
+}
 
 function showGate(step, arg) {
   gateStep = step; gateArg = arg;
@@ -931,11 +1015,10 @@ function showGate(step, arg) {
   document.querySelectorAll("#gate [data-step]").forEach(d => d.hidden = d.dataset.step !== step);
   if (step === "code") $("#gCodeMsg").innerHTML = T("codeSent")(esc(arg));
   if (step === "mail") $("#gMailMsg").innerHTML = T("mailSent")(esc(arg));
-  if (step === "denied") $("#gDeniedMsg").innerHTML = T("deniedMsg")(esc(arg));
+  if (step === "denied") $("#gDeniedMsg").innerHTML = typeof arg === "function" ? arg() : T("deniedMsg")(esc(arg));
   const f = { id: "#gId", code: "#gCode", confirmEmail: "#gEmail2" }[step]; if (f) setTimeout(() => $(f).focus(), 50);
 }
 function hideGate() { gateStep = null; $("#gate").hidden = true; }
-const busyBtn = (b, on) => { b.disabled = on; };
 
 async function initFirebase() {
   showGate("loading");
@@ -945,27 +1028,31 @@ async function initFirebase() {
   firebase.initializeApp(CONFIG.FIREBASE);
   db = firebase.firestore(); auth = firebase.auth();
   auth.languageCode = lang;
-  // finishing an email-link sign-in that opened this page
-  if (auth.isSignInWithEmailLink(location.href)) {
+  if (auth.isSignInWithEmailLink(location.href)) {     // finishing an email-link sign-in that opened this page
     const email = LS.get("emailForSignIn", "");
     if (email) { try { await auth.signInWithEmailLink(email, location.href); LS.del("emailForSignIn"); } catch (e) { toast(fbErr(e), 6000); } cleanUrl(); }
     else { pendingLink = location.href; cleanUrl(); }
   }
   auth.onAuthStateChanged(onAuth);
 }
-let pendingLink = null;
 async function onAuth(u) {
-  user = u; amAdmin = false;
+  user = u; myRec = null; amAdmin = amEditor = false; myChannels = [];
   if (cfgUnsub) { cfgUnsub(); cfgUnsub = null; }
-  $("#accountBtn").hidden = !u;
-  if (!u) {
-    authorized = false;
-    if (pendingLink) showGate("confirmEmail"); else showGate("id");
-    return;
-  }
+  if (!u) { authorized = false; myId = ""; showGate(pendingLink ? "confirmEmail" : "id"); render(); return; }
   showGate("loading");
-  $("#accId").textContent = myIds(u).join(" / ");
-  try { for (const id of myIds(u)) if ((await db.collection("admins").doc(id).get()).exists) { amAdmin = true; break; } } catch {}
+  myId = myIds(u)[0] || "";
+  // the user's own record: role, suspended, expiry, channels
+  try {
+    for (const i of myIds(u)) { const d = await db.collection("users").doc(i).get(); if (d.exists) { myRec = { id: i, ...d.data() }; break; } }
+  } catch {}
+  if (myRec) {
+    if (myRec.disabled) { authorized = false; return showGate("denied", () => T("suspendedMsg")(esc(myId))); }
+    const exp = tsDate(myRec.expires);
+    if (exp && exp < new Date()) { authorized = false; return showGate("denied", () => T("expiredMsg")(esc(myId), fmtDate(exp))); }
+    amAdmin = myRec.role === "admin"; amEditor = amAdmin || myRec.role === "editor";
+    myChannels = Array.isArray(myRec.channels) ? myRec.channels : [];
+  }
+  logActivity();
   cfgUnsub = db.collection("app").doc("config").onSnapshot(d => {
     const first = !authorized;
     authorized = true; hideGate();
@@ -977,17 +1064,41 @@ async function onAuth(u) {
     if (changed) lastError = "";
     if (first || changed) refresh(changed, true);   // first load respects the refresh interval unless the settings changed
     render();
-    if (location.hash === "#admin") { cleanUrl(); openAdmin(); }
+    if (first && (adminIntent || location.hash === "#admin")) { adminIntent = false; cleanUrl(); openAdmin(); }
   }, e => {
     authorized = false;
-    if (e && e.code === "permission-denied") showGate("denied", myIds(u)[0] || "");
-    else { toast(fbErr(e), 6000); showGate("denied", myIds(u)[0] || ""); }
+    if (!(e && e.code === "permission-denied")) toast(fbErr(e), 6000);
+    showGate("denied", myId);
   });
 }
+// who signed in, when and from what device (once per app session) + last seen
+async function logActivity() {
+  if (!db || !myId) return;
+  try {
+    const ref = db.collection("activity").doc(myId), d = await ref.get();
+    const newSession = !sessionStorage.getItem("kt_session_" + myId);
+    const data = { lastSeen: FV().serverTimestamp(), lastDevice: deviceName() };
+    if (!d.exists) data.firstSeen = FV().serverTimestamp();
+    if (newSession) data.logins = FV().increment(1);
+    await ref.set(data, { merge: true });
+    if (newSession) {
+      sessionStorage.setItem("kt_session_" + myId, "1");
+      await db.collection("logins").add({ id: myId, at: FV().serverTimestamp(), device: deviceName() });
+    }
+  } catch (e) { console.warn("activity", e); }
+}
+// which video was watched (once each time a video starts)
+function logView() {
+  const v = playlist[idx];
+  if (!REMOTE || !db || !myId || !v || viewLogged === v.id) return;
+  viewLogged = v.id;
+  db.collection("views").add({ id: myId, v: v.id, title: v.title, ch: chName(v.ch), at: FV().serverTimestamp() }).catch(e => console.warn("view", e));
+}
+
 $("#gSend").onclick = async () => {
   const id = idOf($("#gId").value), b = $("#gSend");
   if (!id) return toast(T("badId"));
-  busyBtn(b, true); auth.languageCode = lang;
+  b.disabled = true; auth.languageCode = lang;
   try {
     if (id.includes("@")) {
       await auth.sendSignInLinkToEmail(id, { url: location.origin + location.pathname, handleCodeInApp: true });
@@ -1000,14 +1111,15 @@ $("#gSend").onclick = async () => {
   } catch (e) {
     toast(fbErr(e), 7000);
     if (verifier) { try { verifier.clear(); } catch {} verifier = null; $("#recaptcha").innerHTML = ""; }
-  } finally { busyBtn(b, false); }
+  } finally { b.disabled = false; }
 };
 $("#gId").addEventListener("keydown", e => { if (e.key === "Enter") $("#gSend").click(); });
+$("#gAdmin").onclick = () => { adminIntent = true; toast(T("adminLoginHint"), 4000); $("#gId").focus(); };
 $("#gVerify").onclick = async () => {
   const code = $("#gCode").value.replace(/\D/g, ""), b = $("#gVerify");
   if (code.length < 6 || !confirmation) return toast(T("fb")["auth/invalid-verification-code"]);
-  busyBtn(b, true);
-  try { await confirmation.confirm(code); } catch (e) { toast(fbErr(e)); } finally { busyBtn(b, false); }
+  b.disabled = true;
+  try { await confirmation.confirm(code); } catch (e) { toast(fbErr(e)); } finally { b.disabled = false; }
 };
 $("#gCode").addEventListener("input", e => { if (e.target.value.replace(/\D/g, "").length === 6) $("#gVerify").click(); });
 $("#gPasteOk").onclick = async () => {
@@ -1022,19 +1134,32 @@ $("#gEmail2Ok").onclick = async () => {
 };
 document.querySelectorAll("#gate [data-back]").forEach(b => b.onclick = () => showGate("id"));
 $("#gRetry").onclick = () => onAuth(user);
-async function signOut() {
-  try { await auth.signOut(); } catch {}
-  remoteCfg = null; LS.del("remoteCfg");
+async function signOut(thenAdmin) {
+  if (P.classList.contains("open")) closePlayer(true);
   document.querySelectorAll(".modal.open").forEach(m => m.classList.remove("open"));
-  toast(T("loggedOut"));
+  try { sessionStorage.removeItem("kt_session_" + myId); } catch {}
+  try { await auth.signOut(); } catch {}
+  remoteCfg = null; LS.del("remoteCfg"); $("#gId").value = "";
+  if (thenAdmin) { adminIntent = true; toast(T("adminLoginHint"), 4000); } else toast(T("loggedOut"));
 }
-$("#gLogout").onclick = signOut; $("#accLogout").onclick = signOut;
-$("#accountBtn").onclick = () => openModal("#accountModal");
+$("#gLogout").onclick = () => signOut(); $("#accLogout").onclick = () => signOut();
 
-/* ---------- Admin settings (hidden: long-press the logo, or open the link with #admin) ---------- */
+/* ---------- account button (👤): who I am, settings, sign in as admin, sign out ---------- */
+$("#accountBtn").onclick = () => {
+  $("#accId").textContent = REMOTE ? myId : "";
+  $("#accRole").textContent = REMOTE && myRec ? T("yourRole")(T("roles")[myRec.role || "viewer"]) : "";
+  $("#accSettings").hidden = !(REMOTE && amEditor);
+  $("#accAdmin").hidden = REMOTE && amEditor;
+  $("#accLogout").hidden = !REMOTE;
+  openModal("#accountModal");
+};
+$("#accSettings").onclick = () => { $("#accountModal").classList.remove("open"); openSettings(); };
+$("#accAdmin").onclick = () => { $("#accountModal").classList.remove("open"); if (REMOTE) signOut(true); else openAdmin(); };
+
+/* ---------- Settings (also: long-press the logo, or open the link with #admin) ---------- */
 function openAdmin() {
   if (!REMOTE) { $("#pinInput").value = ""; openModal("#pinModal"); setTimeout(() => $("#pinInput").focus(), 50); return; }
-  if (amAdmin) openSettings(); else toast(T("notAdmin"));
+  if (amEditor) openSettings(); else toast(T("notAdmin"));
 }
 (() => {
   const logo = $("#logo"); let t = null;
@@ -1044,7 +1169,6 @@ function openAdmin() {
   logo.addEventListener("contextmenu", e => e.preventDefault());
 })();
 window.addEventListener("hashchange", () => { if (location.hash === "#admin") { cleanUrl(); if (!REMOTE || authorized) openAdmin(); } });
-
 function checkPin() {
   if ($("#pinInput").value === String(pin())) { $("#pinModal").classList.remove("open"); openSettings(); }
   else { toast(T("wrongPin")); $("#pinInput").value = ""; }
@@ -1052,47 +1176,139 @@ function checkPin() {
 $("#pinOk").onclick = checkPin;
 $("#pinInput").addEventListener("keydown", e => { if (e.key === "Enter") checkPin(); });
 
+const ROLES = ["viewer", "editor", "admin"];
+const roleOptions = sel => `${ROLES.map(r => `<option value="${r}" ${r === sel ? "selected" : ""}>${T("roles")[r]}</option>`).join("")}`;
+function showTab(id) {
+  document.querySelectorAll("#setTabs [data-tab]").forEach(b => b.classList.toggle("on", b.dataset.tab === id));
+  document.querySelectorAll("#setModal .tab").forEach(t => t.hidden = t.id !== id);
+  if (id === "tUsers") loadUsers();
+  if (id === "tLogs") loadLogs();
+}
+$("#setTabs").addEventListener("click", e => { const b = e.target.closest("[data-tab]"); if (b) showTab(b.dataset.tab); });
+
 async function openSettings() {
   const o = opts();
   $("#sKey").value = apiKey();
   $("#sCh").value = channelList().join("\n");
   $("#sShorts").checked = o.hideShorts; $("#sKid").checked = o.kidLock; $("#sTv").checked = o.showTv; $("#sPl").checked = o.showPl; $("#sPin").value = "";
   $("#keyHint").textContent = REMOTE ? T("keyHintRemote") : T("keyHintLocal");
-  $("#pinBox").hidden = REMOTE; $("#remoteBox").hidden = !REMOTE;
-  if (REMOTE) {
-    $("#whoami").textContent = T("signedAs") + myIds(user).join(" / ");
-    try { const a = await db.collection("app").doc("access").get(); $("#sOpen").checked = a.exists ? a.data().open !== false : false; } catch { $("#sOpen").checked = false; }
-    loadList("members"); loadList("admins");
-  }
+  $("#pinBox").hidden = REMOTE;
+  $("#setTabs").hidden = !(REMOTE && amAdmin);           // users & activity: admins only
+  $("#uNewRole").innerHTML = roleOptions("viewer");
+  showTab("tSet");
   openModal("#setModal");
+  if (REMOTE && amAdmin) {
+    $("#whoami").textContent = T("signedAs") + myId;
+    try { const a = await db.collection("app").doc("access").get(); $("#sOpen").checked = a.exists && a.data().open === true; } catch {}
+  }
 }
-async function loadList(col) {
-  const box = $("#" + col + "List"); box.textContent = "...";
+$("#sOpen").onchange = async () => {
+  try { await db.collection("app").doc("access").set({ open: $("#sOpen").checked }); toast(T("userSaved")); }
+  catch (e) { toast(fbErr(e)); $("#sOpen").checked = !$("#sOpen").checked; }
+};
+
+/* users = people added by an admin (users/{id}) + people who signed in (activity/{id}) */
+let usersCache = [];
+async function loadUsers() {
+  const box = $("#usersList"); box.textContent = "...";
   try {
-    const snap = await db.collection(col).get(), mine = myIds(user);
-    box.innerHTML = snap.docs.map(d => `<div class="adm"><span>${esc(d.id)}</span>${col === "admins" && mine.includes(d.id) ? `<small>${T("you")}</small>` : `<button data-col="${col}" data-del="${esc(d.id)}">${T("remove")}</button>`}</div>`).join("") || T("none");
+    const [us, act] = await Promise.all([db.collection("users").get(), db.collection("activity").get()]);
+    const map = new Map();
+    us.docs.forEach(d => map.set(d.id, { id: d.id, rec: d.data() }));
+    act.docs.forEach(d => { const e = map.get(d.id) || { id: d.id }; e.act = d.data(); map.set(d.id, e); });
+    usersCache = [...map.values()].sort((a, b) => tsMs(b.act && b.act.lastSeen) - tsMs(a.act && a.act.lastSeen));
+    renderUsers();
   } catch (e) { box.textContent = fbErr(e); }
 }
+function userStatus(e) {
+  if (!e.rec) return ["notAdded", T("notAdded")];
+  if (e.rec.disabled) return ["off", T("suspended")];
+  const x = tsDate(e.rec.expires);
+  if (x && x < new Date()) return ["off", T("expired")];
+  return ["ok", x ? T("until")(fmtDate(x)) : T("active")];
+}
+function renderUsers() {
+  const f = $("#uFilter").value.trim().toLowerCase();
+  $("#usersList").innerHTML = usersCache.filter(e => !f || e.id.includes(f)).map(e => {
+    const [cls, st] = userStatus(e), role = e.rec ? (e.rec.role || "viewer") : "";
+    const a = e.act || {};
+    const seen = a.lastSeen ? T("lastSeen")(fmtDate(tsDate(a.lastSeen), true)) : T("never");
+    return `<button class="urow" data-uid="${esc(e.id)}">
+      <span class="uid" dir="ltr">${esc(e.id)}${e.id === myId ? " " + T("you") : ""}</span>
+      <span class="tags">${role ? `<span class="tag role-${role}">${T("roles")[role]}</span>` : ""}<span class="tag ${cls}">${st}</span>${e.rec && e.rec.channels && e.rec.channels.length ? `<span class="tag">📺 ${e.rec.channels.length}</span>` : ""}</span>
+      <span class="useen">${seen}${a.logins ? " · " + T("timesN")(a.logins) : ""}${a.lastDevice ? " · " + esc(a.lastDevice) : ""}</span>
+    </button>`;
+  }).join("") || T("none");
+}
+$("#uFilter").addEventListener("input", renderUsers);
+$("#usersList").addEventListener("click", e => { const b = e.target.closest("[data-uid]"); if (b) openUser(b.dataset.uid); });
+$("#uAdd").onclick = async () => {
+  const id = idOf($("#uNew").value); if (!id) return toast(T("badId"));
+  try {
+    await db.collection("users").doc(id).set({ role: $("#uNewRole").value, addedBy: myId, at: FV().serverTimestamp() }, { merge: true });
+    $("#uNew").value = ""; toast(T("added")(id)); loadUsers();
+  } catch (e) { toast(fbErr(e)); }
+};
+
+let editing = null;
+function openUser(id) {
+  const e = usersCache.find(x => x.id === id) || { id };
+  const r = e.rec || {}, a = e.act || {};
+  editing = id;
+  $("#ueTitle").textContent = id;
+  $("#ueStats").innerHTML = [a.firstSeen && T("firstSeen")(fmtDate(tsDate(a.firstSeen), true)), a.lastSeen ? T("lastSeen")(fmtDate(tsDate(a.lastSeen), true)) : T("never"), a.logins && T("timesN")(a.logins), a.lastDevice && T("device")(esc(a.lastDevice))].filter(Boolean).join("<br>");
+  $("#ueRole").innerHTML = roleOptions(r.role || "viewer");
+  $("#ueDisabled").checked = !!r.disabled;
+  const x = tsDate(r.expires);
+  $("#ueExpires").value = x ? new Date(x.getTime() - x.getTimezoneOffset() * 6e4).toISOString().slice(0, 10) : "";
+  const sel = Array.isArray(r.channels) ? r.channels : [];
+  $("#ueChannels").innerHTML = channels.map(c => `<label><input type="checkbox" value="${esc(c.id)}" ${!sel.length || sel.includes(c.id) ? "checked" : ""}><img src="${esc(c.thumb)}" alt="">${esc(c.title)}</label>`).join("");
+  $("#ueDelete").hidden = !e.rec || id === myId;
+  openModal("#userModal");
+}
+$("#ueNoExp").onclick = () => { $("#ueExpires").value = ""; };
+$("#ueSave").onclick = async () => {
+  const role = $("#ueRole").value, disabled = $("#ueDisabled").checked;
+  if (editing === myId && (role !== "admin" || disabled)) return toast(T("selfLock"), 5000);
+  const ticked = [...document.querySelectorAll("#ueChannels input:checked")].map(i => i.value);
+  const exp = $("#ueExpires").value;
+  const data = {
+    role, disabled,
+    expires: exp ? firebase.firestore.Timestamp.fromDate(new Date(exp + "T23:59:59")) : null,
+    channels: ticked.length === channels.length ? [] : ticked,
+    updatedBy: myId, updatedAt: FV().serverTimestamp()
+  };
+  try { await db.collection("users").doc(editing).set(data, { merge: true }); toast(T("userSaved")); $("#userModal").classList.remove("open"); loadUsers(); }
+  catch (e) { toast(fbErr(e)); }
+};
+$("#ueDelete").onclick = async e => {
+  if (!confirmTwice(e.currentTarget)) return;
+  try { await db.collection("users").doc(editing).delete(); toast(T("deleted")(editing)); $("#userModal").classList.remove("open"); loadUsers(); }
+  catch (err) { toast(fbErr(err)); }
+};
 function confirmTwice(btn) {   // tap once → "Sure?", tap again within 3s → do it
   if (btn.dataset.sure) return true;
   btn.dataset.sure = 1; const t = btn.textContent; btn.textContent = T("sure");
   setTimeout(() => { delete btn.dataset.sure; btn.textContent = t; }, 3000);
   return false;
 }
-$("#remoteBox").addEventListener("click", async e => {
-  const b = e.target.closest("[data-del]"); if (!b || !confirmTwice(b)) return;
-  try { await db.collection(b.dataset.col).doc(b.dataset.del).delete(); toast(T("removed")(b.dataset.del)); loadList(b.dataset.col); } catch (err) { toast(fbErr(err)); }
-});
-async function addTo(col, input) {
-  const id = idOf($(input).value);
-  if (!id) return toast(T("badId"));
-  try {
-    await db.collection(col).doc(id).set({ addedBy: myIds(user)[0] || "", at: firebase.firestore.FieldValue.serverTimestamp() });
-    $(input).value = ""; toast(T("added")(id)); loadList(col);
-  } catch (e) { toast(fbErr(e)); }
+
+/* activity: sign-ins and watched videos */
+let logKind = "logins", logCache = [];
+async function loadLogs() {
+  const box = $("#logList"); box.textContent = "...";
+  try { const s = await db.collection(logKind).orderBy("at", "desc").limit(300).get(); logCache = s.docs.map(d => d.data()); renderLogs(); }
+  catch (e) { box.textContent = fbErr(e); }
 }
-$("#mAdd").onclick = () => addTo("members", "#mId");
-$("#aAdd").onclick = () => addTo("admins", "#aId");
+function renderLogs() {
+  const f = $("#logFilter").value.trim().toLowerCase();
+  const rows = logCache.filter(x => !f || (x.id || "").toLowerCase().includes(f) || (x.title || "").toLowerCase().includes(f) || (x.ch || "").toLowerCase().includes(f));
+  $("#logList").innerHTML = rows.map(x => `<div class="lrow"><span class="uid" dir="ltr" data-f="${esc(x.id)}">${esc(x.id)}</span><span class="ltime">${fmtDate(tsDate(x.at), true)}</span><span class="ldet" dir="auto">${logKind === "logins" ? "📱 " + esc(x.device || "") : "▶ " + esc(x.title || x.v) + (x.ch ? " · " + esc(x.ch) : "")}</span></div>`).join("") || T("noLogs");
+}
+$("#logTabs").addEventListener("click", e => { const b = e.target.closest("[data-log]"); if (!b) return; logKind = b.dataset.log; document.querySelectorAll("#logTabs button").forEach(x => x.classList.toggle("on", x === b)); loadLogs(); });
+$("#logFilter").addEventListener("input", renderLogs);
+$("#logList").addEventListener("click", e => { const f = e.target.dataset && e.target.dataset.f; if (f) { $("#logFilter").value = f; renderLogs(); } });
+$("#logReload").onclick = loadLogs;
 
 $("#sSave").onclick = async () => {
   const data = {
@@ -1103,8 +1319,7 @@ $("#sSave").onclick = async () => {
   const b = $("#sSave"); b.disabled = true;
   try {
     if (REMOTE) {
-      await db.collection("app").doc("config").set({ ...data, updatedBy: myIds(user)[0] || "", updatedAt: firebase.firestore.FieldValue.serverTimestamp() });
-      await db.collection("app").doc("access").set({ open: $("#sOpen").checked });
+      await db.collection("app").doc("config").set({ ...data, updatedBy: myId, updatedAt: FV().serverTimestamp() });
       toast(T("saved"));
     } else {
       data.apiKey && data.apiKey !== CONFIG.API_KEY ? LS.set("apiKey", data.apiKey) : LS.del("apiKey");
