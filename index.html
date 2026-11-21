@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#2b2f77">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<title>قنوات الأطفال</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;800&display=swap" rel="stylesheet">
+<script>
+/* =====================================================================
+   الإعدادات — عدّل هنا
+   ===================================================================== */
+const CONFIG = {
+  // مفتاح YouTube Data API v3 (ممكن تحطه هنا أو من شاشة الإعدادات جوه الأبلكيشن)
+  API_KEY: "",
+  // رقم سري لشاشة الإعدادات (غيّره)
+  PIN: "0000",
+  // القنوات المسموحة: لينك قناة (@handle أو channel/UC...) أو لينك فيديو (هتتضاف قناته)
+  CHANNELS: [
+    "https://www.youtube.com/@AnashedAlRawda",
+    "https://www.youtube.com/@learn2kids",
+    "https://www.youtube.com/@ahlansimsim",
+    "https://www.youtube.com/@MYBABYGH",
+    "https://www.youtube.com/watch?v=NEcug4krSAo",
+    "https://www.youtube.com/@LittleFoxKids",
+    "https://www.youtube.com/watch?v=6lQb75KP-V8",
+    "https://www.youtube.com/channel/UCtlcIZVBdFPSAtCoNZsTusg",
+    "https://www.youtube.com/@LearnwithTamer",
+    "https://www.youtube.com/@DawoodKidsTV"
+  ],
+  REFRESH_MINUTES: 30,   // كل قد إيه يدوّر على فيديوهات جديدة
+  NEW_DAYS: 3            // الفيديو يتعلّم "جديد" لو نازل من أقل من كده (أول مرة)
+};
+</script>
+<style>
+:root{--bg:#f3f5ff;--card:#fff;--ink:#1d2140;--muted:#6b7090;--brand:#2b2f77;--accent:#ff5a5f;--yellow:#ffc93c;--radius:18px}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;background:var(--bg);color:var(--ink);font-family:"Cairo",system-ui,-apple-system,"Segoe UI",Tahoma,sans-serif}
+button{font-family:inherit;cursor:pointer}
+header{position:sticky;top:0;z-index:20;background:var(--brand);color:#fff;padding:calc(env(safe-area-inset-top) + 10px) 14px 10px;display:flex;align-items:center;gap:10px;box-shadow:0 3px 12px rgba(0,0,0,.15)}
+header h1{font-size:20px;margin:0;flex:1;font-weight:800;display:flex;align-items:center;gap:8px}
+header h1 .logo{width:32px;height:32px;border-radius:9px;background:var(--yellow);display:grid;place-items:center;color:var(--brand);font-size:16px}
+.icon-btn{background:rgba(255,255,255,.15);border:0;color:#fff;width:42px;height:42px;border-radius:12px;font-size:20px;display:grid;place-items:center}
+.icon-btn:active{transform:scale(.93)}
+.icon-btn.spin span{display:inline-block;animation:spin 1s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+#search{width:100%;max-width:260px;border:0;border-radius:12px;padding:9px 12px;font-family:inherit;font-size:15px}
+@media(max-width:560px){#search{display:none}#search.show{display:block;position:absolute;top:100%;left:8px;right:8px;max-width:none;margin-top:6px;box-shadow:0 4px 14px rgba(0,0,0,.2)}}
+@media(min-width:561px){#searchToggle{display:none}}
+#channels{display:flex;align-items:flex-start;gap:12px;overflow-x:auto;padding:14px;scrollbar-width:none}
+#channels::-webkit-scrollbar{display:none}
+.ch{flex:0 0 auto;width:84px;text-align:center;background:none;border:0;padding:0;color:var(--ink)}
+.ch .av{position:relative;width:72px;height:72px;margin:0 auto;border-radius:50%;background:#dde1ff center/cover;border:4px solid transparent;box-shadow:0 3px 10px rgba(0,0,0,.12);display:grid;place-items:center;font-size:28px}
+.ch.active .av{border-color:var(--accent)}
+.ch .nm{font-size:12px;font-weight:700;margin-top:6px;line-height:1.25;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.badge{position:absolute;top:-4px;left:-4px;background:var(--accent);color:#fff;font-size:12px;font-weight:800;min-width:24px;height:24px;border-radius:12px;display:grid;place-items:center;padding:0 6px;border:2px solid #fff}
+#title{padding:0 16px;margin:4px 0 10px;font-size:18px;font-weight:800}
+#grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px;padding:0 14px 24px}
+@media(max-width:560px){#grid{grid-template-columns:1fr 1fr;gap:10px;padding:0 10px 20px}}
+@media(max-width:360px){#grid{grid-template-columns:1fr}}
+.v{background:var(--card);border-radius:var(--radius);overflow:hidden;box-shadow:0 3px 12px rgba(30,40,120,.08);border:0;padding:0;text-align:right;color:var(--ink);display:flex;flex-direction:column}
+.v:active{transform:scale(.97)}
+.v .th{position:relative;aspect-ratio:16/9;background:#ccd center/cover}
+.v .dur{position:absolute;bottom:6px;left:6px;background:rgba(0,0,0,.78);color:#fff;font-size:12px;padding:1px 6px;border-radius:6px;direction:ltr}
+.v .new{position:absolute;top:6px;right:6px;background:var(--accent);color:#fff;font-size:12px;font-weight:800;padding:2px 8px;border-radius:8px}
+.v .watched{position:absolute;bottom:0;right:0;left:0;height:4px;background:var(--accent)}
+.v .meta{padding:8px 10px 10px}
+.v .t{font-size:14px;font-weight:700;line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.v .c{font-size:12px;color:var(--muted);margin-top:4px}
+.more{display:block;margin:0 auto 30px;background:var(--brand);color:#fff;border:0;border-radius:14px;padding:12px 26px;font-size:16px;font-weight:700}
+.msg{margin:30px 16px;padding:22px;background:#fff;border-radius:var(--radius);text-align:center;line-height:1.8}
+.msg b{color:var(--brand)}
+.skel{background:linear-gradient(90deg,#e6e8f5 25%,#f2f3fb 50%,#e6e8f5 75%);background-size:200% 100%;animation:sk 1.2s infinite}
+@keyframes sk{to{background-position:-200% 0}}
+
+/* Player */
+#player{position:fixed;inset:0;z-index:50;background:#000;display:none;flex-direction:column}
+#player.open{display:flex}
+#pTop{display:flex;align-items:center;gap:10px;padding:calc(env(safe-area-inset-top) + 8px) 10px 8px;color:#fff}
+#pTop .t{flex:1;font-weight:700;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#stage{position:relative;flex:1;display:flex;align-items:center;justify-content:center;min-height:0}
+#frameBox{position:relative;width:100%;max-height:100%;aspect-ratio:16/9}
+#frameBox iframe,#ytp{position:absolute;inset:0;width:100%;height:100%;border:0}
+#shield{position:absolute;top:0;left:0;right:0;height:16%;z-index:3}
+#pErr{position:absolute;inset:0;display:none;align-items:center;justify-content:center;flex-direction:column;gap:14px;color:#fff;text-align:center;padding:20px;background:#111;z-index:4}
+#pErr.show{display:flex}
+#bar{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:8px;padding:10px 10px calc(env(safe-area-inset-bottom) + 12px);background:#111;color:#fff}
+.pb{background:#2a2a35;color:#fff;border:0;border-radius:12px;min-width:46px;height:46px;font-size:20px;padding:0 12px;display:inline-flex;align-items:center;justify-content:center;gap:6px}
+.pb.small{font-size:14px;font-weight:700;min-width:44px;height:38px}
+.pb.on{background:var(--accent)}
+.pb.cast{background:var(--yellow);color:#1d2140;font-size:15px;font-weight:800}
+.grp{display:flex;gap:6px;align-items:center;background:#1b1b24;border-radius:14px;padding:4px}
+.grp label{font-size:12px;color:#aab;padding:0 6px}
+#vol{width:110px;accent-color:var(--accent)}
+#player:fullscreen #pTop,#player:fullscreen #bar{display:none}
+#player:fullscreen #frameBox{height:100%;width:auto;max-width:100%}
+#fsExit{position:absolute;top:12px;right:12px;z-index:6;display:none;opacity:.55}
+#player:fullscreen #fsExit{display:inline-flex}
+
+/* Modal */
+.modal{position:fixed;inset:0;z-index:80;background:rgba(10,12,40,.55);display:none;align-items:center;justify-content:center;padding:16px}
+.modal.open{display:flex}
+.sheet{background:#fff;border-radius:22px;width:100%;max-width:560px;max-height:92vh;overflow:auto;padding:20px}
+.sheet h2{margin:0 0 12px;font-size:20px}
+.sheet label{display:block;font-weight:700;margin:14px 0 6px}
+.sheet input[type=text],.sheet input[type=password],.sheet textarea{width:100%;border:2px solid #dfe2f5;border-radius:12px;padding:10px;font-family:inherit;font-size:15px;direction:ltr;text-align:left}
+.sheet textarea{min-height:200px;font-size:13px}
+.sheet .row{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}
+.btn{border:0;border-radius:12px;padding:11px 18px;font-size:15px;font-weight:700;background:var(--brand);color:#fff}
+.btn.ghost{background:#eef0ff;color:var(--brand)}
+.btn.red{background:#ffe5e6;color:#c22}
+.hint{font-size:12.5px;color:var(--muted);line-height:1.7}
+.check{display:flex;align-items:center;gap:8px;font-weight:700;margin-top:14px}
+.check input{width:20px;height:20px}
+.pin{display:flex;gap:10px;justify-content:center;margin:14px 0}
+.pin input{width:200px;text-align:center;font-size:26px;letter-spacing:10px;border:2px solid #dfe2f5;border-radius:12px;padding:8px}
+#toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#1d2140;color:#fff;padding:10px 18px;border-radius:12px;z-index:99;display:none;font-size:14px;max-width:90vw;text-align:center}
+</style>
+</head>
+<body>
+<header>
+  <h1><span class="logo">▶</span><span>قنوات الأطفال</span></h1>
+  <input id="search" type="search" placeholder="بحث في الفيديوهات...">
+  <button class="icon-btn" id="searchToggle" title="بحث">🔍</button>
+  <button class="icon-btn" id="refreshBtn" title="تحديث"><span>⟳</span></button>
+  <button class="icon-btn" id="settingsBtn" title="الإعدادات">🔒</button>
+</header>
+
+<nav id="channels"></nav>
+<div id="title"></div>
+<main id="grid"></main>
+<div id="moreBox"></div>
+
+<!-- Player -->
+<section id="player" aria-hidden="true">
+  <div id="pTop">
+    <button class="pb" id="pClose" title="رجوع">✕</button>
+    <div class="t" id="pTitle"></div>
+  </div>
+  <div id="stage">
+    <div id="frameBox">
+      <div id="ytp"></div>
+      <div id="shield" title=""></div>
+      <div id="pErr">
+        <div id="pErrMsg"></div>
+        <div style="display:flex;gap:10px">
+          <button class="pb small" id="pErrNext">الفيديو اللي بعده ◀</button>
+        </div>
+      </div>
+    </div>
+    <button class="pb" id="fsExit" title="خروج من ملء الشاشة">⤡</button>
+  </div>
+  <div id="bar">
+    <div class="grp" dir="ltr">
+      <button class="pb" id="pPrev" title="السابق">⏮</button>
+      <button class="pb" id="pPlay" title="تشغيل/إيقاف">⏸</button>
+      <button class="pb" id="pNext" title="التالي">⏭</button>
+    </div>
+    <div class="grp" id="speeds"><label>السرعة</label></div>
+    <div class="grp">
+      <button class="pb small" id="pMute" title="كتم">🔊</button>
+      <input type="range" dir="ltr" id="vol" min="0" max="100" value="100" title="الصوت">
+    </div>
+    <button class="pb" id="pFs" title="ملء الشاشة">⛶</button>
+    <button class="pb cast" id="pCast" title="تشغيل على الشاشة">📺 على الشاشة</button>
+  </div>
+</section>
+
+<!-- PIN -->
+<div class="modal" id="pinModal">
+  <div class="sheet" style="max-width:360px;text-align:center">
+    <h2>للكبار بس 🔒</h2>
+    <div class="hint">اكتب الرقم السري</div>
+    <div class="pin"><input id="pinInput" type="password" inputmode="numeric" maxlength="8" autocomplete="off"></div>
+    <div class="row" style="justify-content:center">
+      <button class="btn" id="pinOk">دخول</button>
+      <button class="btn ghost" data-close>إلغاء</button>
+    </div>
+  </div>
+</div>
+
+<!-- Settings -->
+<div class="modal" id="setModal">
+  <div class="sheet">
+    <h2>الإعدادات</h2>
+    <label for="sKey">مفتاح YouTube API</label>
+    <input id="sKey" type="text" placeholder="AIza..." autocomplete="off">
+    <div class="hint">بيتحفظ على الجهاز ده بس. لو حطيته في الملف (CONFIG.API_KEY) هيشتغل على كل الأجهزة.</div>
+    <label for="sCh">القنوات المسموحة (لينك في كل سطر)</label>
+    <textarea id="sCh" spellcheck="false"></textarea>
+    <div class="hint">ينفع: https://www.youtube.com/@name — أو channel/UC... — أو لينك فيديو (هتتضاف قناته).</div>
+    <label class="check"><input type="checkbox" id="sShorts"> إخفاء الـ Shorts (الفيديوهات أقل من دقيقة)</label>
+    <label class="check"><input type="checkbox" id="sShield"> قفل روابط يوتيوب جوه المشغّل (عشان الطفل ميخرجش لليوتيوب)</label>
+    <label for="sPin">رقم سري جديد (اختياري)</label>
+    <input id="sPin" type="password" inputmode="numeric" maxlength="8" placeholder="سيبه فاضي لو مش عاوز تغيّره">
+    <div class="row">
+      <button class="btn" id="sSave">حفظ</button>
+      <button class="btn ghost" data-close>إلغاء</button>
+      <button class="btn ghost" id="sDefaults">رجّع القنوات الافتراضية</button>
+      <button class="btn red" id="sClear">مسح الكاش</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+(() => {
+"use strict";
+/* ---------- storage ---------- */
+const LS = {
+  get(k, d) { try { const v = localStorage.getItem("kt_" + k); return v == null ? d : JSON.parse(v); } catch { return d; } },
+  set(k, v) { try { localStorage.setItem("kt_" + k, JSON.stringify(v)); } catch {} },
+  del(k) { try { localStorage.removeItem("kt_" + k); } catch {} }
+};
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const toast = (m, ms = 3000) => { const t = $("#toast"); t.textContent = m; t.style.display = "block"; clearTimeout(toast.h); toast.h = setTimeout(() => t.style.display = "none", ms); };
+
+const apiKey = () => LS.get("apiKey", "") || CONFIG.API_KEY;
+const channelList = () => LS.get("channels", null) || CONFIG.CHANNELS;
+const pin = () => LS.get("pin", "") || CONFIG.PIN;
+const opts = () => Object.assign({ hideShorts: false, shield: true }, LS.get("opts", {}));
+
+/* ---------- state ---------- */
+let channels = LS.get("chInfo", []);          // [{id,title,thumb,uploads}]
+let vids = LS.get("vids", {});                 // {chId:{items:[...], next}}
+let lastFetch = LS.get("lastFetch", 0);
+const firstSeenDefault = Date.now() - CONFIG.NEW_DAYS * 864e5;
+let seen = LS.get("seen", {});                 // {chId: ts}
+let watched = new Set(LS.get("watched", []));
+let current = "all";                           // "all" | chId
+let viewSeen = {};                             // seen values captured when a view opened
+let query = "";
+let busy = false;
+let lastError = "";
+
+/* ---------- YouTube Data API ---------- */
+async function api(path, params) {
+  const key = apiKey();
+  if (!key) throw new Error("NO_KEY");
+  const url = "https://www.googleapis.com/youtube/v3/" + path + "?" + new URLSearchParams({ ...params, key });
+  const r = await fetch(url);
+  const j = await r.json().catch(() => ({}));
+  if (!r.ok) throw new Error((j.error && j.error.message) || ("HTTP " + r.status));
+  return j;
+}
+function parseEntry(s) {
+  s = String(s).trim(); if (!s) return null;
+  let m;
+  if ((m = s.match(/(?:[?&]v=|youtu\.be\/|\/shorts\/|\/embed\/|\/live\/)([\w-]{11})/))) return { type: "video", id: m[1] };
+  if ((m = s.match(/(UC[\w-]{22})/))) return { type: "id", id: m[1] };
+  if ((m = s.match(/@([^\/?#\s]+)/))) return { type: "handle", id: "@" + decodeURIComponent(m[1]) };
+  return null;
+}
+const chunk = (a, n) => { const o = []; for (let i = 0; i < a.length; i += n) o.push(a.slice(i, i + n)); return o; };
+
+async function resolveChannelIds(list) {
+  const cache = LS.get("resolved", {});
+  const ids = [], vidIds = [];
+  const unresolved = [];
+  for (const raw of list) {
+    const e = parseEntry(raw);
+    if (!e) { unresolved.push(raw); continue; }
+    const k = e.type + ":" + e.id;
+    if (cache[k]) { ids.push(cache[k]); continue; }
+    if (e.type === "id") { ids.push(e.id); cache[k] = e.id; }
+    else if (e.type === "video") vidIds.push(e.id);
+    else {
+      try {
+        const j = await api("channels", { part: "id", forHandle: e.id });
+        if (j.items && j.items[0]) { cache[k] = j.items[0].id; ids.push(j.items[0].id); }
+        else unresolved.push(raw);
+      } catch (err) { if (err.message === "NO_KEY") throw err; unresolved.push(raw); }
+    }
+  }
+  for (const part of chunk(vidIds, 50)) {
+    const j = await api("videos", { part: "snippet", id: part.join(",") });
+    for (const it of j.items || []) { cache["video:" + it.id] = it.snippet.channelId; ids.push(it.snippet.channelId); }
+  }
+  LS.set("resolved", cache);
+  if (unresolved.length) toast("مقدرتش ألاقي: " + unresolved.join(" ، "), 6000);
+  return [...new Set(ids)];
+}
+
+async function loadChannelInfo(ids) {
+  const out = [];
+  for (const part of chunk(ids, 50)) {
+    const j = await api("channels", { part: "snippet,contentDetails", id: part.join(",") });
+    for (const it of j.items || []) {
+      const th = it.snippet.thumbnails || {};
+      out.push({ id: it.id, title: it.snippet.title, thumb: (th.medium || th.default || {}).url || "", uploads: it.contentDetails.relatedPlaylists.uploads });
+    }
+  }
+  // keep the order the parent wrote them in
+  out.sort((a, b) => ids.indexOf(a.id) - ids.indexOf(b.id));
+  return out;
+}
+
+function isoDur(s) {
+  const m = /P(?:(\d+)D)?T?(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?/.exec(s || "") || [];
+  return (+m[1] || 0) * 86400 + (+m[2] || 0) * 3600 + (+m[3] || 0) * 60 + (+m[4] || 0);
+}
+async function fetchUploads(ch, pageToken) {
+  const p = { part: "contentDetails", playlistId: ch.uploads, maxResults: 50 };
+  if (pageToken) p.pageToken = pageToken;
+  const pl = await api("playlistItems", p);
+  const ids = (pl.items || []).map(i => i.contentDetails.videoId);
+  let items = [];
+  if (ids.length) {
+    const d = await api("videos", { part: "snippet,contentDetails,status", id: ids.join(",") });
+    items = (d.items || [])
+      .filter(v => v.status && v.status.embeddable !== false && v.status.privacyStatus !== "private" && (v.snippet.liveBroadcastContent || "none") === "none")
+      .map(v => {
+        const th = v.snippet.thumbnails || {};
+        return { id: v.id, ch: ch.id, title: v.snippet.title, thumb: (th.high || th.medium || th.default || {}).url || "", at: Date.parse(v.snippet.publishedAt), dur: isoDur(v.contentDetails.duration) };
+      });
+  }
+  return { items, next: pl.nextPageToken || null };
+}
+
+async function refresh(force) {
+  if (busy) return;
+  if (!apiKey()) { render(); return; }
+  if (!force && Date.now() - lastFetch < CONFIG.REFRESH_MINUTES * 60e3 && channels.length) return;
+  busy = true; $("#refreshBtn").classList.add("spin");
+  try {
+    const ids = await resolveChannelIds(channelList());
+    channels = await loadChannelInfo(ids);
+    LS.set("chInfo", channels);
+    const results = await Promise.allSettled(channels.map(ch => fetchUploads(ch)));
+    let fresh = 0;
+    results.forEach((r, i) => {
+      const ch = channels[i];
+      if (r.status !== "fulfilled") return;
+      const old = vids[ch.id] || { items: [], next: null };
+      const known = new Set(old.items.map(v => v.id));
+      fresh += r.value.items.filter(v => !known.has(v.id)).length;
+      const map = new Map(); [...r.value.items, ...old.items].forEach(v => map.set(v.id, v));
+      const merged = [...map.values()].sort((a, b) => b.at - a.at);
+      vids[ch.id] = { items: merged, next: old.items.length > r.value.items.length ? old.next : r.value.next };
+    });
+    // drop removed channels
+    const keep = new Set(channels.map(c => c.id));
+    Object.keys(vids).forEach(k => { if (!keep.has(k)) delete vids[k]; });
+    lastFetch = Date.now();
+    saveVids(); LS.set("lastFetch", lastFetch);
+    if (force) toast(fresh && lastFetchHadData ? `فيه ${fresh} فيديو جديد 🎉` : "تمام، كله محدّث ✔");
+    lastFetchHadData = true;
+    lastError = "";
+  } catch (e) {
+    lastError = e.message;
+    toast(e.message === "NO_KEY" ? "محتاج مفتاح API من الإعدادات" : "حصلت مشكلة: " + e.message, 6000);
+  } finally {
+    busy = false; $("#refreshBtn").classList.remove("spin"); render();
+  }
+}
+let lastFetchHadData = !!lastFetch;
+function saveVids() {
+  // cap stored items so localStorage doesn't overflow
+  const slim = {}; for (const k in vids) slim[k] = { items: vids[k].items.slice(0, 300), next: vids[k].next };
+  LS.set("vids", slim);
+}
+
+async function loadMore() {
+  const ch = channels.find(c => c.id === current); const st = vids[current];
+  if (!ch || !st || !st.next) return;
+  const btn = $("#moreBtn"); if (btn) { btn.disabled = true; btn.textContent = "بيحمّل..."; }
+  try {
+    const r = await fetchUploads(ch, st.next);
+    const map = new Map(); [...st.items, ...r.items].forEach(v => map.set(v.id, v));
+    vids[current] = { items: [...map.values()].sort((a, b) => b.at - a.at), next: r.next };
+    saveVids();
+  } catch (e) { toast("مشكلة في التحميل: " + e.message); }
+  render();
+}
+
+/* ---------- views ---------- */
+const seenOf = id => (seen[id] ?? firstSeenDefault);
+const isNew = v => v.at > (viewSeen[v.ch] ?? seenOf(v.ch)) && !watched.has(v.id);
+const passes = v => (!opts().hideShorts || v.dur > 60) && (!query || v.title.toLowerCase().includes(query));
+function newCount(chId) { return ((vids[chId] || {}).items || []).filter(v => v.at > seenOf(chId) && !watched.has(v.id) && passes(v)).length; }
+function fmtDur(s) { if (!s) return ""; const h = Math.floor(s / 3600), m = Math.floor(s % 3600 / 60), x = s % 60; return (h ? h + ":" + String(m).padStart(2, "0") : m) + ":" + String(x).padStart(2, "0"); }
+function ago(t) {
+  const d = (Date.now() - t) / 1000;
+  if (d < 3600) return "من " + Math.max(1, Math.round(d / 60)) + " دقيقة";
+  if (d < 86400) return "من " + Math.round(d / 3600) + " ساعة";
+  if (d < 86400 * 30) return "من " + Math.round(d / 86400) + " يوم";
+  if (d < 86400 * 365) return "من " + Math.round(d / 86400 / 30) + " شهر";
+  return "من " + Math.round(d / 86400 / 365) + " سنة";
+}
+let currentList = [];
+function listFor(view) {
+  if (view === "all") {
+    let all = []; for (const k in vids) all = all.concat(vids[k].items);
+    return all.filter(passes).sort((a, b) => b.at - a.at).slice(0, 200);
+  }
+  return ((vids[view] || {}).items || []).filter(passes);
+}
+
+function render() {
+  const nav = $("#channels");
+  const totalNew = channels.reduce((s, c) => s + newCount(c.id), 0);
+  nav.innerHTML =
+    `<button class="ch ${current === "all" ? "active" : ""}" data-ch="all"><div class="av" style="background:var(--yellow)">⭐${totalNew ? `<span class="badge">${totalNew}</span>` : ""}</div><div class="nm">الكل</div></button>` +
+    channels.map(c => { const n = newCount(c.id); return `<button class="ch ${current === c.id ? "active" : ""}" data-ch="${esc(c.id)}"><div class="av" style="background-image:url('${esc(c.thumb)}')">${n ? `<span class="badge">${n}</span>` : ""}</div><div class="nm">${esc(c.title)}</div></button>`; }).join("");
+
+  const grid = $("#grid"), more = $("#moreBox");
+  more.innerHTML = "";
+  if (!apiKey()) {
+    $("#title").textContent = "";
+    grid.innerHTML = `<div class="msg" style="grid-column:1/-1">أهلاً 👋<br>عشان الأبلكيشن يجيب الفيديوهات محتاج <b>مفتاح YouTube API</b>.<br>دوس على 🔒 فوق واكتب الرقم السري (الافتراضي <b>${esc(CONFIG.PIN)}</b>) وحط المفتاح.</div>`;
+    return;
+  }
+  const ch = channels.find(c => c.id === current);
+  $("#title").textContent = current === "all" ? (query ? "نتائج البحث" : "أحدث الفيديوهات") : (ch ? ch.title : "");
+  currentList = listFor(current);
+  if (!currentList.length) {
+    if (!busy && lastError) {
+      const bad = /key not valid|API_KEY_INVALID/i.test(lastError), ref = /referer|referrer/i.test(lastError);
+      grid.innerHTML = `<div class="msg" style="grid-column:1/-1"><b>مقدرتش أجيب الفيديوهات</b><br>${bad ? "المفتاح مش صحيح. انسخه تاني من Google Cloud (Credentials ← SHOW KEY) وحطه من 🔒." : ref ? "المفتاح مقفول على موقع تاني. راجع Application restrictions في Google Cloud." : esc(lastError)}<br><span class="hint" dir="ltr">${esc(lastError)}</span></div>`;
+      return;
+    }
+    grid.innerHTML = busy || !lastFetch
+      ? Array.from({ length: 8 }, () => `<div class="v"><div class="th skel"></div><div class="meta"><div class="skel" style="height:14px;border-radius:6px"></div><div class="skel" style="height:10px;width:50%;margin-top:8px;border-radius:6px"></div></div></div>`).join("")
+      : `<div class="msg" style="grid-column:1/-1">مفيش فيديوهات هنا${query ? " بالكلمة دي" : ""}.</div>`;
+    return;
+  }
+  const chName = id => (channels.find(c => c.id === id) || {}).title || "";
+  grid.innerHTML = currentList.map((v, i) => `
+    <button class="v" data-i="${i}">
+      <div class="th" style="background-image:url('${esc(v.thumb)}')">
+        ${isNew(v) ? '<span class="new">جديد</span>' : ""}
+        ${v.dur ? `<span class="dur">${fmtDur(v.dur)}</span>` : ""}
+        ${watched.has(v.id) ? '<span class="watched"></span>' : ""}
+      </div>
+      <div class="meta"><div class="t">${esc(v.title)}</div><div class="c">${current === "all" ? esc(chName(v.ch)) + " · " : ""}${ago(v.at)}</div></div>
+    </button>`).join("");
+  if (current !== "all" && vids[current] && vids[current].next && !query)
+    more.innerHTML = `<button class="more" id="moreBtn">فيديوهات أقدم</button>`;
+}
+
+function openView(id) {
+  // when leaving a channel, mark it as seen
+  if (current !== "all" && current !== id) { seen[current] = Date.now(); LS.set("seen", seen); }
+  current = id;
+  if (id !== "all") { viewSeen[id] = seenOf(id); seen[id] = Date.now(); LS.set("seen", seen); }
+  render(); window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+$("#channels").addEventListener("click", e => { const b = e.target.closest(".ch"); if (b) openView(b.dataset.ch); });
+$("#grid").addEventListener("click", e => { const b = e.target.closest(".v"); if (b) playAt(currentList, +b.dataset.i); });
+$("#moreBox").addEventListener("click", e => { if (e.target.id === "moreBtn") loadMore(); });
+$("#refreshBtn").onclick = () => refresh(true);
+$("#searchToggle").onclick = () => { const s = $("#search"); s.classList.toggle("show"); if (s.classList.contains("show")) s.focus(); };
+$("#search").addEventListener("input", e => { query = e.target.value.trim().toLowerCase(); if (query && current !== "all") current = "all"; render(); });
+
+/* ---------- Player ---------- */
+let yt = null, ytReady = false, pendingId = null, playlist = [], idx = 0;
+const rate = () => LS.get("rate", 1);
+const SPEEDS = [0.5, 0.75, 1, 1.25, 1.5, 2];
+$("#speeds").insertAdjacentHTML("beforeend", SPEEDS.map(s => `<button class="pb small" data-rate="${s}">${s}x</button>`).join(""));
+function paintSpeeds() { document.querySelectorAll("[data-rate]").forEach(b => b.classList.toggle("on", +b.dataset.rate === rate())); }
+paintSpeeds();
+
+function loadYT() {
+  if (window.YT && window.YT.Player) return onYTApi();
+  const s = document.createElement("script"); s.src = "https://www.youtube.com/iframe_api"; document.head.appendChild(s);
+}
+window.onYouTubeIframeAPIReady = onYTApi;
+function onYTApi() {
+  if (yt) return;
+  yt = new YT.Player("ytp", {
+    width: "100%", height: "100%",
+    host: "https://www.youtube.com",
+    playerVars: { rel: 0, playsinline: 1, modestbranding: 1, iv_load_policy: 3, fs: 1, autoplay: 1, origin: location.origin },
+    events: {
+      onReady: () => { ytReady = true; yt.setVolume(LS.get("vol", 100)); if (LS.get("muted", false)) yt.mute(); paintVol(); if (pendingId) { yt.loadVideoById(pendingId); pendingId = null; } },
+      onStateChange: e => {
+        if (e.data === YT.PlayerState.PLAYING) { try { yt.setPlaybackRate(rate()); } catch {} $("#pPlay").textContent = "⏸"; }
+        else if (e.data === YT.PlayerState.PAUSED) $("#pPlay").textContent = "▶";
+        else if (e.data === YT.PlayerState.ENDED) next();
+      },
+      onError: e => {
+        const m = { 2: "لينك الفيديو غلط", 5: "المتصفح مش قادر يشغّل الفيديو ده", 100: "الفيديو اتشال أو بقى خاص", 101: "صاحب القناة مانع تشغيل الفيديو ده برّه يوتيوب", 150: "صاحب القناة مانع تشغيل الفيديو ده برّه يوتيوب", 153: "لازم الأبلكيشن يتفتح من لينك (مش من ملف على الجهاز)" }[e.data] || ("خطأ " + e.data);
+        $("#pErrMsg").textContent = m; $("#pErr").classList.add("show");
+      }
+    }
+  });
+}
+function playAt(list, i) {
+  playlist = list.slice(); idx = i;
+  $("#player").classList.add("open"); $("#player").setAttribute("aria-hidden", "false");
+  if (!history.state || !history.state.player) history.pushState({ player: 1 }, "");
+  document.body.style.overflow = "hidden";
+  $("#shield").style.display = opts().shield ? "block" : "none";
+  start();
+}
+function start() {
+  const v = playlist[idx]; if (!v) return;
+  $("#pTitle").textContent = v.title; $("#pErr").classList.remove("show");
+  watched.add(v.id); LS.set("watched", [...watched].slice(-3000));
+  if (ytReady) yt.loadVideoById(v.id); else { pendingId = v.id; loadYT(); }
+}
+function next() { if (idx < playlist.length - 1) { idx++; start(); } else closePlayer(true); }
+function prev() { if (idx > 0) { idx--; start(); } }
+function closePlayer(fromCode) {
+  if (!$("#player").classList.contains("open")) return;
+  try { yt && yt.stopVideo(); } catch {}
+  if (document.fullscreenElement) document.exitFullscreen().catch(() => {});
+  $("#player").classList.remove("open"); $("#player").setAttribute("aria-hidden", "true");
+  document.body.style.overflow = "";
+  if (fromCode && history.state && history.state.player) history.back();
+  render();
+}
+window.addEventListener("popstate", () => closePlayer(false));
+$("#pClose").onclick = () => closePlayer(true);
+$("#pNext").onclick = next; $("#pPrev").onclick = prev; $("#pErrNext").onclick = next;
+$("#pPlay").onclick = () => { if (!ytReady) return; const s = yt.getPlayerState(); s === YT.PlayerState.PLAYING ? yt.pauseVideo() : yt.playVideo(); };
+$("#speeds").addEventListener("click", e => { const b = e.target.closest("[data-rate]"); if (!b) return; LS.set("rate", +b.dataset.rate); paintSpeeds(); try { yt && yt.setPlaybackRate(+b.dataset.rate); } catch {} });
+function paintVol() { const m = LS.get("muted", false); $("#pMute").textContent = m ? "🔇" : "🔊"; $("#vol").value = LS.get("vol", 100); }
+$("#vol").addEventListener("input", e => { const v = +e.target.value; LS.set("vol", v); LS.set("muted", false); if (ytReady) { yt.unMute(); yt.setVolume(v); } paintVol(); });
+$("#pMute").onclick = () => { const m = !LS.get("muted", false); LS.set("muted", m); if (ytReady) m ? yt.mute() : yt.unMute(); paintVol(); };
+async function toggleFs() {
+  const el = $("#player");
+  try {
+    if (document.fullscreenElement) await document.exitFullscreen();
+    else if (el.requestFullscreen) { await el.requestFullscreen(); try { await screen.orientation.lock("landscape"); } catch {} }
+    else if (el.webkitRequestFullscreen) el.webkitRequestFullscreen();
+    else toast("استخدم زرار ملء الشاشة اللي جوه الفيديو");
+  } catch { toast("استخدم زرار ملء الشاشة اللي جوه الفيديو"); }
+}
+$("#pFs").onclick = toggleFs; $("#fsExit").onclick = toggleFs;
+
+// Cast: hand the video to the official YouTube app, whose Cast button makes the TV stream it directly
+$("#pCast").onclick = () => {
+  const v = playlist[idx]; if (!v) return;
+  let t = 0; try { t = Math.floor(yt.getCurrentTime() || 0); } catch {}
+  try { yt.pauseVideo(); } catch {}
+  const web = `https://www.youtube.com/watch?v=${v.id}${t ? "&t=" + t + "s" : ""}`;
+  const ua = navigator.userAgent;
+  if (/Android/i.test(ua)) location.href = `intent://www.youtube.com/watch?v=${v.id}${t ? "&t=" + t : ""}#Intent;package=com.google.android.youtube;scheme=https;S.browser_fallback_url=${encodeURIComponent(web)};end`;
+  else window.open(web, "_blank");
+  toast("في يوتيوب دوس على أيقونة الكاست 📺 واختار الشاشة", 6000);
+};
+
+/* ---------- Settings ---------- */
+function openModal(id) { $(id).classList.add("open"); }
+function closeModal(el) { el.closest(".modal").classList.remove("open"); }
+document.querySelectorAll("[data-close]").forEach(b => b.onclick = () => closeModal(b));
+$("#settingsBtn").onclick = () => { $("#pinInput").value = ""; openModal("#pinModal"); setTimeout(() => $("#pinInput").focus(), 50); };
+function checkPin() {
+  if ($("#pinInput").value === String(pin())) {
+    $("#pinModal").classList.remove("open");
+    $("#sKey").value = LS.get("apiKey", "") || CONFIG.API_KEY;
+    $("#sCh").value = channelList().join("\n");
+    $("#sShorts").checked = opts().hideShorts; $("#sShield").checked = opts().shield; $("#sPin").value = "";
+    openModal("#setModal");
+  } else { toast("الرقم غلط"); $("#pinInput").value = ""; }
+}
+$("#pinOk").onclick = checkPin;
+$("#pinInput").addEventListener("keydown", e => { if (e.key === "Enter") checkPin(); });
+$("#sSave").onclick = () => {
+  const key = $("#sKey").value.replace(/[\s"']/g, "");
+  if (key && key !== CONFIG.API_KEY) LS.set("apiKey", key); else if (!key || key === CONFIG.API_KEY) LS.del("apiKey");
+  const list = $("#sCh").value.split(/\n+/).map(s => s.trim()).filter(Boolean);
+  const same = list.join("\n") === CONFIG.CHANNELS.join("\n");
+  same ? LS.del("channels") : LS.set("channels", list);
+  LS.set("opts", { hideShorts: $("#sShorts").checked, shield: $("#sShield").checked });
+  const np = $("#sPin").value.trim(); if (np) LS.set("pin", np);
+  $("#setModal").classList.remove("open");
+  current = "all"; refresh(true);
+};
+$("#sDefaults").onclick = () => { $("#sCh").value = CONFIG.CHANNELS.join("\n"); };
+$("#sClear").onclick = () => { ["vids", "chInfo", "lastFetch", "resolved"].forEach(LS.del); vids = {}; channels = []; lastFetch = 0; toast("اتمسح الكاش"); };
+
+/* ---------- boot ---------- */
+render();
+refresh(false);
+setInterval(() => { if (document.visibilityState === "visible") refresh(false); }, 5 * 60e3);
+document.addEventListener("visibilitychange", () => { if (document.visibilityState === "visible") refresh(false); });
+if ("serviceWorker" in navigator && location.protocol.startsWith("http")) navigator.serviceWorker.register("sw.js").catch(() => {});
+})();
+</script>
+</body>
+</html>
