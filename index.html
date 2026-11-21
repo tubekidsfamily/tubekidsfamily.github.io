@@ -238,7 +238,7 @@ header h1 .logo{width:32px;height:32px;border-radius:9px;background:var(--yellow
       <p data-i18n="loginIntro"></p>
       <input id="gId" type="text" inputmode="email" autocomplete="username" data-i18n-ph="idPh">
       <button class="btn big" id="gSend" data-i18n="continue"></button>
-      <button class="linkbtn" id="gAdmin" data-i18n="loginAdmin"></button>
+      <button class="btn big ghost" id="gAdmin" data-i18n="loginAdminBtn"></button>
     </div>
     <div data-step="code" hidden>
       <p id="gCodeMsg"></p>
@@ -269,6 +269,7 @@ header h1 .logo{width:32px;height:32px;border-radius:9px;background:var(--yellow
     <div data-step="denied" hidden>
       <p id="gDeniedMsg"></p>
       <button class="btn big ghost" id="gRetry" data-i18n="retry"></button>
+      <button class="btn big ghost" id="gDeniedAdmin" data-i18n="loginAdminBtn"></button>
       <button class="linkbtn" id="gLogout" data-i18n="logout"></button>
     </div>
     <div data-step="loading" hidden><div class="spinner"></div></div>
@@ -554,7 +555,7 @@ const I18N = {
     save: "حفظ", defaults: "رجّع القنوات الافتراضية", clearCache: "مسح الكاش وتحديث",
     saved: "اتحفظ عند كل اليوزرز ✔", savedLocal: "اتحفظ ✔", cacheCleared: "اتمسح الكاش", removed: e => "اتشال " + e, added: e => "اتضاف " + e + " ✔",
     fbDown: "مقدرتش أوصل لـ Firebase", none: "مفيش",
-    forgot: "نسيت الباسورد", pinShort: "الرقم السري", adminLoginTitle: "دخول الأدمن بالإيميل والباسورد", backToUser: "رجوع لدخول اليوزر", passOptional: "باسورد (اختياري، للأدمن والمحرر)", sendReset: "📧 ابعت لينك تعيين باسورد",
+    loginAdminBtn: "🔑 دخول كأدمن (إيميل وباسورد)", forgot: "نسيت الباسورد", pinShort: "الرقم السري", adminLoginTitle: "دخول الأدمن بالإيميل والباسورد", backToUser: "رجوع لدخول اليوزر", passOptional: "باسورد (اختياري، للأدمن والمحرر)", sendReset: "📧 ابعت لينك تعيين باسورد",
     resetSentTo: e => "اتبعت لينك تعيين الباسورد على " + e, emailOnly: "ده بيشتغل مع الإيميل بس", accountExists: "الحساب ده موجود قبل كده. لو محتاج باسورد ابعتله لينك تعيين باسورد من صفحته.",
     stUsers: "يوزر", stToday: "دخلوا النهارده", stApp: "مثبّتين الأبلكيشن", stViews: "مشاهدات النهارده", installedTag: "📲 مثبّت", installedEvt: "📲 ثبّت الأبلكيشن",
     watchTimer: "⏱ مؤقت المشاهدة", timerIntro: "حدد وقت المشاهدة، ولما يخلص الأبلكيشن بيتقفل لوحده لحد ما حد من الكبار يكتب الرقم السري. الوقت بيتحسب بس والفيديو شغّال.",
@@ -620,7 +621,7 @@ const I18N = {
     save: "Save", defaults: "Reset channels to default", clearCache: "Clear cache & refresh",
     saved: "Saved for every user ✔", savedLocal: "Saved ✔", cacheCleared: "Cache cleared", removed: e => "Removed " + e, added: e => e + " added ✔",
     fbDown: "Couldn't reach Firebase", none: "None",
-    forgot: "Forgot password", pinShort: "PIN", adminLoginTitle: "Admin sign-in with email and password", backToUser: "Back to user sign-in", passOptional: "Password (optional, for admins/editors)", sendReset: "📧 Send password link",
+    loginAdminBtn: "🔑 Sign in as admin (email & password)", forgot: "Forgot password", pinShort: "PIN", adminLoginTitle: "Admin sign-in with email and password", backToUser: "Back to user sign-in", passOptional: "Password (optional, for admins/editors)", sendReset: "📧 Send password link",
     resetSentTo: e => "Password link sent to " + e, emailOnly: "This works with email only", accountExists: "This account already exists. If it needs a password, send a password link from its page.",
     stUsers: "Users", stToday: "Active today", stApp: "Installed the app", stViews: "Views today", installedTag: "📲 Installed", installedEvt: "📲 Installed the app",
     watchTimer: "⏱ Watch timer", timerIntro: "Set the watching time. When it runs out the app locks until a grown-up enters the PIN. Time only counts while a video plays.",
@@ -1279,7 +1280,8 @@ async function signOut(thenAdmin) {
   remoteCfg = null; LS.del("remoteCfg"); $("#gId").value = ""; profile = { name: "", photo: "" }; LS.del("profile"); paintAvatar();
   if (thenAdmin) { adminIntent = true; showGate("admin"); } else toast(T("loggedOut"));
 }
-$("#gLogout").onclick = () => signOut(); $("#accLogout").onclick = () => signOut();
+$("#gLogout").onclick = () => signOut();
+$("#gDeniedAdmin").onclick = () => signOut(true); $("#accLogout").onclick = () => signOut();
 
 /* ---------- account button (👤): who I am, settings, sign in as admin, sign out ---------- */
 /* ---------- profile (👤): name, photo and account info ---------- */
