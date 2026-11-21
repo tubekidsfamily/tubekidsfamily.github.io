@@ -6,7 +6,7 @@
 window.APP_CONFIG = {
   // مفتاح YouTube Data API v3: انسخه من Google Cloud ← Credentials ← SHOW KEY
   // (بعد ما تجهّز Firebase امسحه من هنا وحطه من إعدادات الأدمن، عشان ميبقاش ظاهر للناس)
-  API_KEY: "",
+  API_KEY: "AIzaSyBookLb_X2ALPYj3Ww7DBHl5-smpdnwmgg",
 
   // رقم سري للإعدادات — بيستخدم بس لو FIREBASE فاضي
   PIN: "0000",
