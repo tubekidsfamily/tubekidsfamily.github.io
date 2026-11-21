@@ -19,7 +19,7 @@ window.APP_CONFIG = {
   storageBucket: "tubekidsfamily.firebasestorage.app",
   messagingSenderId: "1048637358439",
   appId: "1:1048637358439:web:0dda0a3cc0462b15906fc2"
-},,
+},
 
   // كود الدولة لأرقام الموبايل اللي بتبدأ بـ 0
   COUNTRY_CODE: "+20",
