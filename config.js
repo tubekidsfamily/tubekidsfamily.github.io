@@ -12,7 +12,14 @@ window.APP_CONFIG = {
   PIN: "1994",
 
   // إعدادات Firebase (تسجيل الدخول + اليوزرز). لو null الأبلكيشن بيفتح لأي حد من غير تسجيل دخول.
-  FIREBASE: null,
+  FIREBASE: {
+  apiKey: "AIzaSyBzsZWmW_n2H0Vi61_x4UyqFGQ-Ix3lLFQ",
+  authDomain: "tubekidsfamily.firebaseapp.com",
+  projectId: "tubekidsfamily",
+  storageBucket: "tubekidsfamily.firebasestorage.app",
+  messagingSenderId: "1048637358439",
+  appId: "1:1048637358439:web:0dda0a3cc0462b15906fc2"
+},,
 
   // كود الدولة لأرقام الموبايل اللي بتبدأ بـ 0
   COUNTRY_CODE: "+20",
