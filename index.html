@@ -324,7 +324,7 @@ header h1 .logo{flex:0 0 auto;width:38px;height:38px;border-radius:11px;box-shad
 .un{display:flex;gap:12px;width:100%;align-items:flex-start;text-align:start;background:none;border:0;color:#fff;padding:7px;border-radius:14px;font-family:inherit}
 .un:hover,.un:focus-visible{background:rgba(255,255,255,.08)}
 .unth{position:relative;flex:0 0 150px;aspect-ratio:16/9;border-radius:12px;background:#222 center/cover;overflow:hidden}
-.unth i{position:absolute;bottom:5px;inset-inline-end:5px;font-style:normal;font-size:11px;font-weight:600;background:rgba(0,0,0,.75);padding:1px 6px;border-radius:6px;direction:ltr}
+.unth i{position:absolute;bottom:5px;inset-inline-end:5px;font-style:normal;color:#fff;font-size:11px;font-weight:600;background:rgba(0,0,0,.75);padding:1px 6px;border-radius:6px;direction:ltr}
 .unm{min-width:0;display:flex;flex-direction:column;gap:4px;padding-top:2px}
 .unm b{font-size:13.5px;font-weight:600;line-height:1.45;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 .unm small{font-size:12px;color:rgba(255,255,255,.55)}
@@ -348,6 +348,44 @@ header h1 .logo{flex:0 0 auto;width:38px;height:38px;border-radius:11px;box-shad
 #player.fs.idle #pTop,#player.fs.idle #bar,#player.land.idle #pTop,#player.land.idle #bar{opacity:0;pointer-events:none}
 #player.fake-fs{z-index:100}
 
+
+/* the watch page follows the app's light look; full screen and sideways phones stay black */
+#player:not(.fs):not(.land){background:var(--bg);background-image:var(--aurora);background-repeat:no-repeat;color:var(--ink)}
+#player:not(.fs):not(.land) #ambient,#player:not(.fs):not(.land)::after{display:none}
+#player:not(.fs):not(.land) #pTop{background:var(--glass);-webkit-backdrop-filter:saturate(180%) blur(18px);backdrop-filter:saturate(180%) blur(18px);border-bottom:1px solid var(--glass-line);margin-bottom:14px}
+#player:not(.fs):not(.land) #pTop .t{opacity:1;color:var(--ink)}
+#player:not(.fs):not(.land) #pClose{background:var(--card);color:var(--ink);border:1px solid var(--line);box-shadow:var(--shadow)}
+#player:not(.fs):not(.land) #stage{box-shadow:0 24px 60px rgba(14,19,48,.22),0 0 0 1px rgba(14,19,48,.05)}
+#player:not(.fs):not(.land) #bar{background:var(--card);border:1px solid var(--line);box-shadow:var(--shadow);-webkit-backdrop-filter:none;backdrop-filter:none}
+#player:not(.fs):not(.land) .seekRow{color:var(--muted)}
+#player:not(.fs):not(.land) #seek::-webkit-slider-runnable-track{background:linear-gradient(90deg,var(--purple),var(--pink)) 0/var(--p) 100% no-repeat,var(--soft2)}
+#player:not(.fs):not(.land) #seek::-moz-range-track{background:var(--soft2)}
+#player:not(.fs):not(.land) #seek::-webkit-slider-thumb{background:#fff;box-shadow:0 0 0 4px rgba(var(--b-rgb),.25),0 2px 6px rgba(14,19,48,.3)}
+#player:not(.fs):not(.land) .pb{background:var(--soft);color:var(--ink);border-color:var(--line)}
+#player:not(.fs):not(.land) .pb:hover{background:var(--soft2)}
+#player:not(.fs):not(.land) #pPrev,#player:not(.fs):not(.land) #pNext,#player:not(.fs):not(.land) #pBack,#player:not(.fs):not(.land) #pFwd{background:transparent;border-color:transparent}
+#player:not(.fs):not(.land) #pPrev:hover,#player:not(.fs):not(.land) #pNext:hover,#player:not(.fs):not(.land) #pBack:hover,#player:not(.fs):not(.land) #pFwd:hover{background:var(--soft)}
+#player:not(.fs):not(.land) .pb.main{background:var(--grad);color:#fff;border:0;box-shadow:0 0 0 6px rgba(var(--b-rgb),.1),0 10px 24px rgba(var(--b-rgb),.4)}
+#player:not(.fs):not(.land) .pb.on{background:var(--ink);color:var(--bg)}
+#player:not(.fs):not(.land) .pb.tv{background:var(--grad);color:#fff;border:0}
+#player:not(.fs):not(.land) .grp{background:var(--soft);border-color:var(--line)}
+#player:not(.fs):not(.land) #pMute{background:transparent}
+#player:not(.fs):not(.land) #vol{accent-color:var(--purple)}
+#player:not(.fs):not(.land) .menu{background:var(--card);border-color:var(--line);color:var(--ink)}
+#player:not(.fs):not(.land) .menu button{color:var(--ink)}
+#player:not(.fs):not(.land) .menu button:hover{background:var(--soft)}
+#player:not(.fs):not(.land) .menu button.sel{color:#fff}
+#player:not(.fs):not(.land) #pMeta{color:var(--muted)}
+#player:not(.fs):not(.land) #pMeta b{color:var(--ink)}
+#player:not(.fs):not(.land) #pMeta img{box-shadow:0 0 0 2px var(--card),0 0 0 3px var(--line)}
+#player:not(.fs):not(.land) #upNext{background:var(--card);border-color:var(--line);box-shadow:var(--shadow);scrollbar-color:var(--line) transparent}
+#player:not(.fs):not(.land) #upNext h3{color:var(--ink)}
+#player:not(.fs):not(.land) .un{color:var(--ink)}
+#player:not(.fs):not(.land) .un:hover,#player:not(.fs):not(.land) .un:focus-visible{background:var(--soft)}
+#player:not(.fs):not(.land) .unm small{color:var(--muted)}
+#player:not(.fs):not(.land) .unth{background-color:var(--soft2)}
+#player:not(.fs):not(.land) :focus-visible{outline-color:var(--purple)!important}
+#player:not(.fs):not(.land) #pBody{scrollbar-color:var(--line) transparent}
 /* ---------- boy / girl picker ---------- */
 .gsheet{max-width:460px;text-align:center}
 .gpick{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:18px}
@@ -560,7 +598,6 @@ header h1 .logo{flex:0 0 auto;width:38px;height:38px;border-radius:11px;box-shad
       <p data-i18n="loginIntroPw"></p>
       <input id="gEmail" type="text" inputmode="email" autocomplete="username" data-i18n-ph="email">
       <input id="gPass" type="password" autocomplete="current-password" data-i18n-ph="password">
-      <label class="gremember"><input type="checkbox" id="gRemember" checked><span data-i18n="remember"></span></label>
       <button class="btn big" id="gLogin" data-i18n="signIn"></button>
       <button class="linkbtn" id="gForgot" data-i18n="forgot"></button>
       <div class="gsep"></div>
@@ -1655,6 +1692,8 @@ function showGate(step, arg) {
 }
 function hideGate() { gateStep = null; $("#gate").hidden = true; }
 
+const markTab = () => { try { sessionStorage.setItem("kt_tab", "1"); } catch {} };
+const tabSigned = () => { try { return sessionStorage.getItem("kt_tab") === "1"; } catch { return false; } };
 async function initFirebase() {
   showGate("loading");
   const base = `https://www.gstatic.com/firebasejs/${FB_V}/`;
@@ -1663,12 +1702,24 @@ async function initFirebase() {
   firebase.initializeApp(CONFIG.FIREBASE);
   db = firebase.firestore(); auth = firebase.auth();
   auth.languageCode = lang;
+  // Where the sign-in is kept:
+  //  · installed app  → on the device until "Sign out" (also after switching accounts)
+  //  · browser tab    → only in this tab: opening the site again (new tab, typed address, shared link) asks to sign in
+  const PS = firebase.auth.Auth && firebase.auth.Auth.Persistence;
+  if (PS && auth.setPersistence) await auth.setPersistence(standalone ? PS.LOCAL : PS.SESSION).catch(() => {});
   if (auth.isSignInWithEmailLink(location.href)) {     // finishing an email-link sign-in that opened this page
     const email = LS.get("emailForSignIn", "");
-    if (email) { try { await auth.signInWithEmailLink(email, location.href); LS.del("emailForSignIn"); } catch (e) { toast(fbErr(e), 6000); } cleanUrl(); }
+    if (email) { try { await auth.signInWithEmailLink(email, location.href); LS.del("emailForSignIn"); markTab(); } catch (e) { toast(fbErr(e), 6000); } cleanUrl(); }
     else { pendingLink = location.href; cleanUrl(); }
   }
-  auth.onAuthStateChanged(onAuth);
+  let firstAuth = true;
+  auth.onAuthStateChanged(u => {
+    const first = firstAuth; firstAuth = false;
+    // a sign-in left over from an older visit in the browser: start clean
+    if (u && first && !standalone && !tabSigned()) { auth.signOut(); return; }
+    if (u) markTab();
+    onAuth(u);
+  });
 }
 async function onAuth(u) {
   user = u; myRec = null; amAdmin = amEditor = false; myChannels = [];
@@ -1770,9 +1821,6 @@ $("#gLogin").onclick = async () => {
   if (!pw) return toast(T("fb")["auth/missing-password"]);
   b.disabled = true;
   try {
-    // unticked "remember me" = the sign-in ends when the browser is closed (for shared or borrowed devices)
-    const PS = firebase.auth.Auth && firebase.auth.Auth.Persistence;
-    if (PS && auth.setPersistence) await auth.setPersistence($("#gRemember").checked ? PS.LOCAL : PS.SESSION).catch(() => {});
     await auth.signInWithEmailAndPassword(email, pw); $("#gPass").value = "";
     adminOkUntil = Date.now() + 15 * 60e3;       // just typed the password: settings open without asking again
   } catch (e) { toast(fbErr(e), 6000); } finally { b.disabled = false; }
@@ -1813,7 +1861,7 @@ $("#gResend").onclick = async () => {
 $("#gEmail2Ok").onclick = async () => {
   const email = idOf($("#gEmail2").value);
   if (!email || !email.includes("@")) return toast(T("badId"));
-  try { await auth.signInWithEmailLink(email, pendingLink); pendingLink = null; LS.del("emailForSignIn"); } catch (e) { toast(fbErr(e), 6000); pendingLink = null; showGate("id"); }
+  try { await auth.signInWithEmailLink(email, pendingLink); markTab(); pendingLink = null; LS.del("emailForSignIn"); } catch (e) { toast(fbErr(e), 6000); pendingLink = null; showGate("id"); }
 };
 document.querySelectorAll("#gate [data-back]").forEach(b => b.onclick = () => { adminIntent = false; showGate("id"); });
 $("#gRetry").onclick = () => onAuth(user);
