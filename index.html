@@ -89,6 +89,7 @@ header h1 .logo{width:32px;height:32px;border-radius:9px;background:var(--yellow
 .glang{position:absolute;top:14px;inset-inline-end:14px;border:0;background:#eef0ff;color:var(--brand);border-radius:10px;padding:6px 12px;font-weight:800}
 .big{width:100%;padding:14px;font-size:17px;margin-top:6px}
 .linkbtn{border:0;background:none;color:var(--brand);font-weight:700;margin-top:10px;text-decoration:underline;font-size:14px}
+.gsep{height:1px;background:#e6e8f7;margin:14px 0 6px}
 .spinner{width:42px;height:42px;border:5px solid #e3e6ff;border-top-color:var(--accent);border-radius:50%;margin:20px auto;animation:spin 1s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
 
@@ -235,10 +236,27 @@ header h1 .logo{width:32px;height:32px;border-radius:9px;background:var(--yellow
     <div class="glogo">▶</div>
     <h1>Tube Kids Family</h1>
     <div data-step="id">
+      <p data-i18n="loginIntroPw"></p>
+      <input id="gEmail" type="text" inputmode="email" autocomplete="username" data-i18n-ph="email">
+      <input id="gPass" type="password" autocomplete="current-password" data-i18n-ph="password">
+      <button class="btn big" id="gLogin" data-i18n="signIn"></button>
+      <button class="linkbtn" id="gForgot" data-i18n="forgot"></button>
+      <div class="gsep"></div>
+      <button class="btn big ghost" id="gSignup" data-i18n="createAccount"></button>
+      <button class="linkbtn" id="gUseLink" data-i18n="useLinkInstead"></button>
+    </div>
+    <div data-step="signup" hidden>
+      <p data-i18n="signupTitle"></p>
+      <input id="gSEmail" type="text" inputmode="email" autocomplete="username" data-i18n-ph="email">
+      <input id="gSPass" type="password" autocomplete="new-password" data-i18n-ph="passMin">
+      <button class="btn big" id="gSOk" data-i18n="createBtn"></button>
+      <button class="linkbtn" data-back data-i18n="backToLogin"></button>
+    </div>
+    <div data-step="link" hidden>
       <p data-i18n="loginIntro"></p>
       <input id="gId" type="text" inputmode="email" autocomplete="username" data-i18n-ph="idPh">
       <button class="btn big" id="gSend" data-i18n="continue"></button>
-      <button class="btn big ghost" id="gAdmin" data-i18n="loginAdminBtn"></button>
+      <button class="linkbtn" data-back data-i18n="backToLogin"></button>
     </div>
     <div data-step="code" hidden>
       <p id="gCodeMsg"></p>
@@ -248,18 +266,10 @@ header h1 .logo{width:32px;height:32px;border-radius:9px;background:var(--yellow
     </div>
     <div data-step="mail" hidden>
       <p id="gMailMsg"></p>
-      <p class="hint" data-i18n="pasteHint"></p>
-      <input id="gPaste" type="text" placeholder="https://...">
-      <button class="btn big" id="gPasteOk" data-i18n="signIn"></button>
+      <div class="spinner"></div>
+      <p class="hint" data-i18n="waitLink"></p>
+      <button class="btn big ghost" id="gResend" data-i18n="resend"></button>
       <button class="linkbtn" data-back data-i18n="changeId"></button>
-    </div>
-    <div data-step="admin" hidden>
-      <p data-i18n="adminLoginTitle"></p>
-      <input id="gAEmail" type="text" inputmode="email" autocomplete="username" data-i18n-ph="email">
-      <input id="gAPass" type="password" autocomplete="current-password" data-i18n-ph="password">
-      <button class="btn big" id="gAOk" data-i18n="signIn"></button>
-      <button class="linkbtn" id="gAForgot" data-i18n="forgot"></button>
-      <button class="linkbtn" data-back data-i18n="backToUser"></button>
     </div>
     <div data-step="confirmEmail" hidden>
       <p data-i18n="confirmEmailMsg"></p>
@@ -269,7 +279,6 @@ header h1 .logo{width:32px;height:32px;border-radius:9px;background:var(--yellow
     <div data-step="denied" hidden>
       <p id="gDeniedMsg"></p>
       <button class="btn big ghost" id="gRetry" data-i18n="retry"></button>
-      <button class="btn big ghost" id="gDeniedAdmin" data-i18n="loginAdminBtn"></button>
       <button class="linkbtn" id="gLogout" data-i18n="logout"></button>
     </div>
     <div data-step="loading" hidden><div class="spinner"></div></div>
@@ -539,7 +548,7 @@ const I18N = {
     tvGo: "افتح في يوتيوب", tvToast: "دوس على أيقونة الكاست واختار الشاشة", cancel: "إلغاء",
     loginIntro: "اكتب الإيميل أو رقم الموبايل، وهيوصلك كود أو لينك دخول.", idPh: "الإيميل أو رقم الموبايل", continue: "كمّل", verify: "تأكيد", changeId: "غيّر الإيميل أو الرقم",
     codeSent: p => `بعتنا كود من 6 أرقام في رسالة على <b dir="ltr">${p}</b>`, mailSent: e => `بعتنا لينك دخول على <b dir="ltr">${e}</b>. افتح الإيميل ودوس على اللينك (لو مش لاقيه بص في الـ Spam).`,
-    pasteHint: "لو اللينك فتح في متصفح تاني أو على جهاز تاني: انسخه والصقه هنا.", confirmEmailMsg: "اكتب الإيميل اللي طلبت عليه اللينك عشان نكمّل الدخول.",
+    waitLink: "أول ما تدوس على اللينك هتدخل على طول، حتى لو فتح في تاب تانية. مش محتاج تعمل حاجة تانية هنا.", resend: "ابعت اللينك تاني", resent: "اتبعت لينك جديد ✔", confirmEmailMsg: "اكتب الإيميل اللي طلبت عليه اللينك عشان نكمّل الدخول.",
     badId: "اكتب إيميل صحيح أو رقم موبايل صحيح", badLink: "ده مش لينك دخول صحيح", retry: "جرّب تاني",
     deniedMsg: id => `الحساب <b dir="ltr">${id}</b> لسه مش متفعّل.<br>كلّم الأدمن يضيفك.`,
     signIn: "دخول", logout: "تسجيل خروج", loggedOut: "اتعمل تسجيل خروج",
@@ -555,7 +564,7 @@ const I18N = {
     save: "حفظ", defaults: "رجّع القنوات الافتراضية", clearCache: "مسح الكاش وتحديث",
     saved: "اتحفظ عند كل اليوزرز ✔", savedLocal: "اتحفظ ✔", cacheCleared: "اتمسح الكاش", removed: e => "اتشال " + e, added: e => "اتضاف " + e + " ✔",
     fbDown: "مقدرتش أوصل لـ Firebase", none: "مفيش",
-    email: "الإيميل", password: "الباسورد", loginAdminBtn: "🔑 دخول كأدمن (إيميل وباسورد)", forgot: "نسيت الباسورد", pinShort: "الرقم السري", adminLoginTitle: "دخول الأدمن بالإيميل والباسورد", backToUser: "رجوع لدخول اليوزر", passOptional: "باسورد (اختياري، للأدمن والمحرر)", sendReset: "📧 ابعت لينك تعيين باسورد",
+    email: "الإيميل", password: "الباسورد", loginIntroPw: "سجّل دخول بالإيميل والباسورد", createAccount: "معندكش حساب؟ اعمل حساب جديد", useLinkInstead: "ادخل بلينك على الإيميل أو برقم الموبايل", signupTitle: "حساب جديد: اكتب إيميلك واختار باسورد", passMin: "الباسورد (6 حروف على الأقل)", createBtn: "اعمل الحساب", backToLogin: "رجوع لتسجيل الدخول", welcomeAdmin: "أهلاً يا أدمن 👋 الإعدادات من زرار 👤", loginAdminBtn: "🔑 دخول كأدمن (إيميل وباسورد)", forgot: "نسيت الباسورد", pinShort: "الرقم السري", adminLoginTitle: "دخول الأدمن بالإيميل والباسورد", backToUser: "رجوع لدخول اليوزر", passOptional: "باسورد (6 حروف على الأقل)", sendReset: "📧 ابعت لينك تعيين باسورد",
     resetSentTo: e => "اتبعت لينك تعيين الباسورد على " + e, emailOnly: "ده بيشتغل مع الإيميل بس", accountExists: "الحساب ده موجود قبل كده. لو محتاج باسورد ابعتله لينك تعيين باسورد من صفحته.",
     stUsers: "يوزر", stToday: "دخلوا النهارده", stApp: "مثبّتين الأبلكيشن", stViews: "مشاهدات النهارده", installedTag: "📲 مثبّت", installedEvt: "📲 ثبّت الأبلكيشن",
     watchTimer: "⏱ مؤقت المشاهدة", timerIntro: "حدد وقت المشاهدة، ولما يخلص الأبلكيشن بيتقفل لوحده لحد ما حد من الكبار يكتب الرقم السري. الوقت بيتحسب بس والفيديو شغّال.",
@@ -580,7 +589,7 @@ const I18N = {
     suspendedMsg: id => `الحساب <b dir="ltr">${id}</b> موقوف.<br>كلّم الأدمن.`,
     expiredMsg: (id, d) => `صلاحية الحساب <b dir="ltr">${id}</b> انتهت يوم ${d}.<br>كلّم الأدمن يجددها.`,
     selfLock: "مينفعش تشيل صلاحية الأدمن من نفسك أو توقف حسابك", yourRole: r => "الدور: " + r,
-    fb: { "auth/invalid-phone-number": "رقم الموبايل مش صحيح", "auth/invalid-email": "الإيميل مكتوب غلط", "auth/too-many-requests": "محاولات كتير، استنى شوية وجرب تاني", "auth/invalid-verification-code": "الكود غلط", "auth/code-expired": "الكود انتهى، اطلب كود جديد", "auth/invalid-action-code": "اللينك ده اتستخدم قبل كده أو انتهى، اطلب لينك جديد", "auth/expired-action-code": "اللينك انتهى، اطلب لينك جديد", "auth/billing-not-enabled": "رسايل الموبايل محتاجة تفعيل الدفع في Firebase (Blaze). استخدم الإيميل لحد ما الأدمن يفعّله.", "auth/operation-not-allowed": "طريقة الدخول دي مش متفعّلة في Firebase", "auth/unauthorized-domain": "الدومين ده مش مضاف في Firebase ← Authorized domains", "auth/quota-exceeded": "خلصت رسايل النهارده، جرّب بكرة أو استخدم الإيميل", "auth/captcha-check-failed": "فشل التحقق، جرّب تاني", "auth/network-request-failed": "مفيش نت", "permission-denied": "مش مسموحلك تعمل كده", "auth/invalid-credential": "الإيميل أو الباسورد غلط", "auth/wrong-password": "الإيميل أو الباسورد غلط", "auth/user-not-found": "الإيميل أو الباسورد غلط", "auth/missing-password": "اكتب الباسورد", "auth/weak-password": "الباسورد لازم 6 حروف على الأقل", "auth/email-already-in-use": "الحساب ده موجود قبل كده" }
+    fb: { "auth/invalid-phone-number": "رقم الموبايل مش صحيح", "auth/invalid-email": "الإيميل مكتوب غلط", "auth/too-many-requests": "محاولات كتير، استنى شوية وجرب تاني", "auth/invalid-verification-code": "الكود غلط", "auth/code-expired": "الكود انتهى، اطلب كود جديد", "auth/invalid-action-code": "اللينك ده اتستخدم قبل كده أو انتهى، اطلب لينك جديد", "auth/expired-action-code": "اللينك انتهى، اطلب لينك جديد", "auth/billing-not-enabled": "رسايل الموبايل محتاجة تفعيل الدفع في Firebase (Blaze). استخدم الإيميل لحد ما الأدمن يفعّله.", "auth/operation-not-allowed": "طريقة الدخول دي مش متفعّلة في Firebase", "auth/unauthorized-domain": "الدومين ده مش مضاف في Firebase ← Authorized domains", "auth/quota-exceeded": "خلص عدد الرسايل المسموح بيه النهارده. ادخل بالإيميل والباسورد، أو جرّب بكرة.", "auth/captcha-check-failed": "فشل التحقق، جرّب تاني", "auth/network-request-failed": "مفيش نت", "permission-denied": "مش مسموحلك تعمل كده", "auth/invalid-credential": "الإيميل أو الباسورد غلط", "auth/wrong-password": "الإيميل أو الباسورد غلط", "auth/user-not-found": "الإيميل أو الباسورد غلط", "auth/missing-password": "اكتب الباسورد", "auth/weak-password": "الباسورد لازم 6 حروف على الأقل", "auth/email-already-in-use": "الحساب ده موجود قبل كده" }
   },
   en: {
     search: "Search videos...", searchT: "Search", settings: "Settings", langT: "العربية", langBtn: "ع", install: "Install app", account: "Account", ok: "OK",
@@ -605,7 +614,7 @@ const I18N = {
     tvGo: "Open in YouTube", tvToast: "Tap the Cast icon and pick your TV", cancel: "Cancel",
     loginIntro: "Enter your email or mobile number and we'll send you a code or a sign-in link.", idPh: "Email or mobile number", continue: "Continue", verify: "Verify", changeId: "Use a different email or number",
     codeSent: p => `We sent a 6-digit code by SMS to <b dir="ltr">${p}</b>`, mailSent: e => `We sent a sign-in link to <b dir="ltr">${e}</b>. Open the email and tap the link (check Spam if you can't find it).`,
-    pasteHint: "If the link opened in another browser or device, copy it and paste it here.", confirmEmailMsg: "Enter the email you requested the link with to finish signing in.",
+    waitLink: "As soon as you tap the link you're in, even if it opens in another tab. Nothing else to do here.", resend: "Send the link again", resent: "New link sent ✔", confirmEmailMsg: "Enter the email you requested the link with to finish signing in.",
     badId: "Enter a valid email or mobile number", badLink: "That isn't a valid sign-in link", retry: "Try again",
     deniedMsg: id => `The account <b dir="ltr">${id}</b> isn't activated yet.<br>Ask an admin to add you.`,
     signIn: "Sign in", logout: "Sign out", loggedOut: "Signed out",
@@ -621,7 +630,7 @@ const I18N = {
     save: "Save", defaults: "Reset channels to default", clearCache: "Clear cache & refresh",
     saved: "Saved for every user ✔", savedLocal: "Saved ✔", cacheCleared: "Cache cleared", removed: e => "Removed " + e, added: e => e + " added ✔",
     fbDown: "Couldn't reach Firebase", none: "None",
-    email: "Email", password: "Password", loginAdminBtn: "🔑 Sign in as admin (email & password)", forgot: "Forgot password", pinShort: "PIN", adminLoginTitle: "Admin sign-in with email and password", backToUser: "Back to user sign-in", passOptional: "Password (optional, for admins/editors)", sendReset: "📧 Send password link",
+    email: "Email", password: "Password", loginIntroPw: "Sign in with your email and password", createAccount: "No account? Create one", useLinkInstead: "Sign in with an email link or mobile number", signupTitle: "New account: enter your email and choose a password", passMin: "Password (at least 6 characters)", createBtn: "Create account", backToLogin: "Back to sign-in", welcomeAdmin: "Welcome, admin 👋 Settings are in the 👤 button", loginAdminBtn: "🔑 Sign in as admin (email & password)", forgot: "Forgot password", pinShort: "PIN", adminLoginTitle: "Admin sign-in with email and password", backToUser: "Back to user sign-in", passOptional: "Password (at least 6 characters)", sendReset: "📧 Send password link",
     resetSentTo: e => "Password link sent to " + e, emailOnly: "This works with email only", accountExists: "This account already exists. If it needs a password, send a password link from its page.",
     stUsers: "Users", stToday: "Active today", stApp: "Installed the app", stViews: "Views today", installedTag: "📲 Installed", installedEvt: "📲 Installed the app",
     watchTimer: "⏱ Watch timer", timerIntro: "Set the watching time. When it runs out the app locks until a grown-up enters the PIN. Time only counts while a video plays.",
@@ -646,7 +655,7 @@ const I18N = {
     suspendedMsg: id => `The account <b dir="ltr">${id}</b> is suspended.<br>Ask an admin.`,
     expiredMsg: (id, d) => `Access for <b dir="ltr">${id}</b> ended on ${d}.<br>Ask an admin to renew it.`,
     selfLock: "You can't remove your own admin role or suspend yourself", yourRole: r => "Role: " + r,
-    fb: { "auth/invalid-phone-number": "Invalid mobile number", "auth/invalid-email": "Invalid email", "auth/too-many-requests": "Too many attempts, try again later", "auth/invalid-verification-code": "Wrong code", "auth/code-expired": "The code expired, request a new one", "auth/invalid-action-code": "This link was already used or expired, request a new one", "auth/expired-action-code": "The link expired, request a new one", "auth/billing-not-enabled": "SMS sign-in needs billing (Blaze) in Firebase. Use email until an admin enables it.", "auth/operation-not-allowed": "This sign-in method isn't enabled in Firebase", "auth/unauthorized-domain": "This domain isn't in Firebase → Authorized domains", "auth/quota-exceeded": "SMS quota reached for today, try tomorrow or use email", "auth/captcha-check-failed": "Verification failed, try again", "auth/network-request-failed": "No internet connection", "permission-denied": "You're not allowed to do that", "auth/invalid-credential": "Wrong email or password", "auth/wrong-password": "Wrong email or password", "auth/user-not-found": "Wrong email or password", "auth/missing-password": "Enter the password", "auth/weak-password": "Password must be at least 6 characters", "auth/email-already-in-use": "This account already exists" }
+    fb: { "auth/invalid-phone-number": "Invalid mobile number", "auth/invalid-email": "Invalid email", "auth/too-many-requests": "Too many attempts, try again later", "auth/invalid-verification-code": "Wrong code", "auth/code-expired": "The code expired, request a new one", "auth/invalid-action-code": "This link was already used or expired, request a new one", "auth/expired-action-code": "The link expired, request a new one", "auth/billing-not-enabled": "SMS sign-in needs billing (Blaze) in Firebase. Use email until an admin enables it.", "auth/operation-not-allowed": "This sign-in method isn't enabled in Firebase", "auth/unauthorized-domain": "This domain isn't in Firebase → Authorized domains", "auth/quota-exceeded": "Today's message limit was reached. Sign in with email and password, or try tomorrow.", "auth/captcha-check-failed": "Verification failed, try again", "auth/network-request-failed": "No internet connection", "permission-denied": "You're not allowed to do that", "auth/invalid-credential": "Wrong email or password", "auth/wrong-password": "Wrong email or password", "auth/user-not-found": "Wrong email or password", "auth/missing-password": "Enter the password", "auth/weak-password": "Password must be at least 6 characters", "auth/email-already-in-use": "This account already exists" }
   }
 };
 let lang = LS.get("lang", CONFIG.DEFAULT_LANG === "en" ? "en" : "ar");
@@ -1129,7 +1138,7 @@ function showGate(step, arg) {
   if (step === "code") $("#gCodeMsg").innerHTML = T("codeSent")(esc(arg));
   if (step === "mail") $("#gMailMsg").innerHTML = T("mailSent")(esc(arg));
   if (step === "denied") $("#gDeniedMsg").innerHTML = typeof arg === "function" ? arg() : T("deniedMsg")(esc(arg));
-  const f = { id: "#gId", code: "#gCode", confirmEmail: "#gEmail2", admin: "#gAEmail" }[step]; if (f) setTimeout(() => $(f).focus(), 50);
+  const f = { id: "#gEmail", link: "#gId", signup: "#gSEmail", code: "#gCode", confirmEmail: "#gEmail2" }[step]; if (f) setTimeout(() => $(f).focus(), 50);
 }
 function hideGate() { gateStep = null; $("#gate").hidden = true; }
 
@@ -1151,7 +1160,7 @@ async function initFirebase() {
 async function onAuth(u) {
   user = u; myRec = null; amAdmin = amEditor = false; myChannels = [];
   if (cfgUnsub) { cfgUnsub(); cfgUnsub = null; }
-  if (!u) { authorized = false; myId = ""; showGate(pendingLink ? "confirmEmail" : adminIntent ? "admin" : "id"); render(); return; }
+  if (!u) { authorized = false; myId = ""; showGate(pendingLink ? "confirmEmail" : "id"); render(); return; }
   showGate("loading");
   myId = myIds(u)[0] || "";
   // the user's own record: role, suspended, expiry, channels
@@ -1178,6 +1187,7 @@ async function onAuth(u) {
     if (first || changed) refresh(changed, true);   // first load respects the refresh interval unless the settings changed
     render();
     if (first && (adminIntent || location.hash === "#admin")) { adminIntent = false; cleanUrl(); openAdmin(); }
+    else if (first && amEditor) toast(T("welcomeAdmin"), 5000);
     if (first) { checkInstalled(); if (LS.get("installPending", false)) markInstalled(); }
   }, e => {
     authorized = false;
@@ -1240,19 +1250,31 @@ $("#gSend").onclick = async () => {
   } finally { b.disabled = false; }
 };
 $("#gId").addEventListener("keydown", e => { if (e.key === "Enter") $("#gSend").click(); });
-$("#gAdmin").onclick = () => { adminIntent = true; showGate("admin"); };
-$("#gAOk").onclick = async () => {
-  const email = idOf($("#gAEmail").value), pw = $("#gAPass").value, b = $("#gAOk");
+// main sign-in: email + password (no daily email limits)
+$("#gLogin").onclick = async () => {
+  const email = idOf($("#gEmail").value), pw = $("#gPass").value, b = $("#gLogin");
   if (!email || !email.includes("@")) return toast(T("badId"));
-  b.disabled = true; adminIntent = true;
-  try { await auth.signInWithEmailAndPassword(email, pw); $("#gAPass").value = ""; } catch (e) { toast(fbErr(e)); } finally { b.disabled = false; }
+  if (!pw) return toast(T("fb")["auth/missing-password"]);
+  b.disabled = true;
+  try { await auth.signInWithEmailAndPassword(email, pw); $("#gPass").value = ""; } catch (e) { toast(fbErr(e), 6000); } finally { b.disabled = false; }
 };
-$("#gAPass").addEventListener("keydown", e => { if (e.key === "Enter") $("#gAOk").click(); });
-$("#gAForgot").onclick = async () => {
-  const email = idOf($("#gAEmail").value);
+$("#gPass").addEventListener("keydown", e => { if (e.key === "Enter") $("#gLogin").click(); });
+$("#gEmail").addEventListener("keydown", e => { if (e.key === "Enter") $("#gPass").focus(); });
+$("#gForgot").onclick = async () => {
+  const email = idOf($("#gEmail").value);
   if (!email || !email.includes("@")) return toast(T("emailFirst"));
-  try { await auth.sendPasswordResetEmail(email); toast(T("resetSentTo")(email), 5000); } catch (e) { toast(fbErr(e)); }
+  try { await auth.sendPasswordResetEmail(email); toast(T("resetSentTo")(email), 6000); } catch (e) { toast(fbErr(e), 6000); }
 };
+$("#gSignup").onclick = () => { $("#gSEmail").value = $("#gEmail").value; showGate("signup"); };
+$("#gUseLink").onclick = () => { $("#gId").value = $("#gEmail").value; showGate("link"); };
+$("#gSOk").onclick = async () => {
+  const email = idOf($("#gSEmail").value), pw = $("#gSPass").value, b = $("#gSOk");
+  if (!email || !email.includes("@")) return toast(T("badId"));
+  if (pw.length < 6) return toast(T("fb")["auth/weak-password"]);
+  b.disabled = true;
+  try { await auth.createUserWithEmailAndPassword(email, pw); $("#gSPass").value = ""; } catch (e) { toast(fbErr(e), 6000); } finally { b.disabled = false; }
+};
+$("#gSPass").addEventListener("keydown", e => { if (e.key === "Enter") $("#gSOk").click(); });
 $("#gVerify").onclick = async () => {
   const code = $("#gCode").value.replace(/\D/g, ""), b = $("#gVerify");
   if (code.length < 6 || !confirmation) return toast(T("fb")["auth/invalid-verification-code"]);
@@ -1260,10 +1282,12 @@ $("#gVerify").onclick = async () => {
   try { await confirmation.confirm(code); } catch (e) { toast(fbErr(e)); } finally { b.disabled = false; }
 };
 $("#gCode").addEventListener("input", e => { if (e.target.value.replace(/\D/g, "").length === 6) $("#gVerify").click(); });
-$("#gPasteOk").onclick = async () => {
-  const link = $("#gPaste").value.trim(), email = LS.get("emailForSignIn", "") || gateArg;
-  if (!auth.isSignInWithEmailLink(link)) return toast(T("badLink"));
-  try { await auth.signInWithEmailLink(email, link); LS.del("emailForSignIn"); } catch (e) { toast(fbErr(e), 6000); }
+$("#gResend").onclick = async () => {
+  const email = LS.get("emailForSignIn", "") || gateArg, b = $("#gResend");
+  if (!email) return showGate("id");
+  b.disabled = true;
+  try { await auth.sendSignInLinkToEmail(email, { url: location.origin + location.pathname, handleCodeInApp: true }); toast(T("resent"), 4000); }
+  catch (e) { toast(fbErr(e), 6000); } finally { b.disabled = false; }
 };
 $("#gEmail2Ok").onclick = async () => {
   const email = idOf($("#gEmail2").value);
@@ -1272,16 +1296,16 @@ $("#gEmail2Ok").onclick = async () => {
 };
 document.querySelectorAll("#gate [data-back]").forEach(b => b.onclick = () => { adminIntent = false; showGate("id"); });
 $("#gRetry").onclick = () => onAuth(user);
-async function signOut(thenAdmin) {
+async function signOut() {
   if (P.classList.contains("open")) closePlayer(true);
   document.querySelectorAll(".modal.open").forEach(m => m.classList.remove("open"));
   try { sessionStorage.removeItem("kt_session_" + myId); } catch {}
   try { await auth.signOut(); } catch {}
-  remoteCfg = null; LS.del("remoteCfg"); $("#gId").value = ""; profile = { name: "", photo: "" }; LS.del("profile"); paintAvatar();
-  if (thenAdmin) { adminIntent = true; showGate("admin"); } else toast(T("loggedOut"));
+  remoteCfg = null; LS.del("remoteCfg"); $("#gId").value = ""; $("#gPass").value = ""; profile = { name: "", photo: "" }; LS.del("profile"); paintAvatar();
+  toast(T("loggedOut"));
 }
 $("#gLogout").onclick = () => signOut();
-$("#gDeniedAdmin").onclick = () => signOut(true); $("#accLogout").onclick = () => signOut();
+$("#accLogout").onclick = e => { if (confirmTwice(e.currentTarget)) signOut(); };
 
 /* ---------- account button (👤): who I am, settings, sign in as admin, sign out ---------- */
 /* ---------- profile (👤): name, photo and account info ---------- */
@@ -1326,7 +1350,7 @@ $("#accountBtn").onclick = async () => {
   paintDraft();
   $("#accId").textContent = REMOTE ? myId : "";
   $("#accSettings").hidden = !(REMOTE && amEditor);
-  $("#accAdmin").hidden = REMOTE && amEditor;
+  $("#accAdmin").hidden = REMOTE;                 // with Firebase, admin sign-in lives on the sign-in screen only
   $("#accLogout").hidden = !REMOTE;
   $("#pNote").textContent = REMOTE ? "" : T("localNote");
   const base = infoRow(T("lDevice"), deviceName()) + infoRow(T("lWatched"), String(watched.size)) + infoRow(T("lLang"), lang === "ar" ? "العربية" : "English");
@@ -1360,7 +1384,7 @@ $("#pSave").onclick = async () => {
 };
 paintAvatar();
 $("#accSettings").onclick = () => { $("#accountModal").classList.remove("open"); openSettings(); };
-$("#accAdmin").onclick = () => { $("#accountModal").classList.remove("open"); if (REMOTE) signOut(true); else openAdmin(); };
+$("#accAdmin").onclick = () => { $("#accountModal").classList.remove("open"); openAdmin(); };
 
 /* ---------- Settings (also: long-press the logo, or open the link with #admin) ---------- */
 function openAdmin() {
