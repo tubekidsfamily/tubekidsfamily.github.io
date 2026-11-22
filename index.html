@@ -7,9 +7,11 @@
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <title>Tube Kids Family</title>
 <link rel="manifest" href="manifest.webmanifest">
-<link rel="icon" href="icon-192.png">
-<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="icon" href="favicon.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Tube Kids">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="mobile-web-app-capable" content="yes">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Readex+Pro:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -72,7 +74,7 @@ input,select,textarea{color:var(--ink);background:var(--card)}
 header{position:sticky;top:0;z-index:20;background:var(--glass);-webkit-backdrop-filter:saturate(180%) blur(18px);backdrop-filter:saturate(180%) blur(18px);border-bottom:1px solid var(--glass-line);color:var(--ink);padding:calc(env(safe-area-inset-top) + 10px) 18px 10px;display:flex;align-items:center;gap:8px}
 header h1{font-size:19px;margin:0;flex:1;min-width:0;font-weight:700;letter-spacing:-.2px;display:flex;align-items:center;gap:10px;white-space:nowrap;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
 header h1 span+span{overflow:hidden;text-overflow:ellipsis}
-header h1 .logo{flex:0 0 auto;width:36px;height:36px;border-radius:11px;background:var(--grad);display:grid;place-items:center;color:#fff;font-size:14px;padding-inline-start:2px;box-shadow:0 6px 16px rgba(var(--b-rgb),.4)}
+header h1 .logo{flex:0 0 auto;width:38px;height:38px;border-radius:11px;box-shadow:0 6px 16px rgba(109,93,252,.35)}
 .icon-btn{flex:0 0 auto;background:transparent;border:1px solid transparent;color:var(--ink);min-width:40px;height:40px;border-radius:12px;font-size:18px;display:grid;place-items:center;padding:0 9px}
 .icon-btn:hover{background:var(--soft)}
 .icon-btn:active{transform:scale(.92)}
@@ -189,7 +191,7 @@ header h1 .logo{flex:0 0 auto;width:36px;height:36px;border-radius:11px;backgrou
 .gside::after{content:"";position:absolute;width:260px;height:260px;border-radius:50%;background:rgba(255,255,255,.1);bottom:-90px;inset-inline-start:-70px}
 .gside>*{position:relative;z-index:1}
 .gside-logo{display:flex;align-items:center;gap:10px;font-weight:700;font-size:16px;opacity:.95}
-.gside-logo span{width:34px;height:34px;border-radius:10px;background:#fff;color:var(--purple);display:grid;place-items:center;font-size:13px;padding-inline-start:2px}
+.gside-logo img{width:38px;height:38px;border-radius:11px;box-shadow:0 0 0 2px rgba(255,255,255,.5)}
 .gside h2{margin:10px 0 6px;font-size:32px;line-height:1.35;font-weight:700;letter-spacing:-.4px;max-width:380px}
 .gside ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:12px}
 .gside li{display:flex;align-items:center;gap:12px;font-size:15px;font-weight:500}
@@ -217,7 +219,7 @@ header h1 .logo{flex:0 0 auto;width:36px;height:36px;border-radius:11px;backgrou
 #apPass{margin-top:6px}
 .aperr{color:#e5294d;font-size:13px;min-height:18px;margin-top:6px}
 .gcard{position:relative;background:var(--card);color:var(--ink);border:1px solid var(--line);border-radius:28px;padding:34px 26px 24px;width:100%;max-width:410px;text-align:center;box-shadow:0 30px 80px rgba(0,0,0,.45)}
-.glogo{width:64px;height:64px;border-radius:20px;background:var(--grad);color:#fff;display:grid;place-items:center;font-size:26px;padding-inline-start:3px;margin:0 auto 14px;box-shadow:0 12px 30px rgba(var(--b-rgb),.5)}
+.glogo{display:block;width:72px;height:72px;margin:0 auto 14px;filter:drop-shadow(0 12px 22px rgba(109,93,252,.4))}
 .gcard h1{margin:0 0 4px;font-size:24px;font-weight:700;letter-spacing:-.3px;color:var(--ink)}
 .gcard p{line-height:1.8;margin:8px 0;color:var(--muted)}
 .gcard input{width:100%;border:1px solid var(--line);border-radius:14px;padding:13px 14px;font-family:inherit;font-size:16px;margin:7px 0;direction:ltr;text-align:center;background:var(--soft);transition:border-color .2s,box-shadow .2s,background .2s}
@@ -457,6 +459,40 @@ header h1 .logo{flex:0 0 auto;width:36px;height:36px;border-radius:11px;backgrou
 /* TV remote / keyboard: show which button is selected */
 :focus-visible{outline:3px solid var(--purple)!important;outline-offset:3px}
 #player :focus-visible{outline-color:#fff!important}
+
+/* ---------- greeting ---------- */
+#hello{padding:18px 18px 0;display:flex;flex-direction:column;gap:2px}
+#hello b{font-size:22px;font-weight:700;letter-spacing:-.3px}
+#hello span{font-size:14px;color:var(--muted)}
+#hello+#hero{margin-top:12px}
+/* ---------- bottom tab bar (phones only) ---------- */
+#tabbar{display:none}
+@media(max-width:700px){
+  #tabbar{position:fixed;left:10px;right:10px;bottom:calc(env(safe-area-inset-bottom) + 10px);z-index:40;display:grid;grid-template-columns:repeat(4,1fr);gap:2px;padding:6px;background:rgba(255,255,255,.86);-webkit-backdrop-filter:saturate(180%) blur(20px);backdrop-filter:saturate(180%) blur(20px);border:1px solid var(--line);border-radius:24px;box-shadow:0 12px 34px rgba(14,19,48,.14)}
+  #tabbar button{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;height:56px;border:0;background:none;border-radius:18px;color:var(--muted);font-family:inherit;font-size:11.5px;font-weight:600}
+  #tabbar button .ico{width:23px;height:23px}
+  #tabbar button.on{color:var(--brand-ink);background:rgba(var(--b-rgb),.1)}
+  #tabbar button.on .ico{stroke-width:2.3}
+  #tabbar button:active{transform:scale(.92)}
+  #tabbar .tav{width:26px;height:26px;border-radius:50%;overflow:hidden;display:grid;place-items:center;background:var(--soft2);font-size:12px;font-weight:700;color:var(--ink)}
+  #tabbar .tav img{width:100%;height:100%;object-fit:cover}
+  #tabbar .tav .ico{width:17px;height:17px}
+  #tabbar b{position:absolute;top:4px;inset-inline-end:10px;font-size:10px;font-weight:700;background:var(--pink);color:#fff;border-radius:8px;padding:1px 5px;font-variant-numeric:tabular-nums}
+  #tabbar b:empty{display:none}
+  body{padding-bottom:calc(env(safe-area-inset-bottom) + 92px)}
+  #searchToggle,#accountBtn,#timerPill{display:none!important}
+  #toast{bottom:calc(env(safe-area-inset-bottom) + 96px)}
+}
+/* ---------- splash (installed app) ---------- */
+#splash{position:fixed;inset:0;z-index:400;background:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;transition:opacity .45s}
+#splash img{width:112px;height:112px;animation:spl 1.4s ease-in-out infinite;filter:drop-shadow(0 18px 30px rgba(109,93,252,.35))}
+#splash b{font-size:22px;font-weight:700;letter-spacing:-.3px;color:#0e1330}
+#splash i{width:120px;height:4px;border-radius:4px;background:#eef0f7;overflow:hidden;position:relative}
+#splash i::after{content:"";position:absolute;inset:0;width:40%;border-radius:4px;background:linear-gradient(90deg,#6d5dfc,#ff5fa8);animation:spbar 1.1s ease-in-out infinite}
+#splash.out{opacity:0}
+@keyframes spl{50%{transform:scale(1.06)}}
+@keyframes spbar{0%{transform:translateX(-110%)}100%{transform:translateX(280%)}}
+[dir=rtl] #splash i::after{animation-direction:reverse}
 .ico{width:20px;height:20px;fill:none!important;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round;flex:0 0 auto}
 .pav .ico{width:46px;height:46px;stroke-width:1.5}.pcam .ico{width:18px;height:18px;vertical-align:middle}
 .ch .av .ico{width:18px;height:18px}
@@ -465,8 +501,9 @@ header h1 .logo{flex:0 0 auto;width:36px;height:36px;border-radius:11px;backgrou
 </style>
 </head>
 <body>
+<div id="splash" hidden><img src="icon-512.png" alt=""><b>Tube Kids Family</b><i></i></div>
 <header>
-  <h1 id="logo"><span class="logo">▶</span><span>Tube Kids Family</span></h1>
+  <h1 id="logo"><img class="logo" src="icon-192.png" alt=""><span>Tube Kids Family</span></h1>
   <input id="search" type="search" data-i18n-ph="search">
   <button class="icon-btn" id="searchToggle" data-i18n-title="searchT"><svg class="ico" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg></button>
   <button class="icon-btn install" id="installBtn" hidden><svg class="ico" viewBox="0 0 24 24"><path d="M12 3.5v11M7.5 10.5 12 15l4.5-4.5M5 20.5h14"/></svg> <span data-i18n="install"></span></button>
@@ -475,6 +512,7 @@ header h1 .logo{flex:0 0 auto;width:36px;height:36px;border-radius:11px;backgrou
   <button class="icon-btn" id="accountBtn" data-i18n-title="account"><svg class="ico" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4.5 20.5c0-3.8 3.4-6 7.5-6s7.5 2.2 7.5 6"/></svg></button>
 </header>
 
+<div id="hello" hidden><b id="helloT"></b><span id="helloS"></span></div>
 <section id="hero" hidden>
   <div class="hbg" id="heroBg"></div>
   <div class="hcontent">
@@ -493,12 +531,19 @@ header h1 .logo{flex:0 0 auto;width:36px;height:36px;border-radius:11px;backgrou
 <main id="grid"></main>
 <div id="moreBox"></div>
 
+<nav id="tabbar">
+  <button data-tab="home" class="on"><svg class="ico" viewBox="0 0 24 24"><path d="M4 10.5 12 4l8 6.5V19a1.5 1.5 0 0 1-1.5 1.5H15v-6h-6v6H5.5A1.5 1.5 0 0 1 4 19z"/></svg><span data-i18n="tabHome"></span></button>
+  <button data-tab="search"><svg class="ico" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><span data-i18n="tabSearch"></span></button>
+  <button data-tab="timer"><svg class="ico" viewBox="0 0 24 24"><circle cx="12" cy="13.5" r="7.5"/><path d="M12 10v3.5l2.5 1.8M9.5 2.5h5"/></svg><span data-i18n="tabTimer"></span><b id="tabTimerLeft"></b></button>
+  <button data-tab="me"><span class="tav" id="tabAv"></span><span data-i18n="tabMe"></span></button>
+</nav>
+
 <!-- Login gate (only when Firebase is configured) -->
 <section id="gate" hidden>
   <div class="gblob b1"></div><div class="gblob b2"></div><div class="gblob b3"></div>
   <div class="gwrap">
   <aside class="gside">
-    <div class="gside-logo"><span>▶</span>Tube Kids Family</div>
+    <div class="gside-logo"><img src="icon-192.png" alt="">Tube Kids Family</div>
     <h2 data-i18n="gsTitle"></h2>
     <ul>
       <li><i><svg class="ico" viewBox="0 0 24 24"><path d="M12 3 4.5 6v5.5c0 4.6 3.2 8.4 7.5 9.5 4.3-1.1 7.5-4.9 7.5-9.5V6z"/><path d="m9 12 2.2 2.2L15.5 10"/></svg></i><span data-i18n="gs1"></span></li>
@@ -509,7 +554,7 @@ header h1 .logo{flex:0 0 auto;width:36px;height:36px;border-radius:11px;backgrou
   </aside>
   <div class="gcard">
     <button class="glang" id="gLang"></button>
-    <div class="glogo">▶</div>
+    <img class="glogo" src="icon-192.png" alt="">
     <h1>Tube Kids Family</h1>
     <div data-step="id">
       <p data-i18n="loginIntroPw"></p>
@@ -531,7 +576,7 @@ header h1 .logo{flex:0 0 auto;width:36px;height:36px;border-radius:11px;backgrou
     </div>
     <div data-step="link" hidden>
       <p data-i18n="loginIntro"></p>
-      <input id="gId" type="text" inputmode="email" autocomplete="username" data-i18n-ph="idPh">
+      <input id="gId" type="email" inputmode="email" autocomplete="username" data-i18n-ph="idPh">
       <button class="btn big" id="gSend" data-i18n="continue"></button>
       <button class="linkbtn" data-back data-i18n="backToLogin"></button>
     </div>
@@ -845,6 +890,8 @@ const thumbOf = (th, pref = ["high", "medium", "default"]) => { th = th || {}; f
 const I18N = {
   ar: {
     gsTitle: "عالم فيديوهات آمن لأطفالك", gs1: "قنوات انت اللي بتختارها بس", gs2: "من غير تعليقات ولا روابط برّه", gs3: "مؤقت مشاهدة بقفل من الأهل",
+    tabHome: "الرئيسية", tabSearch: "بحث", tabTimer: "المؤقت", tabMe: "حسابي",
+    hiMorning: "صباح الخير", hiEvening: "مساء الخير", hiSub: "يلا نتفرج على إيه النهارده؟",
     remember: "افتكرني على الجهاز ده", apTitle: "تأكيد إنك الأدمن", apHint: "اكتب الباسورد بتاعك عشان تفتح الإعدادات. ده بيحمي الإعدادات لو حد تاني ماسك الجهاز.", apOk: "تأكيد",
     gTitle: "مين هيتفرج؟", gHint: "اختار عشان نلوّن الأبلكيشن على ذوقك. تقدر تغيّره بعدين من صفحة حسابك.", gBoy: "ولد", gGirl: "بنت", gLabel: "شكل الأبلكيشن",
     upNext: "الفيديو الجاي", adTap: "📢 إعلان — دوس هنا عشان تقدر تدوس Skip", adOpen: "✔ دوس Skip على الإعلان دلوقتي",
@@ -870,10 +917,10 @@ const I18N = {
     tvTitle: "📺 التشغيل على الشاشة",
     tvBody: "جوجل مش بيسمح لأي أبلكيشن غير <b>يوتيوب</b> إنه يبعت فيديوهات يوتيوب للشاشة بالكاست.<br>هنفتح الفيديو في يوتيوب من نفس الثانية، ومن هناك دوس أيقونة الكاست واختار الشاشة. الشاشة بتشغّل الفيديو بنفسها بأعلى جودة.<br><br>أو افتح الأبلكيشن ده من متصفح الشاشة نفسها.",
     tvGo: "افتح في يوتيوب", tvToast: "دوس على أيقونة الكاست واختار الشاشة", cancel: "إلغاء",
-    loginIntro: "اكتب الإيميل أو رقم الموبايل، وهيوصلك كود أو لينك دخول.", idPh: "الإيميل أو رقم الموبايل", continue: "كمّل", verify: "تأكيد", changeId: "غيّر الإيميل أو الرقم",
+    loginIntro: "اكتب الإيميل بتاعك وهيوصلك عليه لينك دخول، من غير باسورد.", idPh: "الإيميل", continue: "كمّل", verify: "تأكيد", changeId: "غيّر الإيميل أو الرقم",
     codeSent: p => `بعتنا كود من 6 أرقام في رسالة على <b dir="ltr">${p}</b>`, mailSent: e => `بعتنا لينك دخول على <b dir="ltr">${e}</b>. افتح الإيميل ودوس على اللينك (لو مش لاقيه بص في الـ Spam).`,
     waitLink: "أول ما تدوس على اللينك هتدخل على طول، حتى لو فتح في تاب تانية. مش محتاج تعمل حاجة تانية هنا.", resend: "ابعت اللينك تاني", resent: "اتبعت لينك جديد ✔", confirmEmailMsg: "اكتب الإيميل اللي طلبت عليه اللينك عشان نكمّل الدخول.",
-    badId: "اكتب إيميل صحيح أو رقم موبايل صحيح", badLink: "ده مش لينك دخول صحيح", retry: "جرّب تاني",
+    badId: "اكتب إيميل صحيح", badLink: "ده مش لينك دخول صحيح", retry: "جرّب تاني",
     deniedMsg: id => `الحساب <b dir="ltr">${id}</b> لسه مش متفعّل.<br>كلّم الأدمن يضيفك.`,
     signIn: "دخول", logout: "تسجيل خروج", loggedOut: "اتعمل تسجيل خروج",
     adultsOnly: "للكبار بس 🔒", enterPin: "اكتب الرقم السري", wrongPin: "الرقم غلط", notAdmin: "الإعدادات للأدمن بس",
@@ -888,7 +935,7 @@ const I18N = {
     save: "حفظ", defaults: "رجّع القنوات الافتراضية", clearCache: "مسح الكاش وتحديث",
     saved: "اتحفظ عند كل اليوزرز ✔", savedLocal: "اتحفظ ✔", cacheCleared: "اتمسح الكاش", removed: e => "اتشال " + e, added: e => "اتضاف " + e + " ✔",
     fbDown: "مقدرتش أوصل لـ Firebase", none: "مفيش",
-    showPw: "إظهار الباسورد", fill: "ملء", fillT: "كبّر الفيديو يملى الشاشة كلها", selectAll: "اختار الكل", adNote: "📢 إعلان — زرار Skip بيشتغل أول ما يظهر", email: "الإيميل", password: "الباسورد", loginIntroPw: "سجّل دخول بالإيميل والباسورد", createAccount: "معندكش حساب؟ اعمل حساب جديد", useLinkInstead: "ادخل بلينك على الإيميل أو برقم الموبايل", signupTitle: "حساب جديد: اكتب إيميلك واختار باسورد", passMin: "الباسورد (6 حروف على الأقل)", createBtn: "اعمل الحساب", backToLogin: "رجوع لتسجيل الدخول", welcomeAdmin: "أهلاً يا أدمن 👋 الإعدادات من زرار 👤", loginAdminBtn: "🔑 دخول كأدمن (إيميل وباسورد)", forgot: "نسيت الباسورد", pinShort: "الرقم السري", adminLoginTitle: "دخول الأدمن بالإيميل والباسورد", backToUser: "رجوع لدخول اليوزر", passOptional: "باسورد (6 حروف على الأقل)", sendReset: "📧 ابعت لينك تعيين باسورد",
+    showPw: "إظهار الباسورد", fill: "ملء", fillT: "كبّر الفيديو يملى الشاشة كلها", selectAll: "اختار الكل", adNote: "📢 إعلان — زرار Skip بيشتغل أول ما يظهر", email: "الإيميل", password: "الباسورد", loginIntroPw: "سجّل دخول بالإيميل والباسورد", createAccount: "معندكش حساب؟ اعمل حساب جديد", useLinkInstead: "ادخل بلينك على الإيميل من غير باسورد", signupTitle: "حساب جديد: اكتب إيميلك واختار باسورد", passMin: "الباسورد (6 حروف على الأقل)", createBtn: "اعمل الحساب", backToLogin: "رجوع لتسجيل الدخول", welcomeAdmin: "أهلاً يا أدمن 👋 الإعدادات من زرار 👤", loginAdminBtn: "🔑 دخول كأدمن (إيميل وباسورد)", forgot: "نسيت الباسورد", pinShort: "الرقم السري", adminLoginTitle: "دخول الأدمن بالإيميل والباسورد", backToUser: "رجوع لدخول اليوزر", passOptional: "باسورد (6 حروف على الأقل)", sendReset: "📧 ابعت لينك تعيين باسورد",
     resetSentTo: e => "اتبعت لينك تعيين الباسورد على " + e, emailOnly: "ده بيشتغل مع الإيميل بس", accountExists: "الحساب ده موجود قبل كده. لو محتاج باسورد ابعتله لينك تعيين باسورد من صفحته.",
     stUsers: "يوزر", stToday: "دخلوا النهارده", stApp: "مثبّتين الأبلكيشن", stViews: "مشاهدات النهارده", installedTag: "📲 مثبّت", installedEvt: "📲 ثبّت الأبلكيشن",
     watchTimer: "⏱ مؤقت المشاهدة", timerIntro: "حدد وقت المشاهدة، ولما يخلص الأبلكيشن بيتقفل لوحده لحد ما حد من الكبار يكتب الرقم السري. الوقت بيتحسب بس والفيديو شغّال.",
@@ -902,7 +949,7 @@ const I18N = {
     localNote: "تسجيل الدخول والخروج بيشتغلوا بعد ربط Firebase. الاسم والصورة متحفظين على الجهاز ده بس لحد كده.", badImage: "مقدرتش أفتح الصورة دي",
     loginAdmin: "دخول كأدمن", adminLoginHint: "سجّل دخول بإيميل أو رقم الأدمن", openSettings: "⚙ الإعدادات",
     tabSettings: "الإعدادات", tabUsers: "اليوزرز", tabLogs: "السجل", addUser: "إضافة يوزر",
-    filterUser: "دوّر بالإيميل أو الرقم...", filterLog: "دوّر بيوزر أو فيديو...", logLogins: "مرات الدخول", logViews: "الفيديوهات اللي اتشافت", reload: "تحديث", noLogs: "مفيش حاجة لسه",
+    filterUser: "دوّر بالإيميل...", filterLog: "دوّر بيوزر أو فيديو...", logLogins: "مرات الدخول", logViews: "الفيديوهات اللي اتشافت", reload: "تحديث", noLogs: "مفيش حاجة لسه",
     role: "الدور", roleHint: "مشاهد: بيتفرج بس — محرر: بيعدّل القنوات والإعدادات — أدمن: كل حاجة، ومعاها اليوزرز والسجل.",
     roles: { viewer: "مشاهد", editor: "محرر", admin: "أدمن" },
     suspend: "إيقاف الحساب (ميقدرش يدخل)", expires: "الصلاحية لحد (اختياري)", noExpiry: "من غير تاريخ",
@@ -917,6 +964,8 @@ const I18N = {
   },
   en: {
     gsTitle: "A safe video world for your kids", gs1: "Only the channels you choose", gs2: "No comments, no links out", gs3: "Watch timer with a parent lock",
+    tabHome: "Home", tabSearch: "Search", tabTimer: "Timer", tabMe: "Me",
+    hiMorning: "Good morning", hiEvening: "Good evening", hiSub: "What shall we watch today?",
     remember: "Remember me on this device", apTitle: "Confirm it's you", apHint: "Enter your password to open the settings. This protects them if someone else is holding the device.", apOk: "Confirm",
     gTitle: "Who's watching?", gHint: "Pick one and we'll colour the app to match. You can change it later from your account.", gBoy: "Boy", gGirl: "Girl", gLabel: "App colours",
     upNext: "Up next", adTap: "📢 Ad — tap here so you can press Skip", adOpen: "✔ Press Skip on the ad now",
@@ -942,10 +991,10 @@ const I18N = {
     tvTitle: "📺 Play on TV",
     tvBody: "Google only lets the <b>YouTube</b> app cast YouTube videos to a TV.<br>We'll open this video in YouTube at the same second; tap the Cast icon there and pick your TV. The TV streams it directly in the best quality.<br><br>Or open this app in the TV's own browser.",
     tvGo: "Open in YouTube", tvToast: "Tap the Cast icon and pick your TV", cancel: "Cancel",
-    loginIntro: "Enter your email or mobile number and we'll send you a code or a sign-in link.", idPh: "Email or mobile number", continue: "Continue", verify: "Verify", changeId: "Use a different email or number",
+    loginIntro: "Enter your email and we'll send you a sign-in link, no password needed.", idPh: "Email", continue: "Continue", verify: "Verify", changeId: "Use a different email or number",
     codeSent: p => `We sent a 6-digit code by SMS to <b dir="ltr">${p}</b>`, mailSent: e => `We sent a sign-in link to <b dir="ltr">${e}</b>. Open the email and tap the link (check Spam if you can't find it).`,
     waitLink: "As soon as you tap the link you're in, even if it opens in another tab. Nothing else to do here.", resend: "Send the link again", resent: "New link sent ✔", confirmEmailMsg: "Enter the email you requested the link with to finish signing in.",
-    badId: "Enter a valid email or mobile number", badLink: "That isn't a valid sign-in link", retry: "Try again",
+    badId: "Enter a valid email", badLink: "That isn't a valid sign-in link", retry: "Try again",
     deniedMsg: id => `The account <b dir="ltr">${id}</b> isn't activated yet.<br>Ask an admin to add you.`,
     signIn: "Sign in", logout: "Sign out", loggedOut: "Signed out",
     adultsOnly: "Grown-ups only 🔒", enterPin: "Enter the PIN", wrongPin: "Wrong PIN", notAdmin: "Settings are for admins only",
@@ -960,7 +1009,7 @@ const I18N = {
     save: "Save", defaults: "Reset channels to default", clearCache: "Clear cache & refresh",
     saved: "Saved for every user ✔", savedLocal: "Saved ✔", cacheCleared: "Cache cleared", removed: e => "Removed " + e, added: e => e + " added ✔",
     fbDown: "Couldn't reach Firebase", none: "None",
-    showPw: "Show password", fill: "Fill", fillT: "Zoom the video to fill the whole screen", selectAll: "Select all", adNote: "📢 Ad — the Skip button works as soon as it appears", email: "Email", password: "Password", loginIntroPw: "Sign in with your email and password", createAccount: "No account? Create one", useLinkInstead: "Sign in with an email link or mobile number", signupTitle: "New account: enter your email and choose a password", passMin: "Password (at least 6 characters)", createBtn: "Create account", backToLogin: "Back to sign-in", welcomeAdmin: "Welcome, admin 👋 Settings are in the 👤 button", loginAdminBtn: "🔑 Sign in as admin (email & password)", forgot: "Forgot password", pinShort: "PIN", adminLoginTitle: "Admin sign-in with email and password", backToUser: "Back to user sign-in", passOptional: "Password (at least 6 characters)", sendReset: "📧 Send password link",
+    showPw: "Show password", fill: "Fill", fillT: "Zoom the video to fill the whole screen", selectAll: "Select all", adNote: "📢 Ad — the Skip button works as soon as it appears", email: "Email", password: "Password", loginIntroPw: "Sign in with your email and password", createAccount: "No account? Create one", useLinkInstead: "Sign in with an email link instead (no password)", signupTitle: "New account: enter your email and choose a password", passMin: "Password (at least 6 characters)", createBtn: "Create account", backToLogin: "Back to sign-in", welcomeAdmin: "Welcome, admin 👋 Settings are in the 👤 button", loginAdminBtn: "🔑 Sign in as admin (email & password)", forgot: "Forgot password", pinShort: "PIN", adminLoginTitle: "Admin sign-in with email and password", backToUser: "Back to user sign-in", passOptional: "Password (at least 6 characters)", sendReset: "📧 Send password link",
     resetSentTo: e => "Password link sent to " + e, emailOnly: "This works with email only", accountExists: "This account already exists. If it needs a password, send a password link from its page.",
     stUsers: "Users", stToday: "Active today", stApp: "Installed the app", stViews: "Views today", installedTag: "📲 Installed", installedEvt: "📲 Installed the app",
     watchTimer: "⏱ Watch timer", timerIntro: "Set the watching time. When it runs out the app locks until a grown-up enters the PIN. Time only counts while a video plays.",
@@ -974,7 +1023,7 @@ const I18N = {
     localNote: "Sign-in and sign-out work once Firebase is connected. Until then, the name and photo are saved on this device only.", badImage: "Couldn't open that image",
     loginAdmin: "Sign in as admin", adminLoginHint: "Sign in with the admin's email or number", openSettings: "⚙ Settings",
     tabSettings: "Settings", tabUsers: "Users", tabLogs: "Activity", addUser: "Add user",
-    filterUser: "Search by email or number...", filterLog: "Search by user or video...", logLogins: "Sign-ins", logViews: "Watched videos", reload: "Reload", noLogs: "Nothing yet",
+    filterUser: "Search by email...", filterLog: "Search by user or video...", logLogins: "Sign-ins", logViews: "Watched videos", reload: "Reload", noLogs: "Nothing yet",
     role: "Role", roleHint: "Viewer: watches only — Editor: edits channels and settings — Admin: everything, including users and activity.",
     roles: { viewer: "Viewer", editor: "Editor", admin: "Admin" },
     suspend: "Suspend account (can't sign in)", expires: "Access until (optional)", noExpiry: "No end date",
@@ -1230,8 +1279,15 @@ function paintHero(v) {
   $("#heroMeta").innerHTML = (ch && ch.thumb ? `<img src="${esc(ch.thumb)}" alt="">` : "") + `<span>${esc(chName(v.ch))}</span><span>·</span><span>${ago(v.at)}</span>` + (v.dur ? `<span>·</span><span dir="ltr">${fmtDur(v.dur)}</span>` : "");
 }
 $("#hero").addEventListener("click", () => { if (currentList.length) playAt(currentList, 0); });
+function paintHello() {
+  const h = new Date().getHours(), name = (profile.name || "").trim().split(/\s+/)[0];
+  $("#helloT").textContent = T(h >= 4 && h < 12 ? "hiMorning" : "hiEvening") + (name ? (lang === "ar" ? " يا " : ", ") + name : "") + " 👋";
+  $("#helloS").textContent = T("hiSub");
+}
 function render() {
   $("#hero").hidden = true;
+  $("#hello").hidden = !apiKey() || current !== "all" || !!query;
+  if (!$("#hello").hidden) paintHello();
   const shown = channels.filter(c => visible(c.id));
   const totalNew = shown.reduce((s, c) => s + newCount(c.id), 0);
   $("#channels").innerHTML =
@@ -1690,7 +1746,7 @@ function logView() {
 
 $("#gSend").onclick = async () => {
   const id = idOf($("#gId").value), b = $("#gSend");
-  if (!id) return toast(T("badId"));
+  if (!id || !isEmail(id)) return toast(T("badId"));
   b.disabled = true; auth.languageCode = lang;
   try {
     if (id.includes("@")) {
@@ -1783,7 +1839,7 @@ function avatarInner(p, fallback) {
   const ch = (p.name || "").trim().charAt(0);
   return ch ? `<span class="ini">${esc(ch.toUpperCase())}</span>` : fallback;
 }
-function paintAvatar() { $("#accountBtn").innerHTML = avatarInner(profile, ICO.user); }
+function paintAvatar() { $("#accountBtn").innerHTML = $("#tabAv").innerHTML = avatarInner(profile, ICO.user); if (!$("#hello").hidden) paintHello(); }
 async function loadProfile() {
   if (REMOTE && db && myId) {
     try {
@@ -1977,7 +2033,7 @@ function renderUsers() {
 $("#uFilter").addEventListener("input", renderUsers);
 $("#usersList").addEventListener("click", e => { const b = e.target.closest("[data-uid]"); if (b) openUser(b.dataset.uid); });
 $("#uAdd").onclick = async () => {
-  const id = idOf($("#uNew").value), pw = $("#uPass").value; if (!id) return toast(T("badId"));
+  const id = idOf($("#uNew").value), pw = $("#uPass").value; if (!id || !isEmail(id)) return toast(T("badId"));
   try {
     if (pw) {   // create a password account on a second Firebase instance so the admin stays signed in
       if (!id.includes("@")) return toast(T("emailOnly"));
@@ -2099,6 +2155,7 @@ function paintTimer() {
   const t = getTimer();
   $("#timerPill").hidden = !t.active;
   if (t.active) { const l = timeLeft(t); $("#timerLeft").textContent = fmtLeft(l); $("#timerPill").classList.toggle("low", l < 120); }
+  $("#tabTimerLeft").textContent = t.active ? fmtLeft(timeLeft(t)) : "";
 }
 function openTimer() {
   const t = getTimer(); rollDay(t);
@@ -2166,6 +2223,31 @@ document.querySelectorAll('input[type="password"]').forEach(inp => {
   b.onclick = () => { const show = inp.type === "password"; inp.type = show ? "text" : "password"; b.innerHTML = show ? EYE_OFF : EYE; b.classList.toggle("on", show); inp.focus(); };
   w.appendChild(b);
 });
+
+/* ---------- bottom tab bar (phones) ---------- */
+function setTab(name) { document.querySelectorAll("#tabbar [data-tab]").forEach(b => b.classList.toggle("on", b.dataset.tab === name)); }
+$("#tabbar").addEventListener("click", e => {
+  const b = e.target.closest("[data-tab]"); if (!b) return;
+  const tab = b.dataset.tab;
+  if (tab === "home") {
+    setTab("home");
+    const s = $("#search"); if (query || s.classList.contains("show")) { s.value = ""; query = ""; s.classList.remove("show"); }
+    if (current.startsWith("pl:") && history.state && history.state.pl) history.back();
+    if (current !== "all") openView("all"); else { render(); window.scrollTo({ top: 0, behavior: "smooth" }); }
+  } else if (tab === "search") {
+    setTab("search"); const s = $("#search"); s.classList.add("show"); window.scrollTo({ top: 0, behavior: "smooth" }); setTimeout(() => s.focus(), 60);
+  } else if (tab === "timer") openTimer();
+  else if (tab === "me") $("#accountBtn").click();
+});
+$("#search").addEventListener("blur", () => { if (!query) { $("#search").classList.remove("show"); setTab("home"); } });
+
+/* ---------- splash while the installed app starts ---------- */
+if (standalone) {
+  const sp = $("#splash"); sp.hidden = false;
+  const t0 = Date.now(), hide = () => setTimeout(() => { sp.classList.add("out"); setTimeout(() => sp.hidden = true, 450); }, Math.max(0, 900 - (Date.now() - t0)));
+  if (document.readyState === "complete") hide(); else addEventListener("load", hide, { once: true });
+  setTimeout(() => { sp.hidden = true; }, 4000);
+}
 
 /* ---------- TV remote: arrow keys move between buttons ---------- */
 document.addEventListener("keydown", e => {
