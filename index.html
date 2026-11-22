@@ -1057,11 +1057,27 @@ function listFor(view) {
   if (view === "all") { let all = []; for (const k in vids) if (visible(k)) all = all.concat(vids[k].items); return all.filter(passes).sort((a, b) => b.at - a.at).slice(0, 200); }
   return ((vids[view] || {}).items || []).filter(passes);
 }
+// the list thumbnails are small (480px), so the big banner loads YouTube's HD picture instead:
+// 1280px (maxres) → 640px (sd) → the normal thumbnail. YouTube answers a missing size with a 120px grey image.
+function setHeroImage(v) {
+  const bg = $("#heroBg");
+  if (bg.dataset.vid === v.id) return;
+  bg.dataset.vid = v.id;
+  bg.style.backgroundImage = `url('${v.thumb}')`;
+  const tryUrl = list => {
+    if (!list.length || bg.dataset.vid !== v.id) return;
+    const img = new Image();
+    img.onload = () => { if (img.naturalWidth > 200 && bg.dataset.vid === v.id) bg.style.backgroundImage = `url('${list[0]}')`; else tryUrl(list.slice(1)); };
+    img.onerror = () => tryUrl(list.slice(1));
+    img.src = list[0];
+  };
+  tryUrl([`https://i.ytimg.com/vi/${v.id}/maxresdefault.jpg`, `https://i.ytimg.com/vi/${v.id}/sddefault.jpg`]);
+}
 function paintHero(v) {
   const h = $("#hero");
   if (!v) { h.hidden = true; return; }
   h.hidden = false;
-  $("#heroBg").style.backgroundImage = `url('${v.thumb}')`;
+  setHeroImage(v);
   $("#heroKicker").textContent = isNew(v) ? T("heroNew") : T("heroTop");
   $("#heroTitle").textContent = v.title;
   const ch = channels.find(c => c.id === v.ch);
