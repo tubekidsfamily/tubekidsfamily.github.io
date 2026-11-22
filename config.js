@@ -25,7 +25,7 @@ window.APP_CONFIG = {
   COUNTRY_CODE: "+20",
 
   // اللغة الافتراضية أول مرة: "ar" أو "en"
-  DEFAULT_LANG: "ar",
+  DEFAULT_LANG: "EN",
 
   // القنوات المسموحة (لينك في كل سطر). بعد Firebase بتتعدّل من إعدادات الأدمن.
   CHANNELS: [
