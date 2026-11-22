@@ -171,10 +171,51 @@ header h1 .logo{flex:0 0 auto;width:36px;height:36px;border-radius:11px;backgrou
 @keyframes sk{to{background-position:-200% 0}}
 
 /* ---------- login gate / time's-up lock ---------- */
-#gate,#lock{position:fixed;inset:0;z-index:90;background:#0b0d1a;display:flex;align-items:center;justify-content:center;padding:20px;overflow:auto;isolation:isolate}
-#gate::before,#lock::before{content:"";position:fixed;inset:-20%;z-index:-1;background:radial-gradient(40% 35% at 20% 25%,rgba(var(--b-rgb),.55),transparent 70%),radial-gradient(35% 30% at 85% 20%,rgba(var(--a-rgb),.4),transparent 70%),radial-gradient(40% 35% at 70% 90%,rgba(59,168,255,.35),transparent 70%);filter:blur(20px);animation:drift 18s ease-in-out infinite alternate}
+/* time's up: a calm night screen */
+#lock{position:fixed;inset:0;z-index:150;background:#0b0d1a;display:flex;align-items:center;justify-content:center;padding:20px;overflow:auto;isolation:isolate}
+#lock::before{content:"";position:fixed;inset:-20%;z-index:-1;background:radial-gradient(40% 35% at 20% 25%,rgba(var(--b-rgb),.55),transparent 70%),radial-gradient(35% 30% at 85% 20%,rgba(var(--a-rgb),.4),transparent 70%),radial-gradient(40% 35% at 70% 90%,rgba(59,168,255,.35),transparent 70%);filter:blur(20px);animation:drift 18s ease-in-out infinite alternate}
 @keyframes drift{to{transform:translate(4%,-3%) rotate(8deg)}}
-#lock{z-index:150}
+/* sign in: light page, soft colour blobs, brand panel + form */
+#gate{position:fixed;inset:0;z-index:90;background:#f4f5fb;display:flex;align-items:center;justify-content:center;padding:24px;overflow:auto;isolation:isolate}
+#gate::before{content:"";position:fixed;inset:0;z-index:-2;background-image:radial-gradient(rgba(14,19,48,.07) 1.2px,transparent 1.3px);background-size:22px 22px}
+.gblob{position:fixed;z-index:-1;border-radius:50%;filter:blur(60px);opacity:.55;animation:float 16s ease-in-out infinite alternate}
+.gblob.b1{width:520px;height:520px;background:#8b7bff;top:-160px;inset-inline-start:-120px}
+.gblob.b2{width:440px;height:440px;background:#ff8cc0;bottom:-140px;inset-inline-end:-80px;animation-delay:-5s}
+.gblob.b3{width:320px;height:320px;background:#6fd3ff;top:40%;inset-inline-end:28%;opacity:.35;animation-delay:-9s}
+@keyframes float{to{transform:translate(40px,-30px) scale(1.08)}}
+.gwrap{display:flex;align-items:stretch;width:100%;max-width:960px;background:rgba(255,255,255,.55);-webkit-backdrop-filter:blur(24px);backdrop-filter:blur(24px);border:1px solid rgba(255,255,255,.8);border-radius:32px;box-shadow:0 30px 80px rgba(14,19,48,.14);padding:12px}
+.gside{position:relative;flex:1 1 50%;overflow:hidden;border-radius:24px;background:var(--grad);color:#fff;padding:36px 34px;display:flex;flex-direction:column;justify-content:center;gap:16px;min-height:520px}
+.gside::before{content:"";position:absolute;width:420px;height:420px;border-radius:50%;background:rgba(255,255,255,.12);top:-140px;inset-inline-end:-140px}
+.gside::after{content:"";position:absolute;width:260px;height:260px;border-radius:50%;background:rgba(255,255,255,.1);bottom:-90px;inset-inline-start:-70px}
+.gside>*{position:relative;z-index:1}
+.gside-logo{display:flex;align-items:center;gap:10px;font-weight:700;font-size:16px;opacity:.95}
+.gside-logo span{width:34px;height:34px;border-radius:10px;background:#fff;color:var(--purple);display:grid;place-items:center;font-size:13px;padding-inline-start:2px}
+.gside h2{margin:10px 0 6px;font-size:32px;line-height:1.35;font-weight:700;letter-spacing:-.4px;max-width:380px}
+.gside ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:12px}
+.gside li{display:flex;align-items:center;gap:12px;font-size:15px;font-weight:500}
+.gside li i{width:38px;height:38px;flex:0 0 auto;border-radius:12px;background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.3);display:grid;place-items:center}
+.gside li .ico{width:19px;height:19px}
+.gside-art{position:absolute!important;bottom:26px;inset-inline-end:26px;display:flex;gap:10px}
+.gside-art span{width:46px;height:46px;border-radius:14px;background:rgba(255,255,255,.22);border:1px solid rgba(255,255,255,.35);display:grid;place-items:center;font-size:18px;animation:bob2 4s ease-in-out infinite}
+.gside-art .t2{animation-delay:-1.3s;transform:rotate(8deg)}.gside-art .t3{animation-delay:-2.6s}
+@keyframes bob2{50%{transform:translateY(-8px)}}
+#gate .gcard{flex:1 1 50%;max-width:none;border:0;box-shadow:none;background:transparent;display:flex;flex-direction:column;justify-content:center;padding:40px 38px 30px}
+.gremember{display:flex;align-items:center;gap:8px;font-size:13.5px;color:var(--muted);margin:6px 2px 2px;cursor:pointer;user-select:none}
+.gremember input{width:17px!important;height:17px;margin:0!important;accent-color:var(--purple)}
+@media(max-width:820px){
+  #gate{padding:16px;align-items:flex-start;padding-top:max(24px,6vh)}
+  .gwrap{flex-direction:column;max-width:440px;padding:10px}
+  .gside{min-height:0;padding:22px 22px 20px;gap:10px}
+  .gside h2{font-size:21px;margin:4px 0 0}
+  .gside ul,.gside-art,.gside-logo{display:none}
+  .gside h2{text-align:center;max-width:none}
+  #gate .gcard{padding:26px 18px 18px}
+  #gate .glogo{display:none}
+}
+.aplock{width:56px;height:56px;margin:4px auto 12px;border-radius:18px;background:var(--grad);color:#fff;display:grid;place-items:center;box-shadow:0 10px 24px rgba(var(--b-rgb),.4)}
+.aplock .ico{width:26px;height:26px}
+#apPass{margin-top:6px}
+.aperr{color:#e5294d;font-size:13px;min-height:18px;margin-top:6px}
 .gcard{position:relative;background:var(--card);color:var(--ink);border:1px solid var(--line);border-radius:28px;padding:34px 26px 24px;width:100%;max-width:410px;text-align:center;box-shadow:0 30px 80px rgba(0,0,0,.45)}
 .glogo{width:64px;height:64px;border-radius:20px;background:var(--grad);color:#fff;display:grid;place-items:center;font-size:26px;padding-inline-start:3px;margin:0 auto 14px;box-shadow:0 12px 30px rgba(var(--b-rgb),.5)}
 .gcard h1{margin:0 0 4px;font-size:24px;font-weight:700;letter-spacing:-.3px;color:var(--ink)}
@@ -407,8 +448,10 @@ header h1 .logo{flex:0 0 auto;width:36px;height:36px;border-radius:11px;backgrou
 .ustats span{font-size:12px;color:var(--muted)}
 .pwrap{position:relative;display:block;width:100%}
 .pwrap input{padding-right:46px!important}
-.pwrap .eye{position:absolute;top:50%;right:8px;transform:translateY(-50%);border:0;background:none;font-size:18px;line-height:1;padding:6px;cursor:pointer;opacity:.6}
-.pwrap .eye:hover{opacity:1}
+.pwrap .eye{position:absolute;top:50%;right:8px;transform:translateY(-50%);border:0;background:none;width:36px;height:36px;border-radius:10px;display:grid;place-items:center;padding:0;cursor:pointer;color:var(--muted)}
+.pwrap .eye .ico{width:19px;height:19px}
+.pwrap .eye:hover{background:var(--soft2);color:var(--ink)}
+.pwrap .eye.on{color:var(--brand-ink)}
 .add-row .pwrap{flex:1 1 200px;width:auto}
 .pin .pwrap{width:auto}
 /* TV remote / keyboard: show which button is selected */
@@ -452,6 +495,18 @@ header h1 .logo{flex:0 0 auto;width:36px;height:36px;border-radius:11px;backgrou
 
 <!-- Login gate (only when Firebase is configured) -->
 <section id="gate" hidden>
+  <div class="gblob b1"></div><div class="gblob b2"></div><div class="gblob b3"></div>
+  <div class="gwrap">
+  <aside class="gside">
+    <div class="gside-logo"><span>▶</span>Tube Kids Family</div>
+    <h2 data-i18n="gsTitle"></h2>
+    <ul>
+      <li><i><svg class="ico" viewBox="0 0 24 24"><path d="M12 3 4.5 6v5.5c0 4.6 3.2 8.4 7.5 9.5 4.3-1.1 7.5-4.9 7.5-9.5V6z"/><path d="m9 12 2.2 2.2L15.5 10"/></svg></i><span data-i18n="gs1"></span></li>
+      <li><i><svg class="ico" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="12" rx="2.5"/><path d="m10 8.8 4.5 2.7-4.5 2.7z"/><path d="M8.5 20.5h7"/></svg></i><span data-i18n="gs2"></span></li>
+      <li><i><svg class="ico" viewBox="0 0 24 24"><circle cx="12" cy="13.5" r="7.5"/><path d="M12 10v3.5l2.5 1.8M9.5 2.5h5"/></svg></i><span data-i18n="gs3"></span></li>
+    </ul>
+    <div class="gside-art"><span class="t1">▶</span><span class="t2">★</span><span class="t3">♪</span></div>
+  </aside>
   <div class="gcard">
     <button class="glang" id="gLang"></button>
     <div class="glogo">▶</div>
@@ -460,6 +515,7 @@ header h1 .logo{flex:0 0 auto;width:36px;height:36px;border-radius:11px;backgrou
       <p data-i18n="loginIntroPw"></p>
       <input id="gEmail" type="text" inputmode="email" autocomplete="username" data-i18n-ph="email">
       <input id="gPass" type="password" autocomplete="current-password" data-i18n-ph="password">
+      <label class="gremember"><input type="checkbox" id="gRemember" checked><span data-i18n="remember"></span></label>
       <button class="btn big" id="gLogin" data-i18n="signIn"></button>
       <button class="linkbtn" id="gForgot" data-i18n="forgot"></button>
       <div class="gsep"></div>
@@ -503,6 +559,7 @@ header h1 .logo{flex:0 0 auto;width:36px;height:36px;border-radius:11px;backgrou
       <button class="linkbtn" id="gLogout" data-i18n="logout"></button>
     </div>
     <div data-step="loading" hidden><div class="spinner"></div></div>
+  </div>
   </div>
   <div id="recaptcha"></div>
 </section>
@@ -631,6 +688,19 @@ header h1 .logo{flex:0 0 auto;width:36px;height:36px;border-radius:11px;backgrou
       <button class="gopt boy" data-g="boy"><span class="gem">👦</span><b data-i18n="gBoy"></b><span class="gsw"><i></i><i></i></span></button>
       <button class="gopt girl" data-g="girl"><span class="gem">👧</span><b data-i18n="gGirl"></b><span class="gsw"><i></i><i></i></span></button>
     </div>
+  </div>
+</div>
+
+<!-- Settings: confirm the password first -->
+<div class="modal" id="adminPwModal">
+  <div class="sheet" style="max-width:400px;text-align:center">
+    <div class="aplock"><svg class="ico" viewBox="0 0 24 24"><rect x="5" y="10.5" width="14" height="10" rx="2.5"/><path d="M8 10.5V7.5a4 4 0 0 1 8 0v3"/></svg></div>
+    <h2 data-i18n="apTitle"></h2>
+    <p class="hint" data-i18n="apHint"></p>
+    <div class="pid" id="apEmail" dir="ltr" style="margin:10px 0 4px"></div>
+    <input id="apPass" type="password" autocomplete="current-password" data-i18n-ph="password" style="text-align:center">
+    <div class="aperr" id="apErr"></div>
+    <div class="row" style="justify-content:center"><button class="btn" id="apOk" data-i18n="apOk"></button><button class="btn ghost" data-close data-i18n="cancel"></button></div>
   </div>
 </div>
 
@@ -774,6 +844,8 @@ const thumbOf = (th, pref = ["high", "medium", "default"]) => { th = th || {}; f
 /* ---------- language ---------- */
 const I18N = {
   ar: {
+    gsTitle: "عالم فيديوهات آمن لأطفالك", gs1: "قنوات انت اللي بتختارها بس", gs2: "من غير تعليقات ولا روابط برّه", gs3: "مؤقت مشاهدة بقفل من الأهل",
+    remember: "افتكرني على الجهاز ده", apTitle: "تأكيد إنك الأدمن", apHint: "اكتب الباسورد بتاعك عشان تفتح الإعدادات. ده بيحمي الإعدادات لو حد تاني ماسك الجهاز.", apOk: "تأكيد",
     gTitle: "مين هيتفرج؟", gHint: "اختار عشان نلوّن الأبلكيشن على ذوقك. تقدر تغيّره بعدين من صفحة حسابك.", gBoy: "ولد", gGirl: "بنت", gLabel: "شكل الأبلكيشن",
     upNext: "الفيديو الجاي", adTap: "📢 إعلان — دوس هنا عشان تقدر تدوس Skip", adOpen: "✔ دوس Skip على الإعلان دلوقتي",
     heroNew: "أحدث فيديو", heroTop: "مختار ليك", watchNow: "شغّل دلوقتي",
@@ -844,6 +916,8 @@ const I18N = {
     fb: { "auth/invalid-phone-number": "رقم الموبايل مش صحيح", "auth/invalid-email": "الإيميل مكتوب غلط", "auth/too-many-requests": "محاولات كتير، استنى شوية وجرب تاني", "auth/invalid-verification-code": "الكود غلط", "auth/code-expired": "الكود انتهى، اطلب كود جديد", "auth/invalid-action-code": "اللينك ده اتستخدم قبل كده أو انتهى، اطلب لينك جديد", "auth/expired-action-code": "اللينك انتهى، اطلب لينك جديد", "auth/billing-not-enabled": "رسايل الموبايل محتاجة تفعيل الدفع في Firebase (Blaze). استخدم الإيميل لحد ما الأدمن يفعّله.", "auth/operation-not-allowed": "طريقة الدخول دي مش متفعّلة في Firebase", "auth/unauthorized-domain": "الدومين ده مش مضاف في Firebase ← Authorized domains", "auth/quota-exceeded": "خلص عدد الرسايل المسموح بيه النهارده. ادخل بالإيميل والباسورد، أو جرّب بكرة.", "auth/captcha-check-failed": "فشل التحقق، جرّب تاني", "auth/network-request-failed": "مفيش نت", "permission-denied": "مش مسموحلك تعمل كده", "auth/invalid-credential": "الإيميل أو الباسورد غلط", "auth/wrong-password": "الإيميل أو الباسورد غلط", "auth/user-not-found": "الإيميل أو الباسورد غلط", "auth/missing-password": "اكتب الباسورد", "auth/weak-password": "الباسورد لازم 6 حروف على الأقل", "auth/email-already-in-use": "الحساب ده موجود قبل كده" }
   },
   en: {
+    gsTitle: "A safe video world for your kids", gs1: "Only the channels you choose", gs2: "No comments, no links out", gs3: "Watch timer with a parent lock",
+    remember: "Remember me on this device", apTitle: "Confirm it's you", apHint: "Enter your password to open the settings. This protects them if someone else is holding the device.", apOk: "Confirm",
     gTitle: "Who's watching?", gHint: "Pick one and we'll colour the app to match. You can change it later from your account.", gBoy: "Boy", gGirl: "Girl", gLabel: "App colours",
     upNext: "Up next", adTap: "📢 Ad — tap here so you can press Skip", adOpen: "✔ Press Skip on the ad now",
     heroNew: "Just added", heroTop: "Picked for you", watchNow: "Watch now",
@@ -1639,9 +1713,17 @@ $("#gLogin").onclick = async () => {
   if (!email || !email.includes("@")) return toast(T("badId"));
   if (!pw) return toast(T("fb")["auth/missing-password"]);
   b.disabled = true;
-  try { await auth.signInWithEmailAndPassword(email, pw); $("#gPass").value = ""; } catch (e) { toast(fbErr(e), 6000); } finally { b.disabled = false; }
+  try {
+    // unticked "remember me" = the sign-in ends when the browser is closed (for shared or borrowed devices)
+    const PS = firebase.auth.Auth && firebase.auth.Auth.Persistence;
+    if (PS && auth.setPersistence) await auth.setPersistence($("#gRemember").checked ? PS.LOCAL : PS.SESSION).catch(() => {});
+    await auth.signInWithEmailAndPassword(email, pw); $("#gPass").value = "";
+    adminOkUntil = Date.now() + 15 * 60e3;       // just typed the password: settings open without asking again
+  } catch (e) { toast(fbErr(e), 6000); } finally { b.disabled = false; }
 };
 $("#gPass").addEventListener("keydown", e => { if (e.key === "Enter") $("#gLogin").click(); });
+$("#apOk").onclick = confirmAdminPw;
+$("#apPass").addEventListener("keydown", e => { if (e.key === "Enter") confirmAdminPw(); });
 $("#gEmail").addEventListener("keydown", e => { if (e.key === "Enter") $("#gPass").focus(); });
 $("#gForgot").onclick = async () => {
   const email = idOf($("#gEmail").value);
@@ -1684,7 +1766,7 @@ async function signOut() {
   document.querySelectorAll(".modal.open").forEach(m => m.classList.remove("open"));
   try { sessionStorage.removeItem("kt_session_" + myId); } catch {}
   try { await auth.signOut(); } catch {}
-  remoteCfg = null; LS.del("remoteCfg"); $("#gId").value = ""; $("#gPass").value = ""; profile = { name: "", photo: "" }; LS.del("profile"); paintAvatar(); applyGender("");
+  remoteCfg = null; LS.del("remoteCfg"); $("#gId").value = ""; $("#gPass").value = ""; profile = { name: "", photo: "" }; LS.del("profile"); paintAvatar(); applyGender(""); adminOkUntil = 0;
   toast(T("loggedOut"));
 }
 $("#gLogout").onclick = () => signOut();
@@ -1811,7 +1893,28 @@ function showTab(id) {
 }
 $("#setTabs").addEventListener("click", e => { const b = e.target.closest("[data-tab]"); if (b) showTab(b.dataset.tab); });
 
+let adminOkUntil = 0;
+const hasPassword = () => !!(user && user.email && (user.providerData || []).some(p => p.providerId === "password"));
 async function openSettings() {
+  if (REMOTE && hasPassword() && Date.now() > adminOkUntil) {
+    $("#apEmail").textContent = user.email; $("#apPass").value = ""; $("#apErr").textContent = "";
+    openModal("#adminPwModal"); setTimeout(() => $("#apPass").focus(), 60);
+    return;
+  }
+  return openSettingsNow();
+}
+async function confirmAdminPw() {
+  const pw = $("#apPass").value, b = $("#apOk"); if (!pw) return;
+  b.disabled = true; $("#apErr").textContent = "";
+  try {
+    await user.reauthenticateWithCredential(firebase.auth.EmailAuthProvider.credential(user.email, pw));
+    adminOkUntil = Date.now() + 15 * 60e3;
+    $("#adminPwModal").classList.remove("open"); $("#apPass").value = "";
+    openSettingsNow();
+  } catch (e) { $("#apErr").textContent = fbErr(e); }
+  finally { b.disabled = false; }
+}
+async function openSettingsNow() {
   const o = opts();
   $("#sKey").value = apiKey();
   $("#sCh").value = channelList().join("\n");
@@ -2056,9 +2159,11 @@ setInterval(() => {
 document.querySelectorAll('input[type="password"]').forEach(inp => {
   const w = document.createElement("span"); w.className = "pwrap";
   inp.parentNode.insertBefore(w, inp); w.appendChild(inp);
-  const b = document.createElement("button"); b.type = "button"; b.className = "eye"; b.textContent = "👁"; b.tabIndex = -1;
+  const EYE = '<svg class="ico" viewBox="0 0 24 24"><path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12z"/><circle cx="12" cy="12" r="3"/></svg>';
+  const EYE_OFF = '<svg class="ico" viewBox="0 0 24 24"><path d="M10.6 5.6A9.6 9.6 0 0 1 12 5.5c6 0 9.5 6.5 9.5 6.5a17 17 0 0 1-2.6 3.4M6.6 6.7C4 8.4 2.5 12 2.5 12S6 18.5 12 18.5c1.7 0 3.2-.5 4.5-1.2"/><path d="M9.9 9.9a3 3 0 0 0 4.2 4.2M3.5 3.5l17 17"/></svg>';
+  const b = document.createElement("button"); b.type = "button"; b.className = "eye"; b.innerHTML = EYE; b.tabIndex = -1;
   b.title = T("showPw");
-  b.onclick = () => { const show = inp.type === "password"; inp.type = show ? "text" : "password"; b.textContent = show ? "🙈" : "👁"; inp.focus(); };
+  b.onclick = () => { const show = inp.type === "password"; inp.type = show ? "text" : "password"; b.innerHTML = show ? EYE_OFF : EYE; b.classList.toggle("on", show); inp.focus(); };
   w.appendChild(b);
 });
 
