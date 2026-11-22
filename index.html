@@ -103,7 +103,10 @@ header h1 .logo{width:32px;height:32px;border-radius:9px;background:var(--yellow
 #frameBox iframe,#ytp{position:absolute;inset:0;width:100%;height:100%;border:0}
 #tap{position:absolute;inset:0;z-index:3;display:none}
 #player.kid #tap{display:block}
-#player.ad #tap{bottom:24%}
+/* bottom corners are always left open so YouTube's "Skip ad" button can be pressed (left or right, depending on language) */
+#tap{clip-path:polygon(0 0,100% 0,100% 78%,66% 78%,66% 100%,34% 100%,34% 78%,0 78%)}
+#player.ad #tap{bottom:26%;clip-path:none}
+#player.fs.ad #bar{opacity:0;pointer-events:none}
 #adNote{position:absolute;top:10px;left:50%;transform:translateX(-50%);background:rgba(20,21,43,.85);color:#fff;font-size:13px;font-weight:700;padding:6px 12px;border-radius:10px;z-index:4;display:none;white-space:nowrap}
 #player.ad #adNote{display:block}
 #bigIcon{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) scale(.8);width:84px;height:84px;border-radius:50%;background:rgba(20,21,43,.75);display:grid;place-items:center;font-size:36px;opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;z-index:4}
@@ -132,6 +135,9 @@ header h1 .logo{width:32px;height:32px;border-radius:9px;background:var(--yellow
 #player.fs #pTop{position:absolute;top:0;left:0;right:0;background:linear-gradient(rgba(0,0,0,.7),transparent)}
 #player.fs #bar{position:absolute;bottom:0;left:0;right:0;background:linear-gradient(transparent,rgba(0,0,0,.8))}
 #player.fs #stage{position:absolute;inset:0}
+#stage{overflow:hidden}
+#frameBox{flex-shrink:0}
+@media (orientation: landscape){#player.fill #frameBox{width:max(100cqw, calc(100cqh * 16 / 9))}}
 #player.fs.idle #pTop,#player.fs.idle #bar{opacity:0;pointer-events:none}
 #player.fake-fs{z-index:100}
 
@@ -209,6 +215,14 @@ header h1 .logo{width:32px;height:32px;border-radius:9px;background:var(--yellow
 .ustats b{display:block;font-size:22px;color:var(--brand)}
 .ustats span{font-size:12px;color:var(--muted)}
 .tag.app{background:#fff3d1;color:#8a6200}
+.pwrap{position:relative;display:block;width:100%}
+.pwrap input{padding-inline-end:46px!important}
+.pwrap .eye{position:absolute;top:50%;inset-inline-end:8px;transform:translateY(-50%);border:0;background:none;font-size:20px;line-height:1;padding:6px;cursor:pointer;opacity:.7}
+.pwrap .eye:hover{opacity:1}
+.add-row .pwrap{flex:1 1 200px;width:auto}
+.pin .pwrap{width:auto}
+/* TV remote / keyboard: show which button is selected */
+:focus-visible{outline:4px solid var(--yellow)!important;outline-offset:3px}
 #toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#1d2140;color:#fff;padding:10px 18px;border-radius:12px;z-index:200;display:none;font-size:14px;max-width:90vw;text-align:center}
 </style>
 </head>
@@ -365,6 +379,7 @@ header h1 .logo{width:32px;height:32px;border-radius:9px;background:var(--yellow
           <input type="range" id="vol" min="0" max="100" value="100">
         </div>
         <button class="pb small" id="pCC" data-i18n-title="cc">CC</button>
+        <button class="pb small" id="pFill" data-i18n-title="fillT">⤢ <span data-i18n="fill"></span></button>
         <button class="pb" id="pFs" data-i18n-title="fullscreen"><svg viewBox="0 0 24 24" id="fsIco"><path d="M5 5h5V3H3v7h2zm9-2v2h5v5h2V3zm5 16h-5v2h7v-7h-2zM5 14H3v7h7v-2H5z"/></svg></button>
         <button class="pb tv" id="pTv">📺 <span data-i18n="tv"></span></button>
       </div>
@@ -569,7 +584,7 @@ const I18N = {
     save: "حفظ", defaults: "رجّع القنوات الافتراضية", clearCache: "مسح الكاش وتحديث",
     saved: "اتحفظ عند كل اليوزرز ✔", savedLocal: "اتحفظ ✔", cacheCleared: "اتمسح الكاش", removed: e => "اتشال " + e, added: e => "اتضاف " + e + " ✔",
     fbDown: "مقدرتش أوصل لـ Firebase", none: "مفيش",
-    selectAll: "اختار الكل", adNote: "📢 إعلان — زرار Skip بيشتغل أول ما يظهر", email: "الإيميل", password: "الباسورد", loginIntroPw: "سجّل دخول بالإيميل والباسورد", createAccount: "معندكش حساب؟ اعمل حساب جديد", useLinkInstead: "ادخل بلينك على الإيميل أو برقم الموبايل", signupTitle: "حساب جديد: اكتب إيميلك واختار باسورد", passMin: "الباسورد (6 حروف على الأقل)", createBtn: "اعمل الحساب", backToLogin: "رجوع لتسجيل الدخول", welcomeAdmin: "أهلاً يا أدمن 👋 الإعدادات من زرار 👤", loginAdminBtn: "🔑 دخول كأدمن (إيميل وباسورد)", forgot: "نسيت الباسورد", pinShort: "الرقم السري", adminLoginTitle: "دخول الأدمن بالإيميل والباسورد", backToUser: "رجوع لدخول اليوزر", passOptional: "باسورد (6 حروف على الأقل)", sendReset: "📧 ابعت لينك تعيين باسورد",
+    showPw: "إظهار الباسورد", fill: "ملء", fillT: "كبّر الفيديو يملى الشاشة كلها", selectAll: "اختار الكل", adNote: "📢 إعلان — زرار Skip بيشتغل أول ما يظهر", email: "الإيميل", password: "الباسورد", loginIntroPw: "سجّل دخول بالإيميل والباسورد", createAccount: "معندكش حساب؟ اعمل حساب جديد", useLinkInstead: "ادخل بلينك على الإيميل أو برقم الموبايل", signupTitle: "حساب جديد: اكتب إيميلك واختار باسورد", passMin: "الباسورد (6 حروف على الأقل)", createBtn: "اعمل الحساب", backToLogin: "رجوع لتسجيل الدخول", welcomeAdmin: "أهلاً يا أدمن 👋 الإعدادات من زرار 👤", loginAdminBtn: "🔑 دخول كأدمن (إيميل وباسورد)", forgot: "نسيت الباسورد", pinShort: "الرقم السري", adminLoginTitle: "دخول الأدمن بالإيميل والباسورد", backToUser: "رجوع لدخول اليوزر", passOptional: "باسورد (6 حروف على الأقل)", sendReset: "📧 ابعت لينك تعيين باسورد",
     resetSentTo: e => "اتبعت لينك تعيين الباسورد على " + e, emailOnly: "ده بيشتغل مع الإيميل بس", accountExists: "الحساب ده موجود قبل كده. لو محتاج باسورد ابعتله لينك تعيين باسورد من صفحته.",
     stUsers: "يوزر", stToday: "دخلوا النهارده", stApp: "مثبّتين الأبلكيشن", stViews: "مشاهدات النهارده", installedTag: "📲 مثبّت", installedEvt: "📲 ثبّت الأبلكيشن",
     watchTimer: "⏱ مؤقت المشاهدة", timerIntro: "حدد وقت المشاهدة، ولما يخلص الأبلكيشن بيتقفل لوحده لحد ما حد من الكبار يكتب الرقم السري. الوقت بيتحسب بس والفيديو شغّال.",
@@ -635,7 +650,7 @@ const I18N = {
     save: "Save", defaults: "Reset channels to default", clearCache: "Clear cache & refresh",
     saved: "Saved for every user ✔", savedLocal: "Saved ✔", cacheCleared: "Cache cleared", removed: e => "Removed " + e, added: e => e + " added ✔",
     fbDown: "Couldn't reach Firebase", none: "None",
-    selectAll: "Select all", adNote: "📢 Ad — the Skip button works as soon as it appears", email: "Email", password: "Password", loginIntroPw: "Sign in with your email and password", createAccount: "No account? Create one", useLinkInstead: "Sign in with an email link or mobile number", signupTitle: "New account: enter your email and choose a password", passMin: "Password (at least 6 characters)", createBtn: "Create account", backToLogin: "Back to sign-in", welcomeAdmin: "Welcome, admin 👋 Settings are in the 👤 button", loginAdminBtn: "🔑 Sign in as admin (email & password)", forgot: "Forgot password", pinShort: "PIN", adminLoginTitle: "Admin sign-in with email and password", backToUser: "Back to user sign-in", passOptional: "Password (at least 6 characters)", sendReset: "📧 Send password link",
+    showPw: "Show password", fill: "Fill", fillT: "Zoom the video to fill the whole screen", selectAll: "Select all", adNote: "📢 Ad — the Skip button works as soon as it appears", email: "Email", password: "Password", loginIntroPw: "Sign in with your email and password", createAccount: "No account? Create one", useLinkInstead: "Sign in with an email link or mobile number", signupTitle: "New account: enter your email and choose a password", passMin: "Password (at least 6 characters)", createBtn: "Create account", backToLogin: "Back to sign-in", welcomeAdmin: "Welcome, admin 👋 Settings are in the 👤 button", loginAdminBtn: "🔑 Sign in as admin (email & password)", forgot: "Forgot password", pinShort: "PIN", adminLoginTitle: "Admin sign-in with email and password", backToUser: "Back to user sign-in", passOptional: "Password (at least 6 characters)", sendReset: "📧 Send password link",
     resetSentTo: e => "Password link sent to " + e, emailOnly: "This works with email only", accountExists: "This account already exists. If it needs a password, send a password link from its page.",
     stUsers: "Users", stToday: "Active today", stApp: "Installed the app", stViews: "Views today", installedTag: "📲 Installed", installedEvt: "📲 Installed the app",
     watchTimer: "⏱ Watch timer", timerIntro: "Set the watching time. When it runs out the app locks until a grown-up enters the PIN. Time only counts while a video plays.",
@@ -1092,6 +1107,10 @@ async function toggleFs() {
 function paintFs() { $("#fsIco").innerHTML = P.classList.contains("fs") ? ICON_FS_EXIT : ICON_FS; wake(); }
 document.addEventListener("fullscreenchange", () => { P.classList.toggle("fs", !!document.fullscreenElement); paintFs(); });
 $("#pFs").onclick = toggleFs;
+// fill: zoom the video so it covers the whole screen (edges get trimmed instead of black bars)
+function paintFill() { P.classList.toggle("fill", LS.get("fill", false)); $("#pFill").classList.toggle("on", LS.get("fill", false)); }
+$("#pFill").onclick = () => { LS.set("fill", !LS.get("fill", false)); paintFill(); };
+paintFill();
 // TV: Google only allows the YouTube app to cast YouTube videos, so explain and hand off
 $("#pTv").onclick = () => { try { yt.pauseVideo(); } catch {} if (document.fullscreenElement) document.exitFullscreen().catch(() => {}); $("#tvModal").classList.add("open"); };
 $("#tvGo").onclick = () => {
@@ -1671,6 +1690,42 @@ setInterval(() => {
   if (timeLeft(t) <= 0) showLock();
 }, 1000);
 (() => { const t = getTimer(); rollDay(t); paintTimer(); if (t.active && timeLeft(t) <= 0) showLock(); })();
+
+/* ---------- show password: 👁 inside every password box ---------- */
+document.querySelectorAll('input[type="password"]').forEach(inp => {
+  const w = document.createElement("span"); w.className = "pwrap";
+  inp.parentNode.insertBefore(w, inp); w.appendChild(inp);
+  const b = document.createElement("button"); b.type = "button"; b.className = "eye"; b.textContent = "👁"; b.tabIndex = -1;
+  b.title = T("showPw");
+  b.onclick = () => { const show = inp.type === "password"; inp.type = show ? "text" : "password"; b.textContent = show ? "🙈" : "👁"; inp.focus(); };
+  w.appendChild(b);
+});
+
+/* ---------- TV remote: arrow keys move between buttons ---------- */
+document.addEventListener("keydown", e => {
+  const dirs = { ArrowUp: [0, -1], ArrowDown: [0, 1], ArrowLeft: [-1, 0], ArrowRight: [1, 0] };
+  const d = dirs[e.key]; if (!d) return;
+  const a = document.activeElement;
+  if (a && (a.tagName === "TEXTAREA" || (a.tagName === "INPUT" && !["checkbox", "range"].includes(a.type)))) return;
+  if (a && a.type === "range" && d[1] === 0) return;            // left/right still moves sliders
+  const layer = [...document.querySelectorAll("#lock:not([hidden]), .modal.open, #gate:not([hidden]), #player.open")].pop() || document.body;
+  const items = [...layer.querySelectorAll("button, input, select, textarea, [tabindex]:not([tabindex='-1'])")]
+    .filter(el => !el.disabled && el.tabIndex !== -1 && el.offsetParent !== null && !(layer === document.body && el.closest("#player, .modal, #gate, #lock")));
+  if (!items.length) return;
+  e.preventDefault();
+  if (!a || !items.includes(a)) { items[0].focus(); return; }
+  const r = a.getBoundingClientRect(), cx = r.left + r.width / 2, cy = r.top + r.height / 2;
+  let best = null, bestScore = Infinity;
+  for (const el of items) {
+    if (el === a) continue;
+    const q = el.getBoundingClientRect(), dx = q.left + q.width / 2 - cx, dy = q.top + q.height / 2 - cy;
+    const along = dx * d[0] + dy * d[1]; if (along <= 4) continue;            // must be in that direction
+    const across = Math.abs(dx * d[1]) + Math.abs(dy * d[0]);
+    const score = along + across * 2;
+    if (score < bestScore) { bestScore = score; best = el; }
+  }
+  if (best) { best.focus(); best.scrollIntoView({ block: "nearest", inline: "nearest" }); }
+});
 
 /* ---------- boot ---------- */
 applyLang();
