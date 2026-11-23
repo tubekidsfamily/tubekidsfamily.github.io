@@ -498,6 +498,17 @@ header h1 .logo{flex:0 0 auto;width:38px;height:38px;border-radius:11px;box-shad
 :focus-visible{outline:3px solid var(--purple)!important;outline-offset:3px}
 #player :focus-visible{outline-color:#fff!important}
 
+
+/* ---------- "new version" bar ---------- */
+#updBar{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(env(safe-area-inset-bottom) + 20px);z-index:45;display:flex;align-items:center;gap:10px;background:var(--ink);color:var(--bg);padding:8px 8px 8px 14px;border-radius:18px;box-shadow:0 14px 36px rgba(14,19,48,.3);font-size:14px;font-weight:500;max-width:calc(100vw - 24px);animation:up .3s ease-out}
+[dir=rtl] #updBar{padding:8px 14px 8px 8px}
+#updBar .ico{width:18px;height:18px;color:var(--yellow);flex:0 0 auto}
+#updBar span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#updGo{border:0;background:var(--grad);color:#fff;font-family:inherit;font-weight:600;font-size:13.5px;padding:8px 14px;border-radius:12px;white-space:nowrap}
+#updX{border:0;background:none;color:inherit;opacity:.6;font-size:14px;padding:6px 8px;border-radius:10px}
+@media(max-width:700px){#updBar{bottom:calc(env(safe-area-inset-bottom) + 96px)}}
+#accUpdate{display:inline-flex;align-items:center;justify-content:center;gap:8px}
+#accUpdate .ico{width:18px;height:18px}
 /* ---------- greeting ---------- */
 #hello{padding:18px 18px 0;display:flex;flex-direction:column;gap:2px}
 #hello b{font-size:22px;font-weight:700;letter-spacing:-.3px}
@@ -799,11 +810,13 @@ header h1 .logo{flex:0 0 auto;width:38px;height:38px;border-radius:11px;box-shad
     <div class="gseg" id="gSeg"><span data-i18n="gLabel"></span><div><button data-g="boy">👦 <span data-i18n="gBoy"></span></button><button data-g="girl">👧 <span data-i18n="gGirl"></span></button></div></div>
     <div class="pinfo" id="pInfo"></div>
     <div class="hint" id="pNote" style="text-align:center;margin-top:8px"></div>
+    <div class="hint" id="appVer" dir="ltr" style="text-align:center;margin-top:6px;opacity:.7"></div>
     <div class="row" style="flex-direction:column">
       <button class="btn" id="pSave" data-i18n="saveProfile"></button>
       <button class="btn ghost" id="accTimer" data-i18n="watchTimer"></button>
       <button class="btn ghost" id="accSettings" data-i18n="openSettings"></button>
       <button class="btn yellow" id="accAdmin" data-i18n="loginAdmin"></button>
+      <button class="btn ghost" id="accUpdate"><svg class="ico" viewBox="0 0 24 24"><path d="M20 11a8 8 0 0 0-14.3-4.9L4 8M4 4v4h4M4 13a8 8 0 0 0 14.3 4.9L20 16M20 20v-4h-4"/></svg> <span data-i18n="updBtn"></span></button>
       <button class="btn red" id="accLogout" data-i18n="logout"></button>
       <button class="btn ghost" data-close data-i18n="close"></button>
     </div>
@@ -906,11 +919,14 @@ header h1 .logo{flex:0 0 auto;width:38px;height:38px;border-radius:11px;box-shad
   </div>
 </div>
 
+<div id="updBar" hidden><svg class="ico" viewBox="0 0 24 24"><path d="M12 3l2.2 5.3L20 9l-4.4 3.8L17 18.5 12 15.6 7 18.5l1.4-5.7L4 9l5.8-.7z"/></svg><span data-i18n="updNew"></span><button id="updGo" data-i18n="updGo"></button><button id="updX" aria-label="close">✕</button></div>
 <div id="toast"></div>
 
 <script>
 (() => {
 "use strict";
+// bump this together with version.json on every upload — installed apps compare the two to offer the update
+const APP_VERSION = "2026.11.23";
 /* ---------- helpers ---------- */
 const LS = {
   get(k, d) { try { const v = localStorage.getItem("kt_" + k); return v == null ? d : JSON.parse(v); } catch { return d; } },
@@ -927,6 +943,7 @@ const thumbOf = (th, pref = ["high", "medium", "default"]) => { th = th || {}; f
 const I18N = {
   ar: {
     gsTitle: "عالم فيديوهات آمن لأطفالك", gs1: "قنوات انت اللي بتختارها بس", gs2: "من غير تعليقات ولا روابط برّه", gs3: "مؤقت مشاهدة بقفل من الأهل",
+    updBtn: "تحديث الأبلكيشن", updNew: "فيه نسخة جديدة من الأبلكيشن", updGo: "حدّث دلوقتي", updDoing: "بيتحدّث...", updLatest: "انت على آخر نسخة ✔ — بنعيد التحميل", verLbl: "الإصدار",
     tabHome: "الرئيسية", tabSearch: "بحث", tabTimer: "المؤقت", tabMe: "حسابي",
     hiMorning: "صباح الخير", hiEvening: "مساء الخير", hiSub: "يلا نتفرج على إيه النهارده؟",
     remember: "افتكرني على الجهاز ده", apTitle: "تأكيد إنك الأدمن", apHint: "اكتب الباسورد بتاعك عشان تفتح الإعدادات. ده بيحمي الإعدادات لو حد تاني ماسك الجهاز.", apOk: "تأكيد",
@@ -1001,6 +1018,7 @@ const I18N = {
   },
   en: {
     gsTitle: "A safe video world for your kids", gs1: "Only the channels you choose", gs2: "No comments, no links out", gs3: "Watch timer with a parent lock",
+    updBtn: "Update the app", updNew: "A new version of the app is ready", updGo: "Update now", updDoing: "Updating...", updLatest: "You're on the latest version ✔ — reloading", verLbl: "Version",
     tabHome: "Home", tabSearch: "Search", tabTimer: "Timer", tabMe: "Me",
     hiMorning: "Good morning", hiEvening: "Good evening", hiSub: "What shall we watch today?",
     remember: "Remember me on this device", apTitle: "Confirm it's you", apHint: "Enter your password to open the settings. This protects them if someone else is holding the device.", apOk: "Confirm",
@@ -2271,6 +2289,35 @@ document.querySelectorAll('input[type="password"]').forEach(inp => {
   b.onclick = () => { const show = inp.type === "password"; inp.type = show ? "text" : "password"; b.innerHTML = show ? EYE_OFF : EYE; b.classList.toggle("on", show); inp.focus(); };
   w.appendChild(b);
 });
+
+/* ---------- app updates ----------
+   Installed apps keep the old page in memory. Every time the app comes back to the screen (at most every 10 min)
+   it reads version.json; if it's newer than this page a bar offers the update. "Update the app" in the account sheet
+   does it any time: empties the offline copy and reloads the newest files — no need to uninstall. */
+async function hardRefresh() {
+  toast(T("updDoing"), 4000);
+  try { if (window.caches) { const ks = await caches.keys(); await Promise.all(ks.map(k => caches.delete(k))); } } catch {}
+  try { const reg = navigator.serviceWorker && await navigator.serviceWorker.getRegistration(); if (reg) await reg.update(); } catch {}
+  const u = new URL(location.href); u.searchParams.set("v", Date.now()); u.hash = "";
+  location.replace(u.pathname + u.search);
+}
+let lastUpdCheck = 0;
+async function checkUpdate(manual) {
+  if (!manual && Date.now() - lastUpdCheck < 10 * 60e3) return;
+  lastUpdCheck = Date.now();
+  let latest = "";
+  try { const r = await fetch("version.json?t=" + Date.now(), { cache: "no-store" }); if (r.ok) latest = ((await r.json()) || {}).version || ""; } catch {}
+  if (manual) { if (!latest || latest === APP_VERSION) toast(T("updLatest"), 2500); setTimeout(hardRefresh, latest && latest !== APP_VERSION ? 0 : 900); return; }
+  if (latest && latest !== APP_VERSION) $("#updBar").hidden = false;
+}
+$("#updGo").onclick = hardRefresh;
+$("#appVer").textContent = "v" + APP_VERSION;
+$("#updX").onclick = () => { $("#updBar").hidden = true; };
+$("#accUpdate").onclick = () => { $("#accountModal").classList.remove("open"); checkUpdate(true); };
+setTimeout(() => checkUpdate(false), 4000);
+document.addEventListener("visibilitychange", () => { if (document.visibilityState === "visible") checkUpdate(false); });
+// clean "?v=" left by an update from the address bar
+if (new URLSearchParams(location.search).has("v")) { const u = new URL(location.href); u.searchParams.delete("v"); history.replaceState(history.state, "", u.pathname + u.search + u.hash); }
 
 /* ---------- bottom tab bar (phones) ---------- */
 function setTab(name) { document.querySelectorAll("#tabbar [data-tab]").forEach(b => b.classList.toggle("on", b.dataset.tab === name)); }
